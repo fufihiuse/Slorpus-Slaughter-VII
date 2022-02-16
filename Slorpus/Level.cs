@@ -11,5 +11,18 @@ namespace Slorpus
     //Jackson Majewski
     public class Level
     {
+        //Fields
+        private Wall[,] walls;
+
+        //Methods
+        public void LoadFromFile(string filepath)
+        {
+
+        }
+
+        public void Draw()
+        {
+
+        }
     }
 }
