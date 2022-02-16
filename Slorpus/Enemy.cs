@@ -7,7 +7,9 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Slorpus
 {
+    //Yazmin Miller
     public class Enemy
     {
+
     }
 }
