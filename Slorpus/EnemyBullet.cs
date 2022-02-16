@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Slorpus
 {
-    struct EnemyBullet
+    public struct EnemyBullet
     {
     }
 }

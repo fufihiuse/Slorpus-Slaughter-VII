@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Slorpus
 {
-    struct Wall
+    public struct Wall
     {
     }
 }
