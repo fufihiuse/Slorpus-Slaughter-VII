@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Slorpus
 {
-    class UIManager
+    public class UIManager
     {
     }
 }
