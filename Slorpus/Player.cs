@@ -6,5 +6,6 @@ namespace Slorpus
 {
     public class Player
     {
+
     }
 }
