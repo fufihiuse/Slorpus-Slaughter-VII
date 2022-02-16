@@ -17,6 +17,11 @@ namespace Slorpus
         Point pos;
         Vector2 vel;
 
+        public EnemyBullet(Point position, Vector2 velocity)
+        {
+            pos = position;
+            vel = velocity;
+        }
         public Vector2 GetVelocity()
         {
             return vel;

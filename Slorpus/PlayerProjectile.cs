@@ -9,5 +9,9 @@ namespace Slorpus
 {
     public class PlayerProjectile : PhysicsObject
     {
+        public PlayerProjectile(Point pos, Vector2 vel, int width, int height): base(pos, vel, width, height)
+        {
+            // placeholder
+        }
     }
 }
