@@ -7,7 +7,13 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Slorpus
 {
-    public struct Wall
+    public class Wall
     {
+        Point pos;
+
+        public Wall(Point pos)
+        {
+            this.pos = pos;
+        }
     }
 }
