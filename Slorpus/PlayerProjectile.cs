@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Slorpus
 {
-    public class PlayerProjectile
+    public class PlayerProjectile : PhysicsObject
     {
     }
 }

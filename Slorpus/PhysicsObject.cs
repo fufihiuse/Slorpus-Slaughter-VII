@@ -18,6 +18,22 @@ namespace Slorpus
         int width;
         int height;
 
+        public PhysicsObject(Point pos, Vector2 vel, int width, int height)
+        {
+            this.pos = pos;
+            this.vel = vel;
+            this.width = width;
+            this.height = height;
+        }
+        
+        // simple overload constructor that accepts a rectangle instead of separate width and heights
+        public PhysicsObject(Point pos, Vector2 vel, Rectangle rect)
+        {
+            this.pos = pos;
+            this.vel = vel;
+            this.width = rect.Width;
+            this.height = rect.Height;
+        }
 
         public Vector2 GetVelocity()
         {
