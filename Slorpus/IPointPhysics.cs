@@ -7,7 +7,9 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Slorpus
 {
-    public class Enemy: PhysicsObject
+    public interface IPointPhysics
     {
+        public Vector2 GetVelocity();
+        public void Move(Vector2 distance);
     }
 }

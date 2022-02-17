@@ -8,18 +8,25 @@ using Microsoft.Xna.Framework.Input;
 namespace Slorpus
 {
     /*
-     * struct for the enemy bullet which includes minimal information about the bullet itself
-     * drawn in batches
-     * includes some copy pasted code from PhysicsObject, but structs can't inheirit so oh well
+     * Every class that needs to implement IPhysics but doesn't already have a parent class
+     * should inherit from this so as to minimize copypasting code
      */
-    public struct EnemyBullet: IPointPhysics
+    public class PhysicsObject: IPhysics
     {
         Point pos;
         Vector2 vel;
+        int width;
+        int height;
+
 
         public Vector2 GetVelocity()
         {
             return vel;
+        }
+
+        public Point GetSize()
+        {
+            return new Point(width, height);
         }
 
         public void Move(Vector2 distance)
