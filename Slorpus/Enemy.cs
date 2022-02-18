@@ -7,7 +7,11 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Slorpus
 {
-    public class Enemy
+    public class Enemy: PhysicsObject
     {
+        public Enemy(Point pos, Vector2 vel, int width, int height): base(pos, vel, width, height)
+        {
+            // placeholder
+        }
     }
 }
