@@ -13,12 +13,18 @@ namespace Slorpus
     {
         //Fields
         private char[,] level;
-        private Wall[,] walls;
+        private List<Wall> walls;
+        private int tileSize;
+        private Texture2D wallTexture;
+        private Texture2D invisWallTexture;
 
         //Constructor
-        public Level()
+        public Level(int tileSize, Texture2D wallTexture, Texture2D invisWallTexture)
         {
-
+            this.tileSize = tileSize;
+            walls = new List<Wall>();
+            this.wallTexture = wallTexture;
+            this.invisWallTexture = invisWallTexture;
         }
 
         //Methods
@@ -26,11 +32,6 @@ namespace Slorpus
         {
             string line;
             string[] data;
-            /*
-             * Load file into level array
-             * TODO: Loop through level, check if I or W, if so load into walls array
-             * 
-             */
 
             //Loading from file
             try
@@ -50,20 +51,34 @@ namespace Slorpus
                     for (int column = 0; column < level.GetLength(1); column++)
                     {
                         level[row, column] = line[column];
-                        /*
-                        switch (line[column])
+
+                        //Loop through level, check if I or W, if so load into walls array
+                        switch(line[column])
                         {
-                            case 'W':
-                                walls[row, column] = new Wall();
+                        case 'W':
+                            //Create new wall with proper position, and add it to walls List
+                            walls.Add(
+                                new Wall(
+                                    new Rectangle(
+                                        column * tileSize,
+                                        row * tileSize,
+                                        tileSize,
+                                        tileSize),
+                                    wallTexture));
                                 break;
-                            case 'I':
-                                walls[row, column] = new Wall();
+
+                        case 'I':
+                            //Create new invisible wall with proper position, and add it to walls List
+                            walls.Add(
+                                new Wall(
+                                    new Rectangle(
+                                        column * tileSize,
+                                        row * tileSize,
+                                        tileSize,
+                                        tileSize),
+                                    invisWallTexture));
                                 break;
-                            default:
-                                walls[row, column] = null;
                         }
-                        *May not work due to walls array not accepting nulls (Wall is a struct)
-                        */
                     }
                     line = input.ReadLine();
                 }
@@ -73,16 +88,16 @@ namespace Slorpus
             catch(Exception e)
             {
                 Console.WriteLine(e);
-            }
-
-            //Loop through level, check if I or W, if so load into walls array
-            
+            }            
 
         }
 
-        public void Draw()
+        public void Draw(SpriteBatch sb)
         {
-
+            foreach(Wall w in walls)
+            {
+                w.Draw(sb);
+            }
         }
     }
 }

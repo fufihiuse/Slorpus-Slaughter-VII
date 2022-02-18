@@ -11,9 +11,7 @@ namespace Slorpus
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-
-        // Draw batches
-        List<Wall> drawWalls;
+        private Texture2D squareTexture;
 
         // manager(s)
         Level level;
@@ -28,10 +26,6 @@ namespace Slorpus
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-
-            drawWalls = new List<Wall>();
-            // call level.load here, pass in the drawable wall list so it can get added to
-
             base.Initialize();
         }
 
@@ -40,6 +34,10 @@ namespace Slorpus
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            squareTexture = Content.Load<Texture2D>("square");
+
+            level = new Level(19, squareTexture, squareTexture);
+            level.LoadFromFile("..\\..\\..\\levels\\example.sslvl"); //Loads example level, should be changed
         }
 
         protected override void Update(GameTime gameTime)
@@ -54,11 +52,13 @@ namespace Slorpus
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
             // TODO: Add your drawing code here
-
+            _spriteBatch.Begin();
+            level.Draw(_spriteBatch);
             base.Draw(gameTime);
+            _spriteBatch.End();
         }
     }
 }
