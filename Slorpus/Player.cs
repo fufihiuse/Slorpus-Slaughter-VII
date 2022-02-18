@@ -14,9 +14,10 @@ namespace Slorpus
         Rectangle rectangle;
 
         // Constructor
-        public Player()
+        public Player(Texture2D playerAsset, int x, int y, int width, int height)
         {
-
+            this.playerAsset = playerAsset;
+            rectangle = new Rectangle(x, y, width, height);
         }
     }
 }
