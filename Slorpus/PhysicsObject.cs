@@ -13,11 +13,13 @@ namespace Slorpus
      */
     public class PhysicsObject: IPhysics
     {
+        //fields
         Point pos;
         Vector2 vel;
         int width;
         int height;
 
+        //constructor
         public PhysicsObject(Point pos, Vector2 vel, int width, int height)
         {
             this.pos = pos;
@@ -35,16 +37,28 @@ namespace Slorpus
             this.height = rect.Height;
         }
 
+        /// <summary>
+        /// returns velocity
+        /// </summary>
+        /// <returns></returns>
         public Vector2 GetVelocity()
         {
             return vel;
         }
 
+        /// <summary>
+        /// returns size
+        /// </summary>
+        /// <returns></returns>
         public Point GetSize()
         {
             return new Point(width, height);
         }
 
+        /// <summary>
+        /// moves the object a certian distance
+        /// </summary>
+        /// <param name="distance"></param>
         public void Move(Vector2 distance)
         {
             pos.X += (int)distance.X;

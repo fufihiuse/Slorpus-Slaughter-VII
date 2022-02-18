@@ -14,19 +14,28 @@ namespace Slorpus
      */
     public struct EnemyBullet: IPointPhysics
     {
+        //fields
         Point pos;
         Vector2 vel;
 
+        //Constructor
         public EnemyBullet(Point position, Vector2 velocity)
         {
             pos = position;
             vel = velocity;
         }
+        /// <summary>
+        /// returns velocity
+        /// </summary>
+        /// <returns></returns>
         public Vector2 GetVelocity()
         {
             return vel;
         }
-
+        /// <summary>
+        /// moves object
+        /// </summary>
+        /// <param name="distance"></param>
         public void Move(Vector2 distance)
         {
             pos.X += (int)distance.X;
