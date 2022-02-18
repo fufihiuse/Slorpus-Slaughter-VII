@@ -7,13 +7,40 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Slorpus
 {
-    public class Wall
+    public struct Wall
     {
-        Point pos;
+        //fields
+        Rectangle position;
+        Texture2D texture;
 
-        public Wall(Point pos)
+        //property
+        public Rectangle Position
         {
-            this.pos = pos;
+            get
+            {
+                return position;
+            }
+        }
+
+        //constuctor
+        public Wall(Rectangle position, Texture2D texture)
+        {
+            this.position = position;
+            this.texture = texture;
+        }
+
+        //methods
+        /// <summary>
+        /// draws wall
+        /// </summary>
+        /// <param name="sb"></param>
+        public void Draw(SpriteBatch sb)
+        {
+            sb.Draw(
+                texture, 
+                position, 
+                Color.White
+                );
         }
     }
 }
