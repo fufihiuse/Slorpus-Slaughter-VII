@@ -9,9 +9,16 @@ namespace Slorpus
 {
     public class Player : PhysicsObject
     {
+        // Fields
+        Texture2D playerAsset;
+        Rectangle rectangle;
+        int x;
+        int y;
+
+        // Constructor
         public Player(Point pos, Vector2 vel, int width, int height): base(pos, vel, width, height)
         {
-            // placeholder
+            rectangle = new Rectangle(x, y, width, height);
         }
     }
 }
