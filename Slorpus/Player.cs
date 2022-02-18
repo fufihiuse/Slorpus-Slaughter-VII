@@ -9,6 +9,14 @@ namespace Slorpus
 {
     public class Player
     {
+        // Fields
+        Texture2D playerAsset;
+        Rectangle rectangle;
 
+        // Constructor
+        public Player()
+        {
+
+        }
     }
 }
