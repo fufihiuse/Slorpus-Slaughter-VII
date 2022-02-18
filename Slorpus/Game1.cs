@@ -12,6 +12,12 @@ namespace Slorpus
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+        // Draw batches
+        List<Wall> drawWalls;
+
+        // manager(s)
+        Level level;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -22,6 +28,9 @@ namespace Slorpus
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+
+            drawWalls = new List<Wall>();
+            // call level.load here, pass in the drawable wall list so it can get added to
 
             base.Initialize();
         }
