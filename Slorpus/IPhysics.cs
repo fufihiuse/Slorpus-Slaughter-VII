@@ -13,7 +13,10 @@ namespace Slorpus
      */
     public interface IPhysics: IPointPhysics
     {
-        // get location and hitbox size
+        /// <summary>
+        /// get location and hitbox size
+        /// </summary>
+        /// <returns></returns>
         public Point GetSize();
     }
 }
