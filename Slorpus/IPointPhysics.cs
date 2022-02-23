@@ -9,8 +9,13 @@ namespace Slorpus
 {
     public interface IPointPhysics
     {
+        public Point Position { get; }
+        public Vector2 Velocity { get; set; }
+
+
         /// <summary>
         /// returns velocity
+        /// this is just here for backwards compatibility, use the Velocity property instead.
         /// </summary>
         /// <returns></returns>
         public Vector2 GetVelocity();

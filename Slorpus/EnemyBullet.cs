@@ -17,6 +17,8 @@ namespace Slorpus
         //fields
         Point pos;
         Vector2 vel;
+        public Point Position { get { return pos;  } }
+        public Vector2 Velocity { get { return vel;  } }
 
         //Constructor
         public EnemyBullet(Point position, Vector2 velocity)

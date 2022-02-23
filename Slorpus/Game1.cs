@@ -16,6 +16,10 @@ namespace Slorpus
         // manager(s)
         Level level;
 
+        // debug object
+        PhysicsObject DEBUG;
+        List<IPhysics> physicsList;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -38,6 +42,9 @@ namespace Slorpus
 
             level = new Level(19, squareTexture, squareTexture);
             level.LoadFromFile("..\\..\\..\\levels\\example.sslvl"); //Loads example level, should be changed
+
+            DEBUG = new PhysicsObject(new Point(200, 200), new Vector2(0, 0), Constants.WALL_SIZE, Constants.WALL_SIZE);
+            physicsList.Add(DEBUG);
         }
 
         protected override void Update(GameTime gameTime)
@@ -46,6 +53,11 @@ namespace Slorpus
                 Exit();
 
             // TODO: Add your update logic here
+
+            // accelerate debug object
+            DEBUG.Velocity = new Vector2(DEBUG.Velocity.X, DEBUG.Velocity.Y + 0.1f);
+
+            PhysicsManager.MovePhysics(physicsList, level.Walls);
 
             base.Update(gameTime);
         }
@@ -57,6 +69,7 @@ namespace Slorpus
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
             level.Draw(_spriteBatch);
+            _spriteBatch.Draw(squareTexture, new Rectangle(DEBUG.Position, DEBUG.Size), Color.White);
             base.Draw(gameTime);
             _spriteBatch.End();
         }

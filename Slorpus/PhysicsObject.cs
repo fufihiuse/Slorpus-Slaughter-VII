@@ -19,6 +19,10 @@ namespace Slorpus
         int width;
         int height;
 
+        public Point Position { get { return pos;  } }
+        public Point Size { get { return new Point(width, height);  } }
+        public Vector2 Velocity { get { return vel;  } set { vel = value; } }
+
         //constructor
         public PhysicsObject(Point pos, Vector2 vel, int width, int height)
         {
