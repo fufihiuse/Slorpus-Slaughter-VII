@@ -10,8 +10,9 @@ namespace Slorpus
     public struct Wall
     {
         //fields
-        Rectangle position;
-        Texture2D texture;
+        private Rectangle position;
+        private Texture2D texture;
+        private bool collidable;
 
         //property
         public Rectangle Position
@@ -23,10 +24,11 @@ namespace Slorpus
         }
 
         //constuctor
-        public Wall(Rectangle position, Texture2D texture)
+        public Wall(Rectangle position, Texture2D texture, bool collidable)
         {
             this.position = position;
             this.texture = texture;
+            this.collidable = collidable;
         }
 
         //methods
@@ -41,6 +43,15 @@ namespace Slorpus
                 position, 
                 Color.White
                 );
+        }
+        /// <summary>
+        /// returns if the hitbox has collided with the wall
+        /// </summary>
+        /// <param name="hitbox"></param>
+        /// <returns></returns>
+        public bool Collision(Rectangle hitbox)
+        {
+            return position.Intersects(hitbox);
         }
     }
 }
