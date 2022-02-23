@@ -18,7 +18,11 @@ namespace Slorpus
         private Texture2D wallTexture;
         private Texture2D invisWallTexture;
 
-        public List<Wall> Walls { get { return walls; } }
+        //Properties
+        public List<Wall> WallList
+        {
+            get { return walls; }
+        }
 
         //Constructor
         public Level(int tileSize, Texture2D wallTexture, Texture2D invisWallTexture)
