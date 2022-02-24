@@ -31,23 +31,32 @@ namespace Slorpus
 
                 foreach (Wall wall in walls)
                 {
-                    Rectangle new_loc = new Rectangle(
-                        new Point(
-                            physicsObject.Position.X + (int)dist.X,
-                            physicsObject.Position.Y + (int)dist.X
-                            ),
-                        new Point(
-                            physicsObject.Position.Width,
-                            physicsObject.Position.Height
-                            )
-                        );
+                    // check if currently colliding with wall, and if so then move away from it
+                    // this is a failsafe, should not be necessary if the physics are working
+                    if (physicsObject.Position.Intersects(wall.Position))
+                    {
+                        int adjustment_amount = 3;
+                        // create vector pointing away from wall
+                        double dir = Math.Atan2((physicsObject.Position.Y - wall.Position.Y), (physicsObject.Position.X - wall.Position.X));
+
+                        physicsObject.Move(
+                            new Point(
+                                (int)Math.Cos(dir)*adjustment_amount,
+                                (int)Math.Sin(dir)*adjustment_amount
+                                )
+                            );
+                    }
+
+                    Rectangle new_loc = physicsObject.Position;
+                    new_loc.X += (int)dist.X;
+                    new_loc.Y += (int)dist.Y;
                     // TODO: cache all collided walls, and call moveWithoutCollision with the closest one
                     if (wall.Collision(new_loc))
                     {
-                        moveWithoutCollision(physicsObject, dist, wall.Position);
-
                         // call the physic object's collision handler
                         physicsObject.OnCollision(wall.Position);
+                        
+                        moveWithoutCollision(physicsObject, dist, wall.Position);
 
                         // we hit something, give up for efficiency's sake
                         no_collision = false;
@@ -62,6 +71,7 @@ namespace Slorpus
                         (int)dist.X,
                         (int)dist.Y
                         );
+                    physicsObject.Move(real_dist);
                 }
             }
         }
