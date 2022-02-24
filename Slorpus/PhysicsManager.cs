@@ -31,20 +31,38 @@ namespace Slorpus
 
                 foreach (Wall wall in walls)
                 {
+                    Rectangle new_loc = new Rectangle(
+                        new Point(
+                            physicsObject.Position.X + (int)dist.X,
+                            physicsObject.Position.Y + (int)dist.X
+                            ),
+                        new Point(
+                            physicsObject.Position.Width,
+                            physicsObject.Position.Height
+                            )
+                        );
                     // TODO: cache all collided walls, and call moveWithoutCollision with the closest one
-                    if (wall.Collision(physicsObject.Position))
+                    if (wall.Collision(new_loc))
                     {
-                        physicsObject.Teleport(moveWithoutCollision(physicsObject, dist, wall.Position));
+                        moveWithoutCollision(physicsObject, dist, wall.Position);
+
+                        // call the physic object's collision handler
                         physicsObject.OnCollision(wall.Position);
-                        no_collision = false;
+
                         // we hit something, give up for efficiency's sake
+                        no_collision = false;
                         break;
                     }
                 }
                 
                 // move if we didnt already
                 if (no_collision)
-                    physicsObject.Move(dist);
+                {
+                    Point real_dist = new Point(
+                        (int)dist.X,
+                        (int)dist.Y
+                        );
+                }
             }
         }
          
@@ -55,10 +73,8 @@ namespace Slorpus
         /// <param name="velocity">Velocity by which the object should be moved.</param>
         /// <param name="avoidBox">Rectangle hitbox to collide with.</param>
         /// <returns>Distance to move the object.</returns>
-        private static Vector2 moveWithoutCollision(IPhysics physicsObject, Vector2 velocity, Rectangle avoidBox)
-        {
-            // rectangle used to check collisions
-            Rectangle oRect = physicsObject.Position;            
+        private static void moveWithoutCollision(IPhysics physicsObject, Vector2 velocity, Rectangle avoidBox)
+        {           
             // which direction to increment in
             int sign = Math.Sign(velocity.X);
             // if we are moving on X, then move as far as we can
@@ -66,11 +82,12 @@ namespace Slorpus
             {
                 for (int i = 0; i < Math.Abs(velocity.X); i++)
                 {
-                    oRect.X += sign;
-                    if (!oRect.Intersects(avoidBox))
+                    physicsObject.Move(new Point(sign, 0));
+                    if (physicsObject.Position.Intersects(avoidBox))
                     {
+                        // undo movement bc we're hitting now
+                        physicsObject.Move(new Point(-sign, 0));
                         // we've hit a wall, lets lose our velocity
-                        oRect.X -= sign;
                         physicsObject.Velocity = new Vector2(0, physicsObject.Velocity.Y);
                         break;
                     }
@@ -78,23 +95,22 @@ namespace Slorpus
             }
 
             sign = Math.Sign(velocity.Y);
-            // if we are moving on X, then move as far as we can
+            // if we are moving on Y, then move as far as we can
             if (sign != 0)
             {
                 for (int i = 0; i < Math.Abs(velocity.Y); i++)
                 {
-                    oRect.Y += sign;
-                    if (!oRect.Intersects(avoidBox))
+                    physicsObject.Move(new Point(0, sign));
+                    if (physicsObject.Position.Intersects(avoidBox))
                     {
+                        // undo movement bc we're hitting now
+                        physicsObject.Move(new Point(0, -sign));
                         // we've hit a wall, lets lose our velocity
-                        oRect.Y -= sign;
                         physicsObject.Velocity = new Vector2(physicsObject.Velocity.X, 0);
                         break;
                     }
                 }
             }
-            // return the new location
-            return new Vector2(oRect.X, oRect.Y);
         }
         
         /// <summary>
@@ -109,7 +125,12 @@ namespace Slorpus
             {
                 // placeholder, no collision
                 // TODO : check if this works on value types, or if the changes pass out of scope after this loop
-                p.Move(p.GetVelocity());
+                p.Move(
+                    new Point(
+                        (int)p.Velocity.X,
+                        (int)p.Velocity.Y
+                        )
+                    );
             }
         }
     }

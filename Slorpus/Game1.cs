@@ -30,6 +30,7 @@ namespace Slorpus
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            physicsList = new List<IPhysics>();
             base.Initialize();
         }
 
@@ -60,11 +61,24 @@ namespace Slorpus
                 Exit();
 
             // TODO: Add your update logic here
+            KeyboardState kb = Keyboard.GetState();
 
-            // accelerate debug object
-            //DEBUG.Velocity = new Vector2(DEBUG.Velocity.X, DEBUG.Velocity.Y + 0.1f);
+            int xin = 0;
+            int yin = 0;
+            float speed = 0.5f;
 
-            //PhysicsManager.MovePhysics(physicsList, level.WallList);
+            if (kb.IsKeyDown(Keys.W))
+                yin -= 1;
+            if (kb.IsKeyDown(Keys.S))
+                yin += 1;
+            if (kb.IsKeyDown(Keys.A))
+                xin -= 1;
+            if (kb.IsKeyDown(Keys.D))
+                xin += 1;
+
+            DEBUG.Velocity = new Vector2((DEBUG.Velocity.X + (xin * speed)) * 0.9f, (DEBUG.Velocity.Y + (yin * speed)) * 0.9f);
+
+            PhysicsManager.MovePhysics(physicsList, level.WallList);
 
             base.Update(gameTime);
         }

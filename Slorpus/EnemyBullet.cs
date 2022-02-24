@@ -30,14 +30,6 @@ namespace Slorpus
         /// Moves the object to a set of absolute coordinates
         /// </summary>
         /// <param name="location"></param>
-        public void Teleport(Vector2 location)
-        {
-            pos = new Point((int)location.X, (int)location.Y);
-        }
-        /// <summary>
-        /// Moves the object to a set of absolute coordinates
-        /// </summary>
-        /// <param name="location"></param>
         public void Teleport(Point location)
         {
             pos = new Point(location.X, location.Y);
@@ -60,10 +52,10 @@ namespace Slorpus
         /// moves object
         /// </summary>
         /// <param name="distance"></param>
-        public void Move(Vector2 distance)
+        public void Move(Point distance)
         {
-            pos.X += (int)distance.X;
-            pos.Y += (int)distance.Y;
+            pos.X += distance.X;
+            pos.Y += distance.Y;
         }
     }
 }

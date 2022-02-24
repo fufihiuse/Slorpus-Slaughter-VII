@@ -42,16 +42,6 @@ namespace Slorpus
         {
             return vel;
         }
- 
-        /// <summary>
-        /// Moves the object to a set of absolute coordinates
-        /// </summary>
-        /// <param name="location"></param>
-        public void Teleport(Vector2 location)
-        {
-            pos.X = (int)location.X;
-            pos.X = (int)location.X;
-        }
         /// <summary>
         /// Moves the object to a set of absolute coordinates
         /// </summary>
@@ -68,10 +58,10 @@ namespace Slorpus
         /// moves the object a certian distance
         /// </summary>
         /// <param name="distance"></param>
-        public void Move(Vector2 distance)
+        public void Move(Point distance)
         {
-            pos.X += (int)distance.X;
-            pos.Y += (int)distance.Y;
+            pos.X += distance.X;
+            pos.Y += distance.Y;
         }
     }
 }
