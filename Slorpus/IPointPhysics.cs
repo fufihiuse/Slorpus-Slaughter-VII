@@ -20,9 +20,23 @@ namespace Slorpus
         /// <returns></returns>
         public Vector2 GetVelocity();
         /// <summary>
-        /// moves object
+        /// Moves the object relative to its current position.
         /// </summary>
         /// <param name="distance"></param>
         public void Move(Vector2 distance);
+        
+        /// <summary>
+        /// Moves the object to a location.
+        /// </summary>
+        /// <param name="location">The coordinates to move to.</param>
+        public void Teleport(Point location);
+
+        public void Teleport(Vector2 location);
+        
+        /// <summary>
+        /// Called by the PhysicsManager whenever this object collides with a wall.
+        /// </summary>
+        /// <param name="other">The rectangle of the other object collided with.</param>
+        public void OnCollision(Rectangle other);
     }
 }

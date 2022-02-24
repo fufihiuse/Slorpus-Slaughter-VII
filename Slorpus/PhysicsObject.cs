@@ -14,31 +14,24 @@ namespace Slorpus
     public class PhysicsObject: IPhysics
     {
         //fields
-        Point pos;
+        Rectangle pos;
         Vector2 vel;
-        int width;
-        int height;
 
-        public Point Position { get { return pos;  } }
-        public Point Size { get { return new Point(width, height);  } }
+        public Rectangle Position { get { return pos;  } }
         public Vector2 Velocity { get { return vel;  } set { vel = value; } }
 
         //constructor
-        public PhysicsObject(Point pos, Vector2 vel, int width, int height)
+        public PhysicsObject(Rectangle pos, Vector2 vel, int width, int height)
         {
             this.pos = pos;
             this.vel = vel;
-            this.width = width;
-            this.height = height;
         }
         
         // simple overload constructor that accepts a rectangle instead of separate width and heights
-        public PhysicsObject(Point pos, Vector2 vel, Rectangle rect)
+        public PhysicsObject(Rectangle pos, Vector2 vel)
         {
             this.pos = pos;
             this.vel = vel;
-            this.width = rect.Width;
-            this.height = rect.Height;
         }
 
         /// <summary>
@@ -49,15 +42,27 @@ namespace Slorpus
         {
             return vel;
         }
-
+ 
         /// <summary>
-        /// returns size
+        /// Moves the object to a set of absolute coordinates
         /// </summary>
-        /// <returns></returns>
-        public Point GetSize()
+        /// <param name="location"></param>
+        public void Teleport(Vector2 location)
         {
-            return new Point(width, height);
+            pos.X = (int)location.X;
+            pos.X = (int)location.X;
         }
+        /// <summary>
+        /// Moves the object to a set of absolute coordinates
+        /// </summary>
+        /// <param name="location"></param>
+        public void Teleport(Point location)
+        {
+            pos.X = location.X;
+            pos.X = location.X;
+        }
+
+        public virtual void OnCollision(Rectangle other) { }
 
         /// <summary>
         /// moves the object a certian distance

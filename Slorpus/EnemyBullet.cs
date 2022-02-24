@@ -18,7 +18,7 @@ namespace Slorpus
         Point pos;
         Vector2 vel;
         public Point Position { get { return pos;  } }
-        public Vector2 Velocity { get { return vel;  } }
+        public Vector2 Velocity { get { return vel;  } set { vel = value; } }
 
         //Constructor
         public EnemyBullet(Point position, Vector2 velocity)
@@ -26,6 +26,28 @@ namespace Slorpus
             pos = position;
             vel = velocity;
         }
+        /// <summary>
+        /// Moves the object to a set of absolute coordinates
+        /// </summary>
+        /// <param name="location"></param>
+        public void Teleport(Vector2 location)
+        {
+            pos = new Point((int)location.X, (int)location.Y);
+        }
+        /// <summary>
+        /// Moves the object to a set of absolute coordinates
+        /// </summary>
+        /// <param name="location"></param>
+        public void Teleport(Point location)
+        {
+            pos = new Point(location.X, location.Y);
+        }
+
+        public void OnCollision(Rectangle other)
+        {
+            // get destroyed or play an effect or something when colliding with a wall
+        }
+        
         /// <summary>
         /// returns velocity
         /// </summary>

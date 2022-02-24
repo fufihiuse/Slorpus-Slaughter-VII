@@ -40,10 +40,17 @@ namespace Slorpus
             // TODO: use this.Content to load your game content here
             squareTexture = Content.Load<Texture2D>("square");
 
-            level = new Level(19, squareTexture, squareTexture);
+            level = new Level(Constants.WALL_SIZE, squareTexture);
             level.LoadFromFile("..\\..\\..\\levels\\example.sslvl"); //Loads example level, should be changed
 
-            DEBUG = new PhysicsObject(new Point(200, 200), new Vector2(0, 0), Constants.WALL_SIZE, Constants.WALL_SIZE);
+            DEBUG = new PhysicsObject(
+                new Rectangle(
+                    // position
+                    new Point(200, 200),
+                    // size
+                    new Point(16, 16)),
+                new Vector2(0, 0));
+
             physicsList.Add(DEBUG);
         }
 
@@ -55,9 +62,9 @@ namespace Slorpus
             // TODO: Add your update logic here
 
             // accelerate debug object
-            DEBUG.Velocity = new Vector2(DEBUG.Velocity.X, DEBUG.Velocity.Y + 0.1f);
+            //DEBUG.Velocity = new Vector2(DEBUG.Velocity.X, DEBUG.Velocity.Y + 0.1f);
 
-            PhysicsManager.MovePhysics(physicsList, level.Walls);
+            //PhysicsManager.MovePhysics(physicsList, level.WallList);
 
             base.Update(gameTime);
         }
@@ -69,7 +76,7 @@ namespace Slorpus
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
             level.Draw(_spriteBatch);
-            _spriteBatch.Draw(squareTexture, new Rectangle(DEBUG.Position, DEBUG.Size), Color.White);
+            _spriteBatch.Draw(squareTexture, DEBUG.Position, Color.White);
             base.Draw(gameTime);
             _spriteBatch.End();
         }

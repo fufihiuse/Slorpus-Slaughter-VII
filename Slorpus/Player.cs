@@ -9,7 +9,7 @@ namespace Slorpus
 {
     public class Player : PhysicsObject
     {
-        public Player(Point pos, Vector2 vel, int width, int height): base(pos, vel, width, height)
+        public Player(Rectangle pos, Vector2 vel): base(pos, vel)
         {
             // placeholder
         }

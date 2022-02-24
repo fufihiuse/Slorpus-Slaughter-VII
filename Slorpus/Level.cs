@@ -16,7 +16,6 @@ namespace Slorpus
         private List<Wall> walls;
         private int tileSize;
         private Texture2D wallTexture;
-        private Texture2D invisWallTexture;
 
         //Properties
         public List<Wall> WallList
@@ -25,12 +24,11 @@ namespace Slorpus
         }
 
         //Constructor
-        public Level(int tileSize, Texture2D wallTexture, Texture2D invisWallTexture)
+        public Level(int tileSize, Texture2D wallTexture)
         {
             this.tileSize = tileSize;
             walls = new List<Wall>();
             this.wallTexture = wallTexture;
-            this.invisWallTexture = invisWallTexture;
         }
 
         //Methods
@@ -58,32 +56,15 @@ namespace Slorpus
                     {
                         level[row, column] = line[column];
 
-                        //Loop through level, check if I or W, if so load into walls array
-                        switch(line[column])
+                        if (line[column] == 'W')
                         {
-                        case 'W':
-                            //Create new wall with proper position, and add it to walls List
                             walls.Add(
                                 new Wall(
                                     new Rectangle(
                                         column * tileSize,
                                         row * tileSize,
                                         tileSize,
-                                        tileSize),
-                                    wallTexture));
-                                break;
-
-                        case 'I':
-                            //Create new invisible wall with proper position, and add it to walls List
-                            walls.Add(
-                                new Wall(
-                                    new Rectangle(
-                                        column * tileSize,
-                                        row * tileSize,
-                                        tileSize,
-                                        tileSize),
-                                    invisWallTexture));
-                                break;
+                                        tileSize)));
                         }
                     }
                     line = input.ReadLine();
@@ -102,7 +83,7 @@ namespace Slorpus
         {
             foreach(Wall w in walls)
             {
-                w.Draw(sb);
+                sb.Draw(wallTexture, w.Position, Color.White);
             }
         }
     }

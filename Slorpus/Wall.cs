@@ -11,39 +11,17 @@ namespace Slorpus
     {
         //fields
         private Rectangle position;
-        private Texture2D texture;
         private bool collidable;
 
-        //property
-        public Rectangle Position
-        {
-            get
-            {
-                return position;
-            }
-        }
+        public Rectangle Position { get { return position; } }
 
         //constuctor
-        public Wall(Rectangle position, Texture2D texture, bool collidable)
+        public Wall(Rectangle position, bool collidable=true)
         {
             this.position = position;
-            this.texture = texture;
             this.collidable = collidable;
         }
 
-        //methods
-        /// <summary>
-        /// draws wall
-        /// </summary>
-        /// <param name="sb"></param>
-        public void Draw(SpriteBatch sb)
-        {
-            sb.Draw(
-                texture, 
-                position, 
-                Color.White
-                );
-        }
         /// <summary>
         /// returns if the hitbox has collided with the wall
         /// </summary>

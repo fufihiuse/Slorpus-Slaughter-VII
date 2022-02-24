@@ -7,19 +7,39 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Slorpus
 {
-    /*
-     * Interface that exposes a class or struct's physics information.
-     * Adds the size information to IPointPhysics
+    /* Identical to IPointPhysics but with a Rectangle instead of a Point (added width and height information)
+     * 
+     * 
      */
-    public interface IPhysics: IPointPhysics
+    public interface IPhysics
     {
-        public Point Size { get; }
+        public Rectangle Position { get; }
+        public Vector2 Velocity { get; set; }
 
         /// <summary>
-        /// get hitbox size
-        /// only here for backwards compatibility, use the Point property instead
+        /// returns velocity
+        /// this is just here for backwards compatibility, use the Velocity property instead.
         /// </summary>
         /// <returns></returns>
-        public Point GetSize();
+        public Vector2 GetVelocity();
+        /// <summary>
+        /// Moves the object relative to its current position.
+        /// </summary>
+        /// <param name="distance"></param>
+        public void Move(Vector2 distance);
+        
+        /// <summary>
+        /// Moves the object to a location.
+        /// </summary>
+        /// <param name="location">The coordinates to move to.</param>
+        public void Teleport(Point location);
+
+        public void Teleport(Vector2 location);
+        
+        /// <summary>
+        /// Called by the PhysicsManager whenever this object collides with a wall.
+        /// </summary>
+        /// <param name="other">The rectangle of the other object collided with.</param>
+        public void OnCollision(Rectangle other);
     }
 }
