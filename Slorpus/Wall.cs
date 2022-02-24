@@ -24,7 +24,7 @@ namespace Slorpus
         }
 
         //constuctor
-        public Wall(Rectangle position, Texture2D texture, bool collidable)
+        public Wall(Rectangle position, Texture2D texture, bool collidable=true)
         {
             this.position = position;
             this.texture = texture;
