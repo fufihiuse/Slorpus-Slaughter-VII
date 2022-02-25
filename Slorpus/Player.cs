@@ -9,43 +9,9 @@ namespace Slorpus
 {
     public class Player : PhysicsObject
     {
-        // Fields
-        Texture2D playerAsset;
-        Rectangle rectangle;
-        int x;
-        int y;
-        KeyboardState keyboardState;
-
-        // Constructor
-        public Player(Point pos, Vector2 vel, int width, int height, Texture2D playerAsset): base(pos, vel, width, height)
+        public Player(Rectangle pos, Vector2 vel): base(pos, vel)
         {
-            rectangle = new Rectangle(x, y, width, height);
-            this.playerAsset = playerAsset;
-        }
-
-        // Method
-        /// <summary>
-        /// Processes the Keyboard Input and adds it to velocity
-        /// </summary>
-        public void ProcessKeyboardInput()
-        {
-            keyboardState = Keyboard.GetState();
-            if (keyboardState.IsKeyDown(Keys.W) == true)
-            {
-                
-            }
-            if (keyboardState.IsKeyDown(Keys.A) == true)
-            {
-
-            }
-            if (keyboardState.IsKeyDown(Keys.S) == true)
-            {
-
-            }
-            if (keyboardState.IsKeyDown(Keys.D) == true)
-            {
-
-            }
+            // placeholder
         }
     }
 }
