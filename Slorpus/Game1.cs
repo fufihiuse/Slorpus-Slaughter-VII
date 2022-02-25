@@ -85,8 +85,10 @@ namespace Slorpus
 
             DEBUG.Velocity = new Vector2((DEBUG.Velocity.X + (xin * speed)) * 0.9f, (DEBUG.Velocity.Y + (yin * speed)) * 0.9f);
 
+            bulletList.Add(new EnemyBullet(new Point(20, 20), new Vector2(0.5f, 0.5f)));
+
             PhysicsManager.MovePhysics(physicsList, level.WallList);
-            PhysicsManager.CollideBullets(bulletList, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE), level.WallList, physicsList);
+            PhysicsManager.CollideAndMoveBullets(bulletList, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE), level.WallList, physicsList);
 
             base.Update(gameTime);
         }
@@ -99,6 +101,8 @@ namespace Slorpus
             _spriteBatch.Begin();
             level.Draw(_spriteBatch);
             _spriteBatch.Draw(squareTexture, DEBUG.Position, Color.White);
+            enemyManager.DrawBullets(_spriteBatch, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE));
+            enemyManager.DrawEnemies(_spriteBatch);
             base.Draw(gameTime);
             _spriteBatch.End();
         }

@@ -130,10 +130,10 @@ namespace Slorpus
         /// <param name="physicObjects">Objects that implement IPointPhysics at least.</param>
         /// <param name="size">The size that every physics object has.</param>
         /// <param name="walls">List of walls that should stop movement.</param>
-        public static void CollideBullets(List<EnemyBullet> physicObjects, Point size, List<Wall> wallList, List<IPhysics> physicsList)
+        public static void CollideAndMoveBullets(List<EnemyBullet> bullets, Point size, List<Wall> wallList, List<IPhysics> physicsList)
         {
             Rectangle checkRect = new Rectangle(new Point(), size);
-            foreach (IPointPhysics p in physicObjects)
+            foreach (IPointPhysics p in bullets)
             {
                 // placeholder, no collision
                 // TODO : check if this works on value types, or if the changes pass out of scope after this loop

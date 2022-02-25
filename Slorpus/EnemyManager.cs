@@ -52,6 +52,20 @@ namespace Slorpus
                 sb.Draw(enemyAsset, drawRect, Color.White);
             }
         }
+        /// <summary>
+        /// Draws all bullets with a specific size.
+        /// </summary>
+        /// <param name="sb">Spritebatch used to draw the bullet textures.</param>
+        public void DrawBullets(SpriteBatch sb, Point size)
+        {
+            Rectangle drawRect = new Rectangle(new Point(), size);
+            foreach (EnemyBullet eb in bulletList)
+            {
+                drawRect.X = eb.Position.X;
+                drawRect.Y = eb.Position.Y;
+                sb.Draw(enemyAsset, drawRect, Color.White);
+            }
+        }
         
         /// <summary>
         /// Updates all enemies, and adding the returned bullets to the bulletlist.
