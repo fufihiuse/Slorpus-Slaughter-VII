@@ -35,9 +35,13 @@ namespace Slorpus
             pos = new Point(location.X, location.Y);
         }
 
-        public void OnCollision(Rectangle other)
+        public void OnCollision<T>(T other)
         {
             // get destroyed or play an effect or something when colliding with a wall
+            if (typeof(T) == typeof(Wall))
+            {
+                // bullet hit wall, etc
+            }
         }
         
         /// <summary>

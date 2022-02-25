@@ -15,10 +15,13 @@ namespace Slorpus
 
         // manager(s)
         Level level;
+        EnemyManager enemyManager;
 
         // debug object
         PhysicsObject DEBUG;
         List<IPhysics> physicsList;
+        List<EnemyBullet> bulletList;
+        List<Enemy> enemyList;
 
         public Game1()
         {
@@ -53,6 +56,10 @@ namespace Slorpus
                 new Vector2(0, 0));
 
             physicsList.Add(DEBUG);
+
+            bulletList = new List<EnemyBullet>();
+            enemyList = new List<Enemy>();
+            enemyManager = new EnemyManager(bulletList, enemyList, squareTexture, squareTexture);
         }
 
         protected override void Update(GameTime gameTime)
@@ -79,6 +86,7 @@ namespace Slorpus
             DEBUG.Velocity = new Vector2((DEBUG.Velocity.X + (xin * speed)) * 0.9f, (DEBUG.Velocity.Y + (yin * speed)) * 0.9f);
 
             PhysicsManager.MovePhysics(physicsList, level.WallList);
+            PhysicsManager.CollideBullets(bulletList, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE), level.WallList, physicsList);
 
             base.Update(gameTime);
         }

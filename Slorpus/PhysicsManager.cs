@@ -54,7 +54,7 @@ namespace Slorpus
                     if (wall.Collision(new_loc))
                     {
                         // call the physic object's collision handler
-                        physicsObject.OnCollision(wall.Position);
+                        physicsObject.OnCollision<Wall>(wall);
                         
                         moveWithoutCollision(physicsObject, dist, wall.Position);
 
@@ -125,13 +125,15 @@ namespace Slorpus
         
         /// <summary>
         /// Physics object movement for if a long list of physics objects have identical sizes.
+        /// Does not prevent them from colliding but does call OnCollision
         /// </summary>
         /// <param name="physicObjects">Objects that implement IPointPhysics at least.</param>
         /// <param name="size">The size that every physics object has.</param>
         /// <param name="walls">List of walls that should stop movement.</param>
-        public static void MovePointPhysics(List<IPointPhysics> physicObjects, Point size, Wall[,] walls)
+        public static void CollideBullets(List<EnemyBullet> physicObjects, Point size, List<Wall> wallList, List<IPhysics> physicsList)
         {
-            foreach (IPhysics p in physicObjects)
+            Rectangle checkRect = new Rectangle(new Point(), size);
+            foreach (IPointPhysics p in physicObjects)
             {
                 // placeholder, no collision
                 // TODO : check if this works on value types, or if the changes pass out of scope after this loop
@@ -141,6 +143,24 @@ namespace Slorpus
                         (int)p.Velocity.Y
                         )
                     );
+                // move checkRect to the correct location
+                checkRect.X = p.Position.X;
+                checkRect.Y = p.Position.Y;
+                
+                foreach (IPhysics hit in physicsList)
+                {
+                    if (hit.Position.Intersects(checkRect))
+                    {
+                        p.OnCollision<IPhysics>(hit);
+                    }
+                }
+                foreach (Wall hit in wallList)
+                {
+                    if (hit.Position.Intersects(checkRect))
+                    {
+                        p.OnCollision<Wall>(hit);
+                    }
+                }
             }
         }
     }

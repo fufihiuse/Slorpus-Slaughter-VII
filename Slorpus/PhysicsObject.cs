@@ -52,7 +52,7 @@ namespace Slorpus
             pos.X = location.X;
         }
 
-        public virtual void OnCollision(Rectangle other) { }
+        public virtual void OnCollision<T>(T other) { }
 
         /// <summary>
         /// moves the object a certian distance

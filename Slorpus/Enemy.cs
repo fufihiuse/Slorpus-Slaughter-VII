@@ -13,5 +13,16 @@ namespace Slorpus
         {
             // placeholder
         }
+
+        public EnemyBullet[] FireBullets()
+        {
+            // return bullets that we want to fire
+            return new EnemyBullet[0];
+        }
+
+        public void Update()
+        {
+            // enemy logic, called by enemy manager
+        }
     }
 }
