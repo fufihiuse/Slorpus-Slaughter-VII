@@ -9,7 +9,7 @@ namespace Slorpus
 {
     public class Enemy: PhysicsObject
     {
-        public Enemy(Point pos, Vector2 vel, int width, int height): base(pos, vel, width, height)
+        public Enemy(Rectangle pos, Vector2 vel): base(pos, vel)
         {
             // placeholder
         }

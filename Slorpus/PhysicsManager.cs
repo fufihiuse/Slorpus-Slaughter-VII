@@ -14,13 +14,112 @@ namespace Slorpus
         /// </summary>
         /// <param name="physicObjects">List of physics objects with speeds and sizes that need to be moved.</param>
         /// <param name="walls">List of walls that should stop movement.</param>
-        public static void MovePhysics(List<IPhysics> physicObjects, Wall[,] walls)
+        public static void MovePhysics(List<IPhysics> physicObjects, List<Wall> walls)
         {
-            foreach (IPhysics p in physicObjects)
+            // declare only once to reduce memory reallocation
+            // distance going to be moved
+            Vector2 dist = new Vector2();
+            
+            // loop through each physics object and move it
+            foreach (IPhysics physicsObject in physicObjects)
             {
-                // placeholder, no collision
-                // TODO : check if this works on value types, or if the changes pass out of scope after this loop
-                p.Move(p.GetVelocity());
+                // status of collision, used to break out of two loops
+                bool no_collision = true;
+                
+                // distance we are going to move the object
+                dist = physicsObject.GetVelocity();
+
+                foreach (Wall wall in walls)
+                {
+                    // check if currently colliding with wall, and if so then move away from it
+                    // this is a failsafe, should not be necessary if the physics are working
+                    if (physicsObject.Position.Intersects(wall.Position))
+                    {
+                        int adjustment_amount = 3;
+                        // create vector pointing away from wall
+                        double dir = Math.Atan2((physicsObject.Position.Y - wall.Position.Y), (physicsObject.Position.X - wall.Position.X));
+
+                        physicsObject.Move(
+                            new Point(
+                                (int)Math.Cos(dir)*adjustment_amount,
+                                (int)Math.Sin(dir)*adjustment_amount
+                                )
+                            );
+                    }
+
+                    Rectangle new_loc = physicsObject.Position;
+                    new_loc.X += (int)dist.X;
+                    new_loc.Y += (int)dist.Y;
+                    // TODO: cache all collided walls, and call moveWithoutCollision with the closest one
+                    if (wall.Collision(new_loc))
+                    {
+                        // call the physic object's collision handler
+                        physicsObject.OnCollision(wall.Position);
+                        
+                        moveWithoutCollision(physicsObject, dist, wall.Position);
+
+                        // we hit something, give up for efficiency's sake
+                        no_collision = false;
+                        break;
+                    }
+                }
+                
+                // move if we didnt already
+                if (no_collision)
+                {
+                    Point real_dist = new Point(
+                        (int)dist.X,
+                        (int)dist.Y
+                        );
+                    physicsObject.Move(real_dist);
+                }
+            }
+        }
+         
+        /// <summary>
+        /// Moves an object that implements IPhysics by a velocity, but stops if it hits a rectangle.
+        /// </summary>
+        /// <param name="physicsObject">Physics object to move.</param>
+        /// <param name="velocity">Velocity by which the object should be moved.</param>
+        /// <param name="avoidBox">Rectangle hitbox to collide with.</param>
+        /// <returns>Distance to move the object.</returns>
+        private static void moveWithoutCollision(IPhysics physicsObject, Vector2 velocity, Rectangle avoidBox)
+        {           
+            // which direction to increment in
+            int sign = Math.Sign(velocity.X);
+            // if we are moving on X, then move as far as we can
+            if (sign != 0)
+            {
+                for (int i = 0; i < Math.Abs(velocity.X); i++)
+                {
+                    physicsObject.Move(new Point(sign, 0));
+                    if (physicsObject.Position.Intersects(avoidBox))
+                    {
+                        // undo movement bc we're hitting now
+                        physicsObject.Move(new Point(-sign, 0));
+                        // we've hit a wall, lets lose our velocity
+                        physicsObject.Velocity = new Vector2(0, physicsObject.Velocity.Y);
+                        break;
+                    }
+                }
+            }
+
+            sign = Math.Sign(velocity.Y);
+            // if we are moving on Y, then move as far as we can
+            if (sign != 0)
+            {
+                for (int i = 0; i < Math.Abs(velocity.Y); i++)
+                {
+                    physicsObject.Move(new Point(0, sign));
+                    if (physicsObject.Position.Intersects(avoidBox))
+                    {
+                        // undo movement bc we're hitting now
+                        physicsObject.Move(new Point(0, -sign));
+                        // we've hit a wall, lets lose our velocity
+                        physicsObject.Velocity = new Vector2(physicsObject.Velocity.X, 0);
+                        break;
+                    }
+                }
             }
         }
         
@@ -36,7 +135,12 @@ namespace Slorpus
             {
                 // placeholder, no collision
                 // TODO : check if this works on value types, or if the changes pass out of scope after this loop
-                p.Move(p.GetVelocity());
+                p.Move(
+                    new Point(
+                        (int)p.Velocity.X,
+                        (int)p.Velocity.Y
+                        )
+                    );
             }
         }
     }
