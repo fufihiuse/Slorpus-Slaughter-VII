@@ -7,7 +7,7 @@
   "targets": {
     ".NETCoreApp,Version=v3.1": {},
     ".NETCoreApp,Version=v3.1/win-x64": {
-      "NotSoSimpleLevelDesigner/1.0.0": {
+      "NotSoSimpleLevelDesigner/1.2.0": {
         "dependencies": {
           "MonoGame.Content.Builder.Task": "3.8.0.1641",
           "MonoGame.Framework.DesktopGL": "3.8.0.1641",
@@ -868,7 +868,7 @@
     }
   },
   "libraries": {
-    "NotSoSimpleLevelDesigner/1.0.0": {
+    "NotSoSimpleLevelDesigner/1.2.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
