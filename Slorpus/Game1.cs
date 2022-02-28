@@ -15,9 +15,11 @@ namespace Slorpus
 
         // manager(s)
         Level level;
+        List<Enemy> enemyList;
 
         // debug object
         PhysicsObject DEBUG;
+        Player player;
         List<IPhysics> physicsList;
 
         public Game1()
@@ -41,8 +43,9 @@ namespace Slorpus
             // TODO: use this.Content to load your game content here
             squareTexture = Content.Load<Texture2D>("square");
 
-            level = new Level(Constants.WALL_SIZE, squareTexture);
-            level.LoadFromFile("..\\..\\..\\levels\\example.sslvl"); //Loads example level, should be changed
+            //Using example textures
+            level = new Level(Constants.WALL_SIZE, squareTexture, squareTexture, squareTexture, squareTexture);
+            level.LoadFromFile("..\\..\\..\\levels\\example.sslvl", out player, out enemyList); //Loads example level, should be changed
 
             DEBUG = new PhysicsObject(
                 new Rectangle(

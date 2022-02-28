@@ -101,7 +101,7 @@ namespace Slorpus
                                             tileSize),
                                         Vector2.Zero,
                                         hEnemyTexture,
-                                        ShootingPattern.Homing));
+                                        ShootingPattern.HomingAttack));
                                 break;
 
                             //TODO: Add mirror code when mirrors are added
