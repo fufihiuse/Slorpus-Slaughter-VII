@@ -63,7 +63,7 @@ namespace Slorpus
         }
 
         //methods:
-        //  shooting goop method, should be two shooting patterns, should do damage
+        //  shooting goop method, should be two shooting patterns, does damage
         //  can take damage
         //  draw enemy
         //  how to make enemy disappear when dead???
