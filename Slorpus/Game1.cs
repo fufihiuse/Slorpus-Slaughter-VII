@@ -45,7 +45,7 @@ namespace Slorpus
 
             //Using example textures
             level = new Level(Constants.WALL_SIZE, squareTexture, squareTexture, squareTexture, squareTexture);
-            level.LoadFromFile("..\\..\\..\\levels\\example.sslvl", out player, out enemyList); //Loads example level, should be changed
+            level.LoadFromFile("..\\..\\..\\levels\\maze.sslvl", out player, out enemyList); //Loads example level, should be changed
 
             DEBUG = new PhysicsObject(
                 new Rectangle(

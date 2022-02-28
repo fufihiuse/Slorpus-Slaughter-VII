@@ -36,7 +36,6 @@ namespace Slorpus
             this.playerTexture = playerTexture;
             this.eEnemyTexture = eEnemyTexture;
             this.hEnemyTexture = hEnemyTexture;
-            enemyList = new List<Enemy>();
         }
 
         //Methods
@@ -45,7 +44,7 @@ namespace Slorpus
             string line;
             string[] data;
             player = null;
-            enemyList = null;
+            enemyList = new List<Enemy>();
 
             //Loading from file
             try
