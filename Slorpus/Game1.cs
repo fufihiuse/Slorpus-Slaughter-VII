@@ -12,6 +12,7 @@ namespace Slorpus
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Texture2D squareTexture;
+        private KeyboardState kb;
 
         // manager(s)
         Level level;
@@ -31,6 +32,7 @@ namespace Slorpus
         {
             // TODO: Add your initialization logic here
             physicsList = new List<IPhysics>();
+            kb = new KeyboardState();
             base.Initialize();
         }
 
@@ -61,7 +63,7 @@ namespace Slorpus
                 Exit();
 
             // TODO: Add your update logic here
-            DEBUG.UpdatePlayerPosition();
+            DEBUG.UpdatePlayerPosition(kb);
             PhysicsManager.MovePhysics(physicsList, level.WallList);
 
             base.Update(gameTime);

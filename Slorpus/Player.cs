@@ -9,31 +9,74 @@ namespace Slorpus
 {
     public class Player : PhysicsObject
     {
+        /// <summary>
+        /// Creates a new player
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="vel"></param>
         public Player(Rectangle pos, Vector2 vel): base(pos, vel)
-        {
-            // placeholder
-        }
+        {}
 
-        public void UpdatePlayerPosition()
+        /// <summary>
+        /// Updates the player position by detecting the keys pressed by the player
+        /// </summary>
+        /// <param name="kb"></param>
+        public void UpdatePlayerPosition(KeyboardState kb)
         {
-            KeyboardState kb = Keyboard.GetState();
-
-            int xin = 0;
-            int yin = 0;
+            kb = Keyboard.GetState();
             float speed = 0.5f;
+            float xin = 0;
+            float yin = 0;
+            float xTemp = 0;
+            float yTemp = 0;
 
             if (kb.IsKeyDown(Keys.W))
-                yin -= 1;
+            { yTemp = -1; }
+
             if (kb.IsKeyDown(Keys.S))
-                yin += 1;
+            { yTemp = 1; }
+
             if (kb.IsKeyDown(Keys.A))
-                xin -= 1;
+            { xTemp = -1; }
+
             if (kb.IsKeyDown(Keys.D))
-                xin += 1;
+            { xTemp = 1; }
+
+            if (kb.IsKeyDown(Keys.W) && kb.IsKeyDown(Keys.D))
+            {
+                xTemp = 0.707f;
+                yTemp = -0.707f;
+            }
+            if (kb.IsKeyDown(Keys.W) && kb.IsKeyDown(Keys.A))
+            {
+                xTemp = -0.707f;
+                yTemp = -0.707f;
+            }
+            if (kb.IsKeyDown(Keys.A) && kb.IsKeyDown(Keys.S))
+            {
+                xTemp = -0.707f;
+                yTemp = 0.707f;
+            }
+            if (kb.IsKeyDown(Keys.S) && kb.IsKeyDown(Keys.D))
+            {
+                xTemp = 0.707f;
+                yTemp = 0.707f;
+            }
+            if (kb.IsKeyDown(Keys.A) && kb.IsKeyDown(Keys.D))
+            {
+                xTemp = 0f;
+                yTemp = 0f;
+            }
+            if (kb.IsKeyDown(Keys.W) && kb.IsKeyDown(Keys.S))
+            {
+                xTemp = 0f;
+                yTemp = 0f;
+            }
+
+            xin += xTemp;
+            yin += yTemp;
 
             Velocity = new Vector2((Velocity.X + (xin * speed)) * 0.9f, (Velocity.Y + (yin * speed)) * 0.9f);
-
-            
         }
     }
 }
