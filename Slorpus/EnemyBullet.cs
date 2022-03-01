@@ -17,7 +17,7 @@ namespace Slorpus
         //fields
         Point pos;
         Vector2 vel;
-        public Point Position { get { return pos;  } }
+        public Point Position { get { return pos;  } set { pos = value;  } }
         public Vector2 Velocity { get { return vel;  } set { vel = value; } }
 
         //Constructor

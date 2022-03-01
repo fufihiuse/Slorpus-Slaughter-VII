@@ -130,38 +130,62 @@ namespace Slorpus
         /// <param name="physicObjects">Objects that implement IPointPhysics at least.</param>
         /// <param name="size">The size that every physics object has.</param>
         /// <param name="walls">List of walls that should stop movement.</param>
-        public static void CollideAndMoveBullets(List<EnemyBullet> bullets, Point size, List<Wall> wallList, List<IPhysics> physicsList)
+        public static void CollideAndMoveBullets(EnemyBullet[] bullets, Point size, List<Wall> wallList, List<IPhysics> physicsList)
         {
-            Rectangle checkRect = new Rectangle(new Point(), size);
-            foreach (IPointPhysics p in bullets)
+            // indexes of bullets that need to be removed after this loop
+            List<int> queuedBullets = new List<int>();
+
+            for (int i = 0; i < bullets.Length; i++)
             {
+                // whether or not current bullet should be removed at the end of the loop
+                bool removed = false;
                 // placeholder, no collision
                 // TODO : check if this works on value types, or if the changes pass out of scope after this loop
-                p.Move(
+                bullets[i].Move(
                     new Point(
-                        (int)p.Velocity.X,
-                        (int)p.Velocity.Y
+                        (int)bullets[i].Velocity.X,
+                        (int)bullets[i].Velocity.Y
                         )
                     );
-                // move checkRect to the correct location
-                checkRect.X = p.Position.X;
-                checkRect.Y = p.Position.Y;
                 
                 foreach (IPhysics hit in physicsList)
                 {
-                    if (hit.Position.Intersects(checkRect))
+                    if (hit.Position.Contains(bullets[i].Position))
                     {
-                        p.OnCollision<IPhysics>(hit);
+                        bullets[i].OnCollision<IPhysics>(hit);
                     }
                 }
-                foreach (Wall hit in wallList)
+                for (int w = 0; w < wallList.Count; w++)
                 {
-                    if (hit.Position.Intersects(checkRect))
+                    if (wallList[w].Position.Contains(bullets[i].Position))
                     {
-                        p.OnCollision<Wall>(hit);
+                        bullets[i].OnCollision<Wall>(wallList[w]);
+                        removed = true;
                     }
+                }
+
+                if (removed)
+                {
+                    queuedBullets.Add(i);
                 }
             }
+            // remove all queued bullets
+            EnemyBullet[] narray = new EnemyBullet[bullets.Length - queuedBullets.Count];
+            int counter = 0;
+
+            for (int i = 0; i < bullets.Length; i++)
+            {
+                // dont copy over any of the queued to be removed bullets
+                if (queuedBullets.Contains(i))
+                {
+                    continue;
+                }
+                narray[counter] = bullets[i];
+                counter++;
+            }
+
+            // replace bullets with the new array
+            bullets = narray;
         }
     }
 }

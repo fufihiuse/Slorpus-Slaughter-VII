@@ -19,8 +19,10 @@ namespace Slorpus
 
         // debug object
         PhysicsObject DEBUG;
+
+        // lists
         List<IPhysics> physicsList;
-        List<EnemyBullet> bulletList;
+        EnemyBullet[] bullets;
         List<Enemy> enemyList;
 
         public Game1()
@@ -32,8 +34,10 @@ namespace Slorpus
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
             physicsList = new List<IPhysics>();
+
+            // TODO: properly reallocate space instead of just having a static large array
+            bullets = new EnemyBullet[100];
             base.Initialize();
         }
 
@@ -57,9 +61,9 @@ namespace Slorpus
 
             physicsList.Add(DEBUG);
 
-            bulletList = new List<EnemyBullet>();
+            bullets[0] = new EnemyBullet(new Point(20, 20), new Vector2(1f, 2f));
             enemyList = new List<Enemy>();
-            enemyManager = new EnemyManager(bulletList, enemyList, squareTexture, squareTexture);
+            enemyManager = new EnemyManager(bullets, enemyList, squareTexture, squareTexture);
         }
 
         protected override void Update(GameTime gameTime)
@@ -85,10 +89,8 @@ namespace Slorpus
 
             DEBUG.Velocity = new Vector2((DEBUG.Velocity.X + (xin * speed)) * 0.9f, (DEBUG.Velocity.Y + (yin * speed)) * 0.9f);
 
-            bulletList.Add(new EnemyBullet(new Point(20, 20), new Vector2(0.5f, 0.5f)));
-
             PhysicsManager.MovePhysics(physicsList, level.WallList);
-            PhysicsManager.CollideAndMoveBullets(bulletList, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE), level.WallList, physicsList);
+            PhysicsManager.CollideAndMoveBullets(bullets, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE), level.WallList, physicsList);
 
             base.Update(gameTime);
         }
