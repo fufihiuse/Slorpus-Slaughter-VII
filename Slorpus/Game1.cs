@@ -13,17 +13,20 @@ namespace Slorpus
         private SpriteBatch _spriteBatch;
         private Texture2D squareTexture;
 
-        // manager(s)
+        // managers
         Level level;
         EnemyManager enemyManager;
+        BulletManager bulletManager;
+        PhysicsManager physicsManager;
 
         // debug object
         PhysicsObject DEBUG;
 
         // lists
+        // these (usually) should not be modified directly, edit them with the managers
         List<IPhysics> physicsList;
-        EnemyBullet[] bullets;
         List<Enemy> enemyList;
+        EnemyBullet[] bulletList;
 
         public Game1()
         {
@@ -35,9 +38,10 @@ namespace Slorpus
         protected override void Initialize()
         {
             physicsList = new List<IPhysics>();
+            enemyList = new List<Enemy>();
+            bulletList = new EnemyBullet[100];
 
             // TODO: properly reallocate space instead of just having a static large array
-            bullets = new EnemyBullet[100];
             base.Initialize();
         }
 
@@ -61,9 +65,9 @@ namespace Slorpus
 
             physicsList.Add(DEBUG);
 
-            bullets[0] = new EnemyBullet(new Point(20, 20), new Vector2(1f, 2f));
-            enemyList = new List<Enemy>();
-            enemyManager = new EnemyManager(bullets, enemyList, squareTexture, squareTexture);
+            bulletManager = new BulletManager(bulletList, squareTexture);
+            enemyManager = new EnemyManager(enemyList, squareTexture, bulletManager);
+            physicsManager = new PhysicsManager(physicsList, level.WallList, enemyManager, bulletManager);
         }
 
         protected override void Update(GameTime gameTime)
@@ -89,8 +93,9 @@ namespace Slorpus
 
             DEBUG.Velocity = new Vector2((DEBUG.Velocity.X + (xin * speed)) * 0.9f, (DEBUG.Velocity.Y + (yin * speed)) * 0.9f);
 
-            PhysicsManager.MovePhysics(physicsList, level.WallList);
-            PhysicsManager.CollideAndMoveBullets(bullets, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE), level.WallList, physicsList);
+            enemyManager.UpdateEnemies(gameTime);
+            physicsManager.MovePhysics(gameTime);
+            physicsManager.CollideAndMoveBullets(gameTime, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE));
 
             base.Update(gameTime);
         }
@@ -101,10 +106,17 @@ namespace Slorpus
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
+            
+            // draw the walls
             level.Draw(_spriteBatch);
+
+            // draw player and objects
             _spriteBatch.Draw(squareTexture, DEBUG.Position, Color.White);
-            enemyManager.DrawBullets(_spriteBatch, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE));
+            
+            // draw bullets and enemies
+            bulletManager.DrawBullets(_spriteBatch);
             enemyManager.DrawEnemies(_spriteBatch);
+
             base.Draw(gameTime);
             _spriteBatch.End();
         }
