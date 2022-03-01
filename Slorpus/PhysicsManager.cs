@@ -143,37 +143,34 @@ namespace Slorpus
             // indexes of bullets that need to be removed after this loop
             List<int> queuedBullets = new List<int>();
             
-            // request array of all current bullets
-            EnemyBullet[] bullets = bulletManager.Bullets;
-
-            for (int i = 0; i < bullets.Length; i++)
+            for (int i = 0; i < bulletManager.Length; i++)
             {
                 // placeholder, no collision
                 // TODO : check if this works on value types, or if the changes pass out of scope after this loop
-                bullets[i].Move(
+                bulletManager[i].Move(
                     new Point(
-                        (int)bullets[i].Velocity.X,
-                        (int)bullets[i].Velocity.Y
+                        (int)bulletManager[i].Velocity.X,
+                        (int)bulletManager[i].Velocity.Y
                         )
                     );
                 
                 foreach (IPhysics hit in physicsObjects)
                 {
-                    if (hit.Position.Contains(bullets[i].Position))
+                    if (hit.Position.Contains(bulletManager[i].Position))
                     {
-                        bullets[i].OnCollision<IPhysics>(hit);
+                        bulletManager[i].OnCollision<IPhysics>(hit);
                     }
                 }
                 for (int w = 0; w < wallList.Count; w++)
                 {
-                    if (wallList[w].Position.Contains(bullets[i].Position))
+                    if (wallList[w].Position.Contains(bulletManager[i].Position))
                     {
-                        bullets[i].OnCollision<Wall>(wallList[w]);
+                        bulletManager[i].OnCollision<Wall>(wallList[w]);
                         queuedBullets.Add(i);
                     }
                 }
             }
-            bulletManager.DestroyBatch(queuedBullets.ToArray(), true);
+            bulletManager.DestroyBatch(queuedBullets.ToArray());
         }
     }
 }

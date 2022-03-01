@@ -16,6 +16,8 @@ namespace Slorpus
     {
         private EnemyBullet[] bullets;
         private Texture2D bulletAsset;
+        // list of bullets queued for removal
+        private List<int> queuedBullets;
 
         // get a reference to a given bullet
         public ref EnemyBullet this[int i]
@@ -32,17 +34,13 @@ namespace Slorpus
         {
             this.bullets = bullets;
             this.bulletAsset = bulletAsset;
+            queuedBullets = new List<int>();
             
             Random gen = new Random();
             for (int i = 0; i < bullets.Length; i++)
             {
                 bullets[i] = new EnemyBullet(new Point(gen.Next(Constants.WALL_SIZE, 600), gen.Next(Constants.WALL_SIZE, 600)), new Vector2(1f, 2f));
             }
-        }
-
-        public void Move(int index, Point motion)
-        {
-            bullets[index].Move(motion);
         }
 
         /// <summary>
@@ -66,25 +64,43 @@ namespace Slorpus
         {
             DrawBullets(sb, new Point(bulletAsset.Width, bulletAsset.Height));
         }
-
+        
+        /// <summary>
+        /// Expensive way of adding a bullet to the screen. Use FireBatch instead.
+        /// </summary>
+        /// <param name="bullet">Bullet to add into the bulletManager's list.</param>
         public void Fire(EnemyBullet bullet)
         {
-            //
+            EnemyBullet[] original = bullets;
+            bullets = new EnemyBullet[bullets.Length + 1];
+            original.CopyTo(bullets, 0);
+            bullets[original.Length] = bullet;
+        }
+        
+        /// <summary>
+        /// The most efficient way of adding bullets to the screen.
+        /// </summary>
+        /// <param name="new_bullets">Array of bullets to append to the current array.</param>
+        public void FireBatch(EnemyBullet[] new_bullets)
+        {
+            EnemyBullet[] original = bullets;
+            bullets = new EnemyBullet[bullets.Length + new_bullets.Length];
+            original.CopyTo(bullets, 0);
+            new_bullets.CopyTo(bullets, original.Length);
         }
 
-        public void FireBatch(EnemyBullet[] bullets)
+        public void Destroy(int bulletIndex, bool clean=true)
         {
-            //
+            queuedBullets.Add(bulletIndex);
+            if (clean)
+            {
+                Clean();
+            }
         }
 
-        public void Destroy(int bulletIndex)
+        public void DestroyBatch(int[] bulletIndices, bool clean=true)
         {
-            //
-        }
-
-        public void DestroyBatch(int[] bulletIndices, bool clean=false)
-        {
-            //
+            queuedBullets.AddRange(bulletIndices);
             if (clean)
             {
                 Clean();
@@ -96,7 +112,31 @@ namespace Slorpus
         /// </summary>
         public void Clean()
         {
-            //
+            EnemyBullet[] narray = new EnemyBullet[bullets.Length - queuedBullets.Count];
+            int counter = 0;
+            // removed all bullets at indices in queuedBullets
+            for (int i = 0; i < bullets.Length; i++)
+            {
+                if (queuedBullets.Contains(i))
+                {
+                    continue;
+                }
+                try
+                {
+                    narray[counter] = bullets[i];
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    // probably a result of duplicate items in the queued bullets list. just skip
+                    continue;
+                }
+                // we will only get to this point if a.) the bullet "i" is not queued to be destroyed
+                // and b.) we successfully added it to the new bullets array.
+                counter++;
+            }
+            // reset queuedbullets
+            queuedBullets.Clear();
+            bullets = narray;
         }
     }
 }
