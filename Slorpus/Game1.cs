@@ -12,6 +12,7 @@ namespace Slorpus
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Texture2D squareTexture;
+        private KeyboardState kb;
 
         // managers
         Level level;
@@ -20,7 +21,7 @@ namespace Slorpus
         PhysicsManager physicsManager;
 
         // debug object
-        PhysicsObject DEBUG;
+        Player DEBUG;
 
         // lists
         // these (usually) should not be modified directly, edit them with the managers
@@ -42,6 +43,7 @@ namespace Slorpus
             bulletList = new EnemyBullet[100];
 
             // TODO: properly reallocate space instead of just having a static large array
+            kb = new KeyboardState();
             base.Initialize();
         }
 
@@ -55,7 +57,7 @@ namespace Slorpus
             level = new Level(Constants.WALL_SIZE, squareTexture);
             level.LoadFromFile("..\\..\\..\\levels\\example.sslvl"); //Loads example level, should be changed
 
-            DEBUG = new PhysicsObject(
+            DEBUG = new Player(
                 new Rectangle(
                     // position
                     new Point(200, 200),
@@ -78,24 +80,11 @@ namespace Slorpus
             // TODO: Add your update logic here
             KeyboardState kb = Keyboard.GetState();
 
-            int xin = 0;
-            int yin = 0;
-            float speed = 0.5f;
-
-            if (kb.IsKeyDown(Keys.W))
-                yin -= 1;
-            if (kb.IsKeyDown(Keys.S))
-                yin += 1;
-            if (kb.IsKeyDown(Keys.A))
-                xin -= 1;
-            if (kb.IsKeyDown(Keys.D))
-                xin += 1;
-
-            DEBUG.Velocity = new Vector2((DEBUG.Velocity.X + (xin * speed)) * 0.9f, (DEBUG.Velocity.Y + (yin * speed)) * 0.9f);
-
             enemyManager.UpdateEnemies(gameTime);
             physicsManager.MovePhysics(gameTime);
             physicsManager.CollideAndMoveBullets(gameTime, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE));
+            
+            DEBUG.UpdatePlayerPosition(kb);
 
             base.Update(gameTime);
         }
