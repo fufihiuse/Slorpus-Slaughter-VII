@@ -12,12 +12,13 @@ namespace Slorpus
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Texture2D squareTexture;
+        private KeyboardState kb;
 
         // manager(s)
         Level level;
 
         // debug object
-        PhysicsObject DEBUG;
+        Player DEBUG;
         List<IPhysics> physicsList;
 
         public Game1()
@@ -31,6 +32,7 @@ namespace Slorpus
         {
             // TODO: Add your initialization logic here
             physicsList = new List<IPhysics>();
+            kb = new KeyboardState();
             base.Initialize();
         }
 
@@ -44,7 +46,7 @@ namespace Slorpus
             level = new Level(Constants.WALL_SIZE, squareTexture);
             level.LoadFromFile("..\\..\\..\\levels\\example.sslvl"); //Loads example level, should be changed
 
-            DEBUG = new PhysicsObject(
+            DEBUG = new Player(
                 new Rectangle(
                     // position
                     new Point(200, 200),
@@ -61,23 +63,7 @@ namespace Slorpus
                 Exit();
 
             // TODO: Add your update logic here
-            KeyboardState kb = Keyboard.GetState();
-
-            int xin = 0;
-            int yin = 0;
-            float speed = 0.5f;
-
-            if (kb.IsKeyDown(Keys.W))
-                yin -= 1;
-            if (kb.IsKeyDown(Keys.S))
-                yin += 1;
-            if (kb.IsKeyDown(Keys.A))
-                xin -= 1;
-            if (kb.IsKeyDown(Keys.D))
-                xin += 1;
-
-            DEBUG.Velocity = new Vector2((DEBUG.Velocity.X + (xin * speed)) * 0.9f, (DEBUG.Velocity.Y + (yin * speed)) * 0.9f);
-
+            DEBUG.UpdatePlayerPosition(kb);
             PhysicsManager.MovePhysics(physicsList, level.WallList);
 
             base.Update(gameTime);
