@@ -7,21 +7,32 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Slorpus
 {
-    public static class PhysicsManager
+    class PhysicsManager
     {
+        private List<Wall> wallList;
+        private List<IPhysics> physicsObjects;
+        private EnemyManager enemyManager;
+        private BulletManager bulletManager;
+
+        public PhysicsManager(List<IPhysics> physicsObjects, List<Wall> wallList, EnemyManager enemyManager, BulletManager bulletManager)
+        {
+            this.physicsObjects = physicsObjects;
+            this.wallList = wallList;
+            this.enemyManager = enemyManager;
+            this.bulletManager = bulletManager;
+        }
+
         /// <summary>
         /// Moves objects which implement IPhysics and calls their respective collision handlers if necessary (STRETCH GOAL)
         /// </summary>
-        /// <param name="physicObjects">List of physics objects with speeds and sizes that need to be moved.</param>
-        /// <param name="walls">List of walls that should stop movement.</param>
-        public static void MovePhysics(List<IPhysics> physicObjects, List<Wall> walls)
+        public void MovePhysics(GameTime gameTime)
         {
             // declare only once to reduce memory reallocation
             // distance going to be moved
             Vector2 dist = new Vector2();
             
             // loop through each physics object and move it
-            foreach (IPhysics physicsObject in physicObjects)
+            foreach (IPhysics physicsObject in physicsObjects)
             {
                 // status of collision, used to break out of two loops
                 bool no_collision = true;
@@ -29,7 +40,7 @@ namespace Slorpus
                 // distance we are going to move the object
                 dist = physicsObject.GetVelocity();
 
-                foreach (Wall wall in walls)
+                foreach (Wall wall in wallList)
                 {
                     // check if currently colliding with wall, and if so then move away from it
                     // this is a failsafe, should not be necessary if the physics are working
@@ -54,7 +65,7 @@ namespace Slorpus
                     if (wall.Collision(new_loc))
                     {
                         // call the physic object's collision handler
-                        physicsObject.OnCollision(wall.Position);
+                        physicsObject.OnCollision<Wall>(wall);
                         
                         moveWithoutCollision(physicsObject, dist, wall.Position);
 
@@ -83,7 +94,7 @@ namespace Slorpus
         /// <param name="velocity">Velocity by which the object should be moved.</param>
         /// <param name="avoidBox">Rectangle hitbox to collide with.</param>
         /// <returns>Distance to move the object.</returns>
-        private static void moveWithoutCollision(IPhysics physicsObject, Vector2 velocity, Rectangle avoidBox)
+        private void moveWithoutCollision(IPhysics physicsObject, Vector2 velocity, Rectangle avoidBox)
         {           
             // which direction to increment in
             int sign = Math.Sign(velocity.X);
@@ -124,24 +135,42 @@ namespace Slorpus
         }
         
         /// <summary>
-        /// Physics object movement for if a long list of physics objects have identical sizes.
+        /// Moves bullets and calls bulletManager.Destroy if they hit a wall.
         /// </summary>
-        /// <param name="physicObjects">Objects that implement IPointPhysics at least.</param>
         /// <param name="size">The size that every physics object has.</param>
-        /// <param name="walls">List of walls that should stop movement.</param>
-        public static void MovePointPhysics(List<IPointPhysics> physicObjects, Point size, Wall[,] walls)
+        public void CollideAndMoveBullets(GameTime gametime, Point size)
         {
-            foreach (IPhysics p in physicObjects)
+            // indexes of bullets that need to be removed after this loop
+            List<int> queuedBullets = new List<int>();
+            
+            for (int i = 0; i < bulletManager.Length; i++)
             {
                 // placeholder, no collision
                 // TODO : check if this works on value types, or if the changes pass out of scope after this loop
-                p.Move(
+                bulletManager[i].Move(
                     new Point(
-                        (int)p.Velocity.X,
-                        (int)p.Velocity.Y
+                        (int)bulletManager[i].Velocity.X,
+                        (int)bulletManager[i].Velocity.Y
                         )
                     );
+                
+                foreach (IPhysics hit in physicsObjects)
+                {
+                    if (hit.Position.Contains(bulletManager[i].Position))
+                    {
+                        bulletManager[i].OnCollision<IPhysics>(hit);
+                    }
+                }
+                for (int w = 0; w < wallList.Count; w++)
+                {
+                    if (wallList[w].Position.Contains(bulletManager[i].Position))
+                    {
+                        bulletManager[i].OnCollision<Wall>(wallList[w]);
+                        queuedBullets.Add(i);
+                    }
+                }
             }
+            bulletManager.DestroyBatch(queuedBullets.ToArray());
         }
     }
 }
