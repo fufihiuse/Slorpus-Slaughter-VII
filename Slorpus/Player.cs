@@ -65,11 +65,9 @@ namespace Slorpus
             if (kb.IsKeyDown(Keys.A) && kb.IsKeyDown(Keys.D))
             {
                 xTemp = 0f;
-                yTemp = 0f;
             }
             if (kb.IsKeyDown(Keys.W) && kb.IsKeyDown(Keys.S))
             {
-                xTemp = 0f;
                 yTemp = 0f;
             }
 
