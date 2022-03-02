@@ -18,7 +18,6 @@ namespace Slorpus
         private int health;
         private int damage;
         private ShootingPattern shootingPattern;
-        //private bool isDead;
 
         //properties
         public int Health
