@@ -22,7 +22,15 @@ namespace Slorpus
                 Wall tempWall = (Wall)(object)other;
                 if (tempWall.IsMirror)
                 {
-                    //TODO: Add logic
+                    Vector2 velocity = this.GetVelocity();
+                    if(Math.Abs(velocity.X) > Math.Abs(Velocity.Y))
+                    {
+                        this.Velocity *= new Vector2(-1, 1);
+                    }
+                    else
+                    {
+                        this.Velocity *= new Vector2(1, -1);
+                    }
                 }
             }
         }

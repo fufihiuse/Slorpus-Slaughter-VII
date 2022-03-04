@@ -103,7 +103,17 @@ namespace Slorpus
                                         ShootingPattern.HomingAttack));
                                 break;
 
-                            //TODO: Add mirror code when mirrors are added
+                            case 'M':
+                                walls.Add(
+                                    new Wall(
+                                        new Rectangle(
+                                            column * tileSize,
+                                            row * tileSize,
+                                            tileSize,
+                                            tileSize), 
+                                        true, //is Collidable
+                                        true)); //is a mirror
+                                break;
 
                             case 'P':
                                 player = new Player(new Rectangle(
@@ -136,7 +146,18 @@ namespace Slorpus
         {
             foreach(Wall w in walls)
             {
-                sb.Draw(wallTexture, w.Position, Color.White);
+                if (w.IsMirror)
+                {
+                    sb.Draw(wallTexture, w.Position, Color.Green);
+                }
+                else if (w.IsInvis)
+                {
+                    sb.Draw(wallTexture, w.Position, Color.Blue);
+                }
+                else
+                {
+                    sb.Draw(wallTexture, w.Position, Color.White);
+                }
             }
         }
     }

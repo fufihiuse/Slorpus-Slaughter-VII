@@ -16,9 +16,10 @@ namespace Slorpus
 
         public Rectangle Position { get { return position; } }
         public bool IsMirror { get { return isMirror; } }
+        public bool IsInvis { get { return !collidable; } }
 
         //constuctor
-        public Wall(Rectangle position, bool collidable = true, bool isMirror = true)
+        public Wall(Rectangle position, bool collidable = true, bool isMirror = false)
         {
             this.position = position;
             this.collidable = collidable;
