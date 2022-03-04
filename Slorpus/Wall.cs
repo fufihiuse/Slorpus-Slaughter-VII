@@ -12,14 +12,17 @@ namespace Slorpus
         //fields
         private Rectangle position;
         private bool collidable;
+        private bool isMirror;
 
         public Rectangle Position { get { return position; } }
+        public bool IsMirror { get { return isMirror; } }
 
         //constuctor
-        public Wall(Rectangle position, bool collidable=true)
+        public Wall(Rectangle position, bool collidable = true, bool isMirror = true)
         {
             this.position = position;
             this.collidable = collidable;
+            this.isMirror = isMirror;
         }
 
         /// <summary>
