@@ -14,7 +14,7 @@ namespace Slorpus
             // placeholder
         }
 
-        public void OnCollision<T>(T other) 
+        public override void OnCollision<T>(T other) 
         {
             // get destroyed or play an effect or something when colliding with a wall
             if (typeof(T) == typeof(Wall))

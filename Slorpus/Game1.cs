@@ -54,24 +54,15 @@ namespace Slorpus
             // TODO: use this.Content to load your game content here
             squareTexture = Content.Load<Texture2D>("square");
 
-            //Using example textures
-            level = new Level(Constants.WALL_SIZE, squareTexture, squareTexture, squareTexture, squareTexture);
-            level.LoadFromFile("..\\..\\..\\levels\\example.sslvl", out DEBUG, out enemyList); //Loads example level, should be changed
-
-            /*DEBUG = new Player(
-                new Rectangle(
-                    // position
-                    new Point(200, 200),
-                    // size
-                    new Point(16, 16)),
-                new Vector2(0, 0));
-            */
-
-            physicsList.Add(DEBUG);
-
             bulletManager = new BulletManager(bulletList, squareTexture);
             enemyManager = new EnemyManager(enemyList, squareTexture, bulletManager);
             physicsManager = new PhysicsManager(physicsList, level.WallList, enemyManager, bulletManager);
+            
+            //Using example textures
+            level = new Level(Constants.WALL_SIZE, physicsManager, squareTexture, squareTexture, squareTexture, squareTexture, squareTexture);
+            level.LoadFromFile("..\\..\\..\\levels\\example.sslvl", out DEBUG, out enemyList); //Loads example level, should be changed
+
+            physicsList.Add(DEBUG);
         }
 
         protected override void Update(GameTime gameTime)
@@ -102,7 +93,6 @@ namespace Slorpus
             level.Draw(_spriteBatch);
 
             // draw player and objects
-            _spriteBatch.Draw(squareTexture, DEBUG.Position, Color.White);
             
             // draw bullets and enemies
             bulletManager.DrawBullets(_spriteBatch, new Point(5,5));

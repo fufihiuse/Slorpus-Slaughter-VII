@@ -7,15 +7,61 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Slorpus
 {
-    public class Player : PhysicsObject
+    class Player : PhysicsObject
     {
+        // reference the game's physics manager
+        PhysicsManager physicsManager;
+        // number of bullets the player currently has
+        int bullets = 1;
+
+        Texture2D bulletAsset;
+        Texture2D asset;
+
         /// <summary>
         /// Creates a new player
         /// </summary>
         /// <param name="pos"></param>
         /// <param name="vel"></param>
-        public Player(Rectangle pos, Vector2 vel): base(pos, vel)
-        {}
+        public Player(Rectangle pos, Vector2 vel, PhysicsManager physicsManager, Texture2D playerAsset, Texture2D bulletAsset): base(pos, vel)
+        {
+            this.physicsManager = physicsManager;
+            this.asset = playerAsset;
+            this.bulletAsset = bulletAsset;
+        }
+
+        public void Draw(SpriteBatch sb)
+        {
+            sb.Draw(asset, this.Position, Color.White);
+        }
+        
+        /// <summary>
+        /// Called by main whenever mouse button state changes.
+        /// </summary>
+        /// <param name="ms">CURRENT state of the mouse.</param>
+        public void OnMouseClick(MouseState ms)
+        {
+            if (bullets > 0 && ms.LeftButton == ButtonState.Pressed)
+            {
+                // use our reference to the physics manager to instantiate the player bullet
+                Rectangle bulletRect = new Rectangle(
+                    new Point(this.Position.X, this.Position.Y),
+                    new Point(Constants.PLAYER_BULLET_SIZE, Constants.PLAYER_BULLET_SIZE)
+                    );
+
+                // get distance from player to mouse
+                Vector2 vel = new Vector2(
+                    ms.X-this.Position.X,
+                    ms.Y-this.Position.Y
+                    );
+                // normalize it
+                vel = Vector2.Normalize(vel);
+                //multiply by speed
+                vel = Vector2.Multiply(vel, Constants.PLAYER_BULLET_SPEED);
+                
+                physicsManager.AddPhysicsObject(new PlayerProjectile(bulletRect, vel));
+                bullets--;
+            }
+        }
 
         /// <summary>
         /// Updates the player position by detecting the keys pressed by the player

@@ -9,17 +9,19 @@ using System.IO;
 namespace Slorpus
 {
     //Jackson Majewski
-    public class Level
+    class Level
     {
         //Fields
         private char[,] level;
         private List<Wall> walls;
         private int tileSize;
-        private Texture2D wallTexture;
-        private Texture2D playerTexture;
-        private Texture2D eEnemyTexture;
-        private Texture2D hEnemyTexture;
-        private List<Enemy> enemyList;
+        private Texture2D wallAsset;
+        private Texture2D playerAsset;
+        private Texture2D playerBulletAsset;
+        private Texture2D eEnemyAsset;
+        private Texture2D hEnemyAsset;
+
+        private PhysicsManager physicsManager;
 
         //Properties
         public List<Wall> WallList
@@ -28,14 +30,17 @@ namespace Slorpus
         }
 
         //Constructor
-        public Level(int tileSize, Texture2D wallTexture, Texture2D playerTexture, Texture2D eEnemyTexture, Texture2D hEnemyTexture)
+        public Level(int tileSize, PhysicsManager physicsManager, Texture2D wallAsset, Texture2D playerAsset,
+            Texture2D playerBulletAsset, Texture2D eEnemyAsset, Texture2D hEnemyAsset)
         {
             this.tileSize = tileSize;
             walls = new List<Wall>();
-            this.wallTexture = wallTexture;
-            this.playerTexture = playerTexture;
-            this.eEnemyTexture = eEnemyTexture;
-            this.hEnemyTexture = hEnemyTexture;
+            this.wallAsset = wallAsset;
+            this.playerAsset = playerAsset;
+            this.eEnemyAsset = eEnemyAsset;
+            this.hEnemyAsset = hEnemyAsset;
+            this.playerBulletAsset = playerBulletAsset;
+            this.physicsManager = physicsManager;
         }
 
         //Methods
@@ -86,7 +91,7 @@ namespace Slorpus
                                             tileSize,
                                             tileSize),
                                         Vector2.Zero,
-                                        eEnemyTexture,
+                                        eEnemyAsset,
                                         ShootingPattern.Ensconcing));
                                 break;
 
@@ -99,7 +104,7 @@ namespace Slorpus
                                             tileSize,
                                             tileSize),
                                         Vector2.Zero,
-                                        hEnemyTexture,
+                                        hEnemyAsset,
                                         ShootingPattern.HomingAttack));
                                 break;
 
@@ -121,7 +126,11 @@ namespace Slorpus
                                             row * tileSize,
                                             tileSize,
                                             tileSize),
-                                            Vector2.Zero);
+                                            Vector2.Zero,
+                                            physicsManager,
+                                            playerAsset,
+                                            playerBulletAsset
+                                            );
                                 break;
                         }
 
@@ -148,15 +157,15 @@ namespace Slorpus
             {
                 if (w.IsMirror)
                 {
-                    sb.Draw(wallTexture, w.Position, Color.Green);
+                    sb.Draw(wallAsset, w.Position, Color.Green);
                 }
                 else if (w.IsInvis)
                 {
-                    sb.Draw(wallTexture, w.Position, Color.Blue);
+                    sb.Draw(wallAsset, w.Position, Color.Blue);
                 }
                 else
                 {
-                    sb.Draw(wallTexture, w.Position, Color.White);
+                    sb.Draw(wallAsset, w.Position, Color.White);
                 }
             }
         }

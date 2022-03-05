@@ -22,6 +22,11 @@ namespace Slorpus
             this.bulletManager = bulletManager;
         }
 
+        public void AddPhysicsObject(IPhysics physicsObject)
+        {
+            physicsObjects.Add(physicsObject);
+        }
+
         /// <summary>
         /// Moves objects which implement IPhysics and calls their respective collision handlers if necessary (STRETCH GOAL)
         /// </summary>
