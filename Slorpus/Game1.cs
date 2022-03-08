@@ -27,6 +27,7 @@ namespace Slorpus
         // these (usually) should not be modified directly, edit them with the managers
         List<IPhysics> physicsList;
         List<Enemy> enemyList;
+        List<GenericEntity> entityList;
         EnemyBullet[] bulletList;
 
         public Game1()
@@ -55,8 +56,8 @@ namespace Slorpus
             squareTexture = Content.Load<Texture2D>("square");
  
             //Using example textures
-            level = new Level(Constants.WALL_SIZE, physicsManager, squareTexture, squareTexture, squareTexture, squareTexture, squareTexture);
-            level.LoadFromFile("..\\..\\..\\levels\\example.sslvl", out DEBUG, out enemyList); //Loads example level, should be changed
+            level = new Level(Constants.WALL_SIZE, squareTexture, squareTexture, squareTexture);
+            entityList = level.LoadFromFile("..\\..\\..\\levels\\example.sslvl", entityList); //Loads example level and returns entityList
             
             bulletManager = new BulletManager(bulletList, squareTexture);
             enemyManager = new EnemyManager(enemyList, squareTexture, bulletManager);
