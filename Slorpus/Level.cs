@@ -16,6 +16,10 @@ namespace Slorpus
         private List<Wall> walls;
         private int tileSize;
         private Texture2D wallTexture;
+        private Texture2D playerTexture;
+        private Texture2D eEnemyTexture;
+        private Texture2D hEnemyTexture;
+        private List<Enemy> enemyList;
 
         //Properties
         public List<Wall> WallList
@@ -24,18 +28,23 @@ namespace Slorpus
         }
 
         //Constructor
-        public Level(int tileSize, Texture2D wallTexture)
+        public Level(int tileSize, Texture2D wallTexture, Texture2D playerTexture, Texture2D eEnemyTexture, Texture2D hEnemyTexture)
         {
             this.tileSize = tileSize;
             walls = new List<Wall>();
             this.wallTexture = wallTexture;
+            this.playerTexture = playerTexture;
+            this.eEnemyTexture = eEnemyTexture;
+            this.hEnemyTexture = hEnemyTexture;
         }
 
         //Methods
-        public void LoadFromFile(string filepath)
+        public void LoadFromFile(string filepath,  out Player player, out List<Enemy> enemyList)
         {
             string line;
             string[] data;
+            player = null;
+            enemyList = new List<Enemy>();
 
             //Loading from file
             try
@@ -56,16 +65,56 @@ namespace Slorpus
                     {
                         level[row, column] = line[column];
 
-                        if (line[column] == 'W')
+                        switch(line[column])
                         {
-                            walls.Add(
-                                new Wall(
-                                    new Rectangle(
-                                        column * tileSize,
-                                        row * tileSize,
-                                        tileSize,
-                                        tileSize)));
+                            case 'W':
+                                walls.Add(
+                                    new Wall(
+                                        new Rectangle(
+                                            column * tileSize,
+                                            row * tileSize,
+                                            tileSize,
+                                            tileSize)));
+                                break;
+
+                            case 'E':
+                                enemyList.Add(
+                                    new Enemy(
+                                        new Rectangle(
+                                            column * tileSize,
+                                            row * tileSize,
+                                            tileSize,
+                                            tileSize),
+                                        Vector2.Zero,
+                                        eEnemyTexture,
+                                        ShootingPattern.Ensconcing));
+                                break;
+
+                            case 'H':
+                                enemyList.Add(
+                                    new Enemy(
+                                        new Rectangle(
+                                            column * tileSize,
+                                            row * tileSize,
+                                            tileSize,
+                                            tileSize),
+                                        Vector2.Zero,
+                                        hEnemyTexture,
+                                        ShootingPattern.HomingAttack));
+                                break;
+
+                            //TODO: Add mirror code when mirrors are added
+
+                            case 'P':
+                                player = new Player(new Rectangle(
+                                            column * tileSize,
+                                            row * tileSize,
+                                            tileSize,
+                                            tileSize),
+                                            Vector2.Zero);
+                                break;
                         }
+
                     }
                     line = input.ReadLine();
                 }
@@ -79,6 +128,10 @@ namespace Slorpus
 
         }
 
+        /// <summary>
+        /// Override method to draw the walls
+        /// </summary>
+        /// <param name="sb"></param>
         public void Draw(SpriteBatch sb)
         {
             foreach(Wall w in walls)
