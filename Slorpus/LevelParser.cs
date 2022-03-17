@@ -51,17 +51,17 @@ namespace Slorpus
         /// <summary>
         /// Returns a list of walls, made based on the information parsed from entityList.
         /// </summary>
+        /// <param name="walls">The wall list class who needs to have the newly loaded walls added to it.</param>
         /// <param name="entityList">Information about all the game objects that need to be created.</param>
         /// <returns>A list of all the walls in the level.</returns>
-        public List<Wall> GetWalls(List<GenericEntity> entityList)
+        public void GetWalls(List<Wall> walls, List<GenericEntity> entityList)
         {
-            List<Wall> final = new List<Wall>();
             foreach (GenericEntity ge in entityList)
             {
                 switch (ge.EntityType) {
                     case 'W':
                         // add a new wall to the wall list
-                        final.Add(new Wall(
+                        walls.Add(new Wall(
                             new Rectangle(
                                 ge.Position,
                                 new Point(
@@ -74,7 +74,7 @@ namespace Slorpus
                         break;
                     case 'M':
                         // add a new mirror to the wall list
-                        final.Add(new Wall(
+                        walls.Add(new Wall(
                             new Rectangle(
                                 ge.Position,
                                 new Point(
@@ -89,9 +89,6 @@ namespace Slorpus
                         break;
                 }
             }
-
-            // return the constructed set of walls present in the entity list
-            return final;
         }
 
         // TODO: split mirrors into a different list so we dont have to check if things
@@ -105,14 +102,13 @@ namespace Slorpus
         /// <param name="homeEnemyAsset">Asset for enemies with the homing attack.</param>
         /// <param name="enscEnemyAsset">Assets for enemies with the ensconcing attack.</param>
         /// <returns>A list of all enemies in the current level.</returns>
-        public List<Enemy> GetEnemies(List<GenericEntity> entityList, Texture2D homeEnemyAsset, Texture2D enscEnemyAsset)
+        public void GetEnemies(List<Enemy> enemyList, List<GenericEntity> entityList, Texture2D homeEnemyAsset, Texture2D enscEnemyAsset)
         { 
-            List<Enemy> final = new List<Enemy>();
             foreach (GenericEntity ge in entityList)
             {
                 switch (ge.EntityType) {
                     case 'E':
-                        final.Add(
+                        enemyList.Add(
                             new Enemy(
                                 new Rectangle(
                                     ge.Position,
@@ -126,7 +122,7 @@ namespace Slorpus
                         break;
 
                     case 'H':
-                        final.Add(
+                        enemyList.Add(
                             new Enemy(
                                 new Rectangle(
                                     ge.Position,
@@ -140,7 +136,6 @@ namespace Slorpus
                         break;
                 }
             }
-            return final;
         }
         
         /// <summary>
@@ -151,9 +146,8 @@ namespace Slorpus
         /// <param name="playerAsset">The player's Texture2D</param>
         /// <param name="playerBulletAsset">The Texture2D used by the bullet the player fires.</param>
         /// <returns>A list containing the player and any other physics objects loaded in from the level.</returns>
-        public List<IPhysics> GetPhysicsObjects(List<GenericEntity> entityList, PhysicsManager physicsManager, Texture2D playerAsset, Texture2D playerBulletAsset)
+        public void GetPhysicsObjects(List<IPhysics> physicsObjects, List<GenericEntity> entityList, PhysicsManager physicsManager, Texture2D playerAsset, Texture2D playerBulletAsset)
         {
-            List<IPhysics> final = new List<IPhysics>();
             foreach (GenericEntity ge in entityList)
             {
                 if (ge.EntityType == 'P')
@@ -171,11 +165,9 @@ namespace Slorpus
 
                     drawables.Add(player);
                     updateables.Add(player);
-                    final.Add(player);
+                    physicsObjects.Add(player);
                 }
             }
-
-            return final;
         }
     }
 }

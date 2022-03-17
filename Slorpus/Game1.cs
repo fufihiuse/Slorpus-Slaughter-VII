@@ -60,9 +60,9 @@ namespace Slorpus
             physicsManager = new PhysicsManager(physicsList, wallList, enemyManager, bulletManager);
             
             // parse data read from level
-            enemyList = levelParser.GetEnemies(levelList, squareTexture, squareTexture);
-            wallList = levelParser.GetWalls(levelList);
-            physicsList = levelParser.GetPhysicsObjects(levelList, physicsManager, squareTexture, squareTexture);
+            levelParser.GetEnemies(enemyList, levelList, squareTexture, squareTexture);
+            levelParser.GetWalls(wallList, levelList);
+            levelParser.GetPhysicsObjects(physicsList, levelList, physicsManager, squareTexture, squareTexture);
 
             // miscellaneous, "special" items which dont have a manager
             updateList = levelParser.Updatables;
