@@ -20,15 +20,13 @@ namespace Slorpus
         BulletManager bulletManager;
         PhysicsManager physicsManager;
 
-        // debug object
-        Player DEBUG;
-
         // lists
         // these (usually) should not be modified directly, edit them with the managers
         List<IPhysics> physicsList;
         List<Enemy> enemyList;
         List<GenericEntity> entityList;
         EnemyBullet[] bulletList;
+        List<Wall> wallList;
 
         public Game1()
         {
@@ -41,6 +39,7 @@ namespace Slorpus
         {
             physicsList = new List<IPhysics>();
             enemyList = new List<Enemy>();
+            wallList = new List<Wall>();
             bulletList = new EnemyBullet[100];
 
             // TODO: properly reallocate space instead of just having a static large array
@@ -52,18 +51,19 @@ namespace Slorpus
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
             squareTexture = Content.Load<Texture2D>("square");
  
-            //Using example textures
-            level = new Level(Constants.WALL_SIZE, squareTexture, squareTexture, squareTexture);
+            // instantiate all the manager classes on the empty, just initialized lists
+            level = new Level(wallList, squareTexture, squareTexture, squareTexture);
             entityList = level.LoadFromFile("..\\..\\..\\levels\\example.sslvl", entityList); //Loads example level and returns entityList
-            
             bulletManager = new BulletManager(bulletList, squareTexture);
             enemyManager = new EnemyManager(enemyList, squareTexture, bulletManager);
-            physicsManager = new PhysicsManager(physicsList, level.WallList, enemyManager, bulletManager);
-
-            physicsList.Add(DEBUG);
+            physicsManager = new PhysicsManager(physicsList, wallList, enemyManager, bulletManager);
+            
+            // parse data read from level
+            enemyList = LevelParser.GetEnemies(entityList, squareTexture, squareTexture);
+            wallList = LevelParser.GetWalls(entityList);
+            physicsList = LevelParser.GetPhysicsObjects(entityList, physicsManager, squareTexture, squareTexture);
         }
 
         protected override void Update(GameTime gameTime)
@@ -78,8 +78,6 @@ namespace Slorpus
             physicsManager.MovePhysics(gameTime);
             physicsManager.CollideAndMoveBullets(gameTime, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE));
             
-            DEBUG.UpdatePlayerPosition(kb);
-
             base.Update(gameTime);
         }
 
