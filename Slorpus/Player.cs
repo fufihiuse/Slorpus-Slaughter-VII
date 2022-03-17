@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Slorpus
 {
-    class Player : PhysicsObject
+    class Player : PhysicsObject, IUpdate, IDraw
     {
         // reference the game's physics manager
         PhysicsManager physicsManager;
@@ -29,7 +29,13 @@ namespace Slorpus
             this.bulletAsset = bulletAsset;
         }
 
-        public void Draw(SpriteBatch sb)
+        void IUpdate.Update(GameTime gameTime)
+        {
+            // per-frame logic
+            UpdatePlayerPosition();
+        }
+
+        void IDraw.Draw(SpriteBatch sb)
         {
             sb.Draw(asset, this.Position, Color.White);
         }
@@ -67,9 +73,9 @@ namespace Slorpus
         /// Updates the player position by detecting the keys pressed by the player
         /// </summary>
         /// <param name="kb"></param>
-        public void UpdatePlayerPosition(KeyboardState kb)
+        public void UpdatePlayerPosition()
         {
-            kb = Keyboard.GetState();
+            KeyboardState kb = Keyboard.GetState();
             float speed = 0.5f;
             float xin = 0;
             float yin = 0;

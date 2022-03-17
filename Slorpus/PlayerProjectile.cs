@@ -7,11 +7,21 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Slorpus
 {
-    public class PlayerProjectile : PhysicsObject
+    public class PlayerProjectile : PhysicsObject, IUpdate, IDraw
     {
         public PlayerProjectile(Rectangle pos, Vector2 vel): base(pos, vel)
         {
             // placeholder
+        }
+
+        void IUpdate.Update(GameTime gameTime)
+        {
+            // perform per-frame game logic
+        }
+
+        void IDraw.Draw(SpriteBatch sb)
+        {
+            // drawing
         }
 
         public override void OnCollision<T>(T other) 

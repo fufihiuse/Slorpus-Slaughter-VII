@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -11,14 +12,48 @@ namespace Slorpus
      * This class is used to parse the output of Level.LoadFromFile().
      *
      */
-    static class LevelParser
+    class LevelParser
     {
+        // if an entity implements IUpdate, it should be added to this list on load
+        // we retrive it after initializing all the other lists
+        List<IUpdate> updateables;
+        List<IDraw> drawables;
+        
+        
+        // property just to warn if empty
+        public List<IUpdate> Updatables
+        {
+            get {
+                if (updateables.Count <= 0)
+                {
+                    Debugger.Log(0, "Warning", "Updateables list empty. Have you called the other entity Get methods?");
+                }
+                return updateables;
+            }
+        }
+        public List<IDraw> Drawables
+        {
+            get {
+                if (drawables.Count <= 0)
+                {
+                    Debugger.Log(0, "Warning", "Updateables list empty. Have you called the other entity Get methods?");
+                }
+                return drawables;
+            }
+        }
+
+        public LevelParser()
+        {
+            updateables = new List<IUpdate>();
+            drawables = new List<IDraw>();
+        }
+
         /// <summary>
         /// Returns a list of walls, made based on the information parsed from entityList.
         /// </summary>
         /// <param name="entityList">Information about all the game objects that need to be created.</param>
         /// <returns>A list of all the walls in the level.</returns>
-        public static List<Wall> GetWalls(List<GenericEntity> entityList)
+        public List<Wall> GetWalls(List<GenericEntity> entityList)
         {
             List<Wall> final = new List<Wall>();
             foreach (GenericEntity ge in entityList)
@@ -70,7 +105,7 @@ namespace Slorpus
         /// <param name="homeEnemyAsset">Asset for enemies with the homing attack.</param>
         /// <param name="enscEnemyAsset">Assets for enemies with the ensconcing attack.</param>
         /// <returns>A list of all enemies in the current level.</returns>
-        public static List<Enemy> GetEnemies(List<GenericEntity> entityList, Texture2D homeEnemyAsset, Texture2D enscEnemyAsset)
+        public List<Enemy> GetEnemies(List<GenericEntity> entityList, Texture2D homeEnemyAsset, Texture2D enscEnemyAsset)
         { 
             List<Enemy> final = new List<Enemy>();
             foreach (GenericEntity ge in entityList)
@@ -116,14 +151,14 @@ namespace Slorpus
         /// <param name="playerAsset">The player's Texture2D</param>
         /// <param name="playerBulletAsset">The Texture2D used by the bullet the player fires.</param>
         /// <returns>A list containing the player and any other physics objects loaded in from the level.</returns>
-        public static List<IPhysics> GetPhysicsObjects(List<GenericEntity> entityList, PhysicsManager physicsManager, Texture2D playerAsset, Texture2D playerBulletAsset)
+        public List<IPhysics> GetPhysicsObjects(List<GenericEntity> entityList, PhysicsManager physicsManager, Texture2D playerAsset, Texture2D playerBulletAsset)
         {
             List<IPhysics> final = new List<IPhysics>();
             foreach (GenericEntity ge in entityList)
             {
                 if (ge.EntityType == 'P')
                 {
-                    final.Add(new Player(
+                    Player player = new Player(
                         new Rectangle(
                             ge.Position,
                             new Point(Constants.PLAYER_SIZE, Constants.PLAYER_SIZE)
@@ -132,8 +167,11 @@ namespace Slorpus
                         physicsManager,
                         playerAsset,
                         playerBulletAsset
-                        )
-                    );
+                        );
+
+                    drawables.Add(player);
+                    updateables.Add(player);
+                    final.Add(player);
                 }
             }
 
