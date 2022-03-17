@@ -10,7 +10,6 @@ namespace Slorpus
 {
     /*
      * This class is used to parse the output of Level.LoadFromFile().
-     *
      */
     class LevelParser
     {
@@ -18,6 +17,8 @@ namespace Slorpus
         // we retrive it after initializing all the other lists
         List<IUpdate> updateables;
         List<IDraw> drawables;
+        List<IMouseClick> mouseClickables;
+        List<IKeyPress> keyPressables;
         
         
         // property just to warn if empty
@@ -36,9 +37,30 @@ namespace Slorpus
             get {
                 if (drawables.Count <= 0)
                 {
-                    Debugger.Log(0, "Warning", "Updateables list empty. Have you called the other entity Get methods?");
+                    Debugger.Log(0, "Warning", "Drawables list empty. Have you called the other entity Get methods?");
                 }
                 return drawables;
+            }
+        }
+        public List<IMouseClick> MouseClickables
+        {
+            get {
+                if (drawables.Count <= 0)
+                {
+                    Debugger.Log(0, "Warning", "MouseClickables list empty. Have you called the other entity Get methods?");
+                }
+                return mouseClickables;
+            }
+        }
+        public List<IKeyPress> KeyPressables
+        {
+            get
+            {
+                if (keyPressables.Count <= 0)
+                {
+                    Debugger.Log(0, "Warning", "MouseClickables list empty. Have you called the other entity Get methods?");
+                }
+                return keyPressables;
             }
         }
 
@@ -46,6 +68,8 @@ namespace Slorpus
         {
             updateables = new List<IUpdate>();
             drawables = new List<IDraw>();
+            mouseClickables = new List<IMouseClick>();
+            keyPressables = new List<IKeyPress>();
         }
 
         /// <summary>
@@ -60,8 +84,7 @@ namespace Slorpus
             {
                 switch (ge.EntityType) {
                     case 'W':
-                        // add a new wall to the wall list
-                        walls.Add(new Wall(
+                        Wall w = new Wall(
                             new Rectangle(
                                 ge.Position,
                                 new Point(
@@ -69,12 +92,14 @@ namespace Slorpus
                                     Constants.WALL_SIZE
                                     )
                                 )
-                            )
-                        );
+                            );
+
+                        // add a new wall to the wall list
+                        SortItem(w);
+                        walls.Add(w);
                         break;
                     case 'M':
-                        // add a new mirror to the wall list
-                        walls.Add(new Wall(
+                        Wall m = new Wall(
                             new Rectangle(
                                 ge.Position,
                                 new Point(
@@ -84,8 +109,10 @@ namespace Slorpus
                                 ),
                             true, //is collidable
                             true //is a mirror
-                            )
-                        );
+                            );
+                        SortItem(m);
+                        // add a new mirror to the wall list
+                        walls.Add(m);
                         break;
                 }
             }
@@ -108,31 +135,33 @@ namespace Slorpus
             {
                 switch (ge.EntityType) {
                     case 'E':
-                        enemyList.Add(
-                            new Enemy(
-                                new Rectangle(
-                                    ge.Position,
-                                    new Point(
-                                        Constants.ENEMY_SIZE,
-                                        Constants.ENEMY_SIZE)
-                                    ),
-                                Vector2.Zero,
-                                enscEnemyAsset,
-                                ShootingPattern.Ensconcing));
+                        Enemy e = new Enemy(
+                            new Rectangle(
+                                ge.Position,
+                                new Point(
+                                    Constants.ENEMY_SIZE,
+                                    Constants.ENEMY_SIZE)
+                                ),
+                            Vector2.Zero,
+                            enscEnemyAsset,
+                            ShootingPattern.Ensconcing);
+                        SortItem(e);
+                        enemyList.Add(e);
                         break;
 
                     case 'H':
-                        enemyList.Add(
-                            new Enemy(
-                                new Rectangle(
-                                    ge.Position,
-                                    new Point(
-                                        Constants.ENEMY_SIZE,
-                                        Constants.ENEMY_SIZE)
-                                    ),
-                                Vector2.Zero,
-                                homeEnemyAsset,
-                                ShootingPattern.HomingAttack));
+                        Enemy h = new Enemy(
+                            new Rectangle(
+                                ge.Position,
+                                new Point(
+                                    Constants.ENEMY_SIZE,
+                                    Constants.ENEMY_SIZE)
+                                ),
+                            Vector2.Zero,
+                            homeEnemyAsset,
+                            ShootingPattern.HomingAttack);
+                        SortItem(h);
+                        enemyList.Add(h);
                         break;
                 }
             }
@@ -163,11 +192,35 @@ namespace Slorpus
                         playerBulletAsset
                         );
 
-                    drawables.Add(player);
-                    updateables.Add(player);
+                    SortItem(player);
                     physicsObjects.Add(player);
                 }
             }
+        }
+
+        // helper method that tries to add an object to all its matching event subscription lists
+        private void SortItem(Object t)
+        {
+            try
+            {
+                IDraw temp = (IDraw)t;
+                drawables.Add(temp);
+            } catch { }
+            try
+            {
+                IUpdate temp = (IUpdate)t;
+                updateables.Add(temp);
+            } catch { }
+            try
+            {
+                IMouseClick temp = (IMouseClick)t;
+                mouseClickables.Add(temp);
+            } catch { }
+            try
+            {
+                IKeyPress temp = (IKeyPress)t;
+                keyPressables.Add(temp);
+            } catch { }
         }
     }
 }

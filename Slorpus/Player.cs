@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Slorpus
 {
-    class Player : PhysicsObject, IUpdate, IDraw
+    class Player : PhysicsObject, IUpdate, IDraw, IMouseClick, IKeyPress
     {
         // reference the game's physics manager
         PhysicsManager physicsManager;
@@ -39,12 +39,17 @@ namespace Slorpus
         {
             sb.Draw(asset, this.Position, Color.White);
         }
+
+        void IKeyPress.OnKeyPress(KeyboardState kb)
+        {
+            // key pressed logic
+        }
         
         /// <summary>
         /// Called by main whenever mouse button state changes.
         /// </summary>
         /// <param name="ms">CURRENT state of the mouse.</param>
-        public void OnMouseClick(MouseState ms)
+        void IMouseClick.OnMouseClick(MouseState ms)
         {
             if (bullets > 0 && ms.LeftButton == ButtonState.Pressed)
             {

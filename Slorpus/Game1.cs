@@ -22,11 +22,15 @@ namespace Slorpus
         // lists
         // these (usually) should not be modified directly, edit them with the managers
         List<IPhysics> physicsList;
-        List<IUpdate> updateList;
-        List<IDraw> drawList;
         List<Enemy> enemyList;
         EnemyBullet[] bulletList;
         List<Wall> wallList;
+        
+        // more lists, these are for special objects that subscribe to certain events
+        List<IUpdate> updateList;
+        List<IDraw> drawList;
+        List<IMouseClick> mouseClickList;
+        List<IKeyPress> keyPressList;
 
         public Game1()
         {
@@ -67,6 +71,8 @@ namespace Slorpus
             // miscellaneous, "special" items which dont have a manager
             updateList = levelParser.Updatables;
             drawList = levelParser.Drawables;
+            mouseClickList = levelParser.MouseClickables;
+            keyPressList = levelParser.KeyPressables;
         }
 
         protected override void Update(GameTime gameTime)
@@ -85,6 +91,22 @@ namespace Slorpus
             physicsManager.CollideAndMoveBullets(gameTime, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE));
             
             base.Update(gameTime);
+        }
+
+        public void OnMouseClick(MouseState ms)
+        {
+            foreach(IMouseClick mc in mouseClickList)
+            {
+                mc.OnMouseClick(ms);
+            }
+        }
+
+        public void OnKeyPress(KeyboardState kb)
+        { 
+            foreach(IKeyPress kp in keyPressList)
+            {
+                kp.OnKeyPress(kb);
+            }
         }
 
         protected override void Draw(GameTime gameTime)
