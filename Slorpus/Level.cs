@@ -29,11 +29,11 @@ namespace Slorpus
 
         //Methods 
 
-        public List<GenericEntity> LoadFromFile(string filepath, List<GenericEntity> entityList)
+        public List<GenericEntity> LoadFromFile(string filepath)
         {
             string line;
             string[] data;
-            entityList = new List<GenericEntity>();
+            List<GenericEntity> entityList = new List<GenericEntity>();
 
             //Loading from file
             try
@@ -53,46 +53,14 @@ namespace Slorpus
                     for (int column = 0; column < level.GetLength(1); column++)
                     {
                         level[row, column] = line[column];
-
-                        switch (line[column])
-                        {
-                            case 'W':
-                                walls.Add(
-                                    new Wall(
-                                        new Rectangle(
-                                            column * Constants.WALL_SIZE,
-                                            row * Constants.WALL_SIZE,
-                                            Constants.WALL_SIZE,
-                                            Constants.WALL_SIZE)));
-                                break;
-
-                            //Handle different entity types
-                            case 'E':
-                            case 'H':
-                            case 'P':
-                                entityList.Add(
-                                    new GenericEntity(
-                                        line[column],
-                                        column * Constants.WALL_SIZE,
-                                        row * Constants.WALL_SIZE));
-                                break;
-
-                            case 'M':
-                                walls.Add(
-                                    new Wall(
-                                        new Rectangle(
-                                            column * Constants.WALL_SIZE,
-                                            row * Constants.WALL_SIZE,
-                                            Constants.WALL_SIZE,
-                                            Constants.WALL_SIZE),
-                                        true, //is Collidable
-                                        true)); //is a mirror
-                                break;
-                        }
-
+                        
+                        entityList.Add(
+                            new GenericEntity(
+                                line[column],
+                                column * Constants.WALL_SIZE,
+                                row * Constants.WALL_SIZE));
                     }
                     line = input.ReadLine();
-
                 }
 
                 input.Close();

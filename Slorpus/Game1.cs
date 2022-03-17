@@ -25,7 +25,6 @@ namespace Slorpus
         List<IUpdate> updateList;
         List<IDraw> drawList;
         List<Enemy> enemyList;
-        List<GenericEntity> entityList;
         EnemyBullet[] bulletList;
         List<Wall> wallList;
 
@@ -55,15 +54,15 @@ namespace Slorpus
             // instantiate all the manager classes on the empty, just initialized lists
             level = new Level(wallList, squareTexture, squareTexture, squareTexture);
             LevelParser levelParser = new LevelParser();
-            entityList = level.LoadFromFile("..\\..\\..\\levels\\example.sslvl", entityList); //Loads example level and returns entityList
+            List<GenericEntity> levelList = level.LoadFromFile("..\\..\\..\\levels\\example.sslvl"); //Loads example level and returns entityList
             bulletManager = new BulletManager(bulletList, squareTexture);
             enemyManager = new EnemyManager(enemyList, squareTexture, bulletManager);
             physicsManager = new PhysicsManager(physicsList, wallList, enemyManager, bulletManager);
             
             // parse data read from level
-            enemyList = levelParser.GetEnemies(entityList, squareTexture, squareTexture);
-            wallList = levelParser.GetWalls(entityList);
-            physicsList = levelParser.GetPhysicsObjects(entityList, physicsManager, squareTexture, squareTexture);
+            enemyList = levelParser.GetEnemies(levelList, squareTexture, squareTexture);
+            wallList = levelParser.GetWalls(levelList);
+            physicsList = levelParser.GetPhysicsObjects(levelList, physicsManager, squareTexture, squareTexture);
 
             // miscellaneous, "special" items which dont have a manager
             updateList = levelParser.Updatables;
@@ -105,7 +104,7 @@ namespace Slorpus
             }
             
             // draw bullets and enemies
-            bulletManager.DrawBullets(_spriteBatch, new Point(5,5));
+            bulletManager.DrawBullets(_spriteBatch, new Point(Constants.BULLET_SIZE,Constants.BULLET_SIZE));
             enemyManager.DrawEnemies(_spriteBatch);
 
             base.Draw(gameTime);
