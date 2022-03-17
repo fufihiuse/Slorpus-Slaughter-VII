@@ -13,6 +13,10 @@ namespace Slorpus
         private SpriteBatch _spriteBatch;
         private Texture2D squareTexture;
 
+        // input
+        MouseState prevMS;
+        KeyboardState prevKB;
+
         // managers
         Level level;
         EnemyManager enemyManager;
@@ -45,6 +49,9 @@ namespace Slorpus
             enemyList = new List<Enemy>();
             wallList = new List<Wall>();
             bulletList = new EnemyBullet[100];
+
+            prevMS = Mouse.GetState();
+            prevKB = Keyboard.GetState();
 
             base.Initialize();
         }
@@ -85,14 +92,32 @@ namespace Slorpus
                 u.Update(gameTime);
             }
 
+            // check for changes in input
+            if (Keyboard.GetState() != prevKB)
+            {
+                OnKeyPress(prevKB);
+            }
+            if (Mouse.GetState() != prevMS)
+            {
+                OnMouseClick(prevMS);
+            }
+
             enemyManager.UpdateEnemies(gameTime);
             physicsManager.MovePhysics(gameTime);
             // TODO: get rid of the stupid bullet size argument
             physicsManager.CollideAndMoveBullets(gameTime, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE));
             
             base.Update(gameTime);
-        }
 
+            // update previous keyboard state
+            prevKB = Keyboard.GetState();
+            prevMS = Mouse.GetState();
+        }
+        
+        /// <summary>
+        /// Called whenever mouse input state changes.
+        /// </summary>
+        /// <param name="ms">PREVIOUS state of the mouse.</param>
         public void OnMouseClick(MouseState ms)
         {
             foreach(IMouseClick mc in mouseClickList)
@@ -100,7 +125,11 @@ namespace Slorpus
                 mc.OnMouseClick(ms);
             }
         }
-
+        
+        /// <summary>
+        /// Called whenever keyboard input changes.
+        /// </summary>
+        /// <param name="kb">PREVIOUS state of the keyboard.</param>
         public void OnKeyPress(KeyboardState kb)
         { 
             foreach(IKeyPress kp in keyPressList)

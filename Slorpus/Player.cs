@@ -12,7 +12,7 @@ namespace Slorpus
         // reference the game's physics manager
         PhysicsManager physicsManager;
         // number of bullets the player currently has
-        int bullets = 1;
+        int bullets;
 
         Texture2D bulletAsset;
         Texture2D asset;
@@ -27,6 +27,7 @@ namespace Slorpus
             this.physicsManager = physicsManager;
             this.asset = playerAsset;
             this.bulletAsset = bulletAsset;
+            bullets = 1;
         }
 
         void IUpdate.Update(GameTime gameTime)
@@ -46,11 +47,12 @@ namespace Slorpus
         }
         
         /// <summary>
-        /// Called by main whenever mouse button state changes.
+        /// Called by main whenever mouse state changes.
         /// </summary>
-        /// <param name="ms">CURRENT state of the mouse.</param>
-        void IMouseClick.OnMouseClick(MouseState ms)
+        /// <param name="ms">PREVIOUS state of the mouse.</param>
+        void IMouseClick.OnMouseClick(MouseState previous)
         {
+            MouseState ms = Mouse.GetState();
             if (bullets > 0 && ms.LeftButton == ButtonState.Pressed)
             {
                 // use our reference to the physics manager to instantiate the player bullet
