@@ -37,6 +37,8 @@ namespace Slorpus
             {
                 // record the previous position
                 prev = physicsObject.SubpixelCoords;
+                prev.X += physicsObject.Position.Width / 2;
+                prev.Y += physicsObject.Position.Height / 2;
                 // move the physics object
                 physicsObject.Move(physicsObject.Velocity);
 
@@ -68,7 +70,7 @@ namespace Slorpus
                     );
             // amount the wall and object are currently overlapping
             Rectangle overlapRect = Rectangle.Intersect(collided.Position, physicsObject.Position);
-            Vector2 overlap = new Vector2(overlapRect.X, overlapRect.Y);
+            Vector2 overlap = new Vector2(overlapRect.Width, overlapRect.Height);
 
             // generate correction coefficients
             float absX = Math.Abs(diff.X);
@@ -76,14 +78,20 @@ namespace Slorpus
             if (absX > absY)
             {
                 correctionCoeff = new Vector2(Math.Sign(diff.X), 0);
+                // we are correcting X which means we collided on that axis
+                // remove X velocity
+                physicsObject.Velocity = new Vector2(0, physicsObject.Velocity.Y);
             }
             else
             {
                 correctionCoeff = new Vector2(0, Math.Sign(diff.Y));
+                // we are correcting Y which means we collided on that axis
+                // remove Y velocity
+                physicsObject.Velocity = new Vector2(physicsObject.Velocity.X, 0);
             }
 
             // move object by the right correction amount
-            physicsObject.Move(Vector2.Multiply(-correctionCoeff, overlap));
+            physicsObject.Move(Vector2.Multiply(correctionCoeff, overlap));
         }
         
         /// <summary>
