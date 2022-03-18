@@ -19,6 +19,12 @@
 /processorParam:Quality=Best
 /build:Bullet Noise.wav
 
+#begin Bullet Noise.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Bullet Noise.wav
+
 #begin circle.png
 /importer:TextureImporter
 /processor:TextureProcessor
