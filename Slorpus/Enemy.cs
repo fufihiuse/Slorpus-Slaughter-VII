@@ -21,6 +21,8 @@ namespace Slorpus
         private ShootingPattern shootingPattern;
         private bool isDead;
 
+        private EnemyBullet[] wantedGoop;
+
         //properties
         public int Health
         {
@@ -62,38 +64,15 @@ namespace Slorpus
             isDead = false;
         }
 
-        //methods:
-        //  shooting goop method, should be two shooting patterns, does damage
-        //  can take damage
-        //  draw enemy
-        //  how to make enemy disappear when dead???
-
         /// <summary>
-        /// draws enemy
+        /// Draws enemy to screen
         /// </summary>
         /// <param name="sb"></param>
         public void DrawEnemy(SpriteBatch sb)
         {
-            sb.Draw(enemyAsset, Position, Color.White);
+            sb.Draw(enemyAsset, this.Position, Color.White);
         }
 
-        /// <summary>
-        /// enemy shoots goop, depending on enemy diff goop patterns
-        /// </summary>
-        /// <param name="enemyGoop"></param>
-        public void ShootGoop(ShootingPattern enemyGoop)
-        {
-            switch (enemyGoop)
-            {
-                case ShootingPattern.Ensconcing:
-                    //  CODE FOR SPIRAL SHOOTY
-                    break;
-                case ShootingPattern.HomingAttack:
-                    //  CODE FOR HOMING SHOOTY
-                    //  NEED PLAYER COORDS
-                    break;
-            }
-        }
         /// <summary>
         /// when enemy DIES do this
         /// </summary>
@@ -107,14 +86,32 @@ namespace Slorpus
             //  PLAY DEATH ANIMATION
         }
 
-        public EnemyBullet[] FireBullets()
+        /// <summary>
+        /// enemy shoots goop, depending on enemy diff goop patterns
+        /// </summary>
+        /// <param name="enemyGoop"></param>
+        /// <returns></returns>
+        public EnemyBullet[] FireBullets(ShootingPattern enemyGoop)
         {
+            switch (enemyGoop)
+            {
+                case ShootingPattern.Ensconcing:
+                    //  CODE FOR SPIRAL SHOOTY
+                    break;
+                case ShootingPattern.HomingAttack:
+                    //  CODE FOR HOMING SHOOTY
+                    //  NEED PLAYER COORDS
+                    break;
+            }
+
             // return bullets that we want to fire
             return new EnemyBullet[0];
         }
 
         public void Update()
         {
+            //checks if enemy is dead or alive
+            //
             // enemy logic, called by enemy manager
         }
     }
