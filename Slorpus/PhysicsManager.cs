@@ -30,107 +30,60 @@ namespace Slorpus
         /// </summary>
         public void MovePhysics(GameTime gameTime)
         {
-            // declare only once to reduce memory reallocation
-            // distance going to be moved
-            Vector2 dist = new Vector2();
-            
+            // declare stuff once to reduce memory allocation and reallocation
+            Vector2 prev = new Vector2();
             // loop through each physics object and move it
             foreach (IPhysics physicsObject in physicsObjects)
             {
-                // status of collision, used to break out of two loops
-                bool no_collision = true;
-                
-                // distance we are going to move the object
-                dist = physicsObject.GetVelocity();
+                // record the previous position
+                prev = physicsObject.SubpixelCoords;
+                // move the physics object
+                physicsObject.Move(physicsObject.Velocity);
 
+                // now check if it's colliding with any walls n stuff
                 foreach (Wall wall in wallList)
                 {
-                    // check if currently colliding with wall, and if so then move away from it
-                    // this is a failsafe, should not be necessary if the physics are working
-                    if (physicsObject.Position.Intersects(wall.Position))
+                    if (wall.Collision(physicsObject.Position))
                     {
-                        int adjustment_amount = 3;
-                        // create vector pointing away from wall
-                        double dir = Math.Atan2((physicsObject.Position.Y - wall.Position.Y), (physicsObject.Position.X - wall.Position.X));
-
-                        physicsObject.Move(
-                            new Vector2(
-                                (float)Math.Cos(dir)*adjustment_amount,
-                                (float)Math.Sin(dir)*adjustment_amount
-                                )
-                            );
-                    }
-
-                    Rectangle new_loc = physicsObject.Position;
-                    new_loc.X += (int)dist.X;
-                    new_loc.Y += (int)dist.Y;
-                    // TODO: cache all collided walls, and call moveWithoutCollision with the closest one
-                    if (wall.Collision(new_loc))
-                    {
-                        // call the physic object's collision handler
+                        // handler
                         physicsObject.OnCollision<Wall>(wall);
-                        
-                        moveWithoutCollision(physicsObject, dist, wall.Position);
-
-                        // we hit something, give up for efficiency's sake
-                        no_collision = false;
-                        break;
+                        // correct the location of the object to no be colliding
+                        CorrectObject(wall, prev, physicsObject);
                     }
-                }
-                
-                // move if we didnt already
-                if (no_collision)
-                {
-                    physicsObject.Move(dist);
                 }
             }
         }
-         
-        /// <summary>
-        /// Moves an object that implements IPhysics by a velocity, but stops if it hits a rectangle.
-        /// </summary>
-        /// <param name="physicsObject">Physics object to move.</param>
-        /// <param name="velocity">Velocity by which the object should be moved.</param>
-        /// <param name="avoidBox">Rectangle hitbox to collide with.</param>
-        /// <returns>Distance to move the object.</returns>
-        private void moveWithoutCollision(IPhysics physicsObject, Vector2 velocity, Rectangle avoidBox)
-        {           
-            // which direction to increment in
-            int sign = Math.Sign(velocity.X);
-            // if we are moving on X, then move as far as we can
-            if (sign != 0)
+
+        private void CorrectObject(Wall collided, Vector2 previousPos, IPhysics physicsObject)
+        {
+            // this will get multiplied by the overlap amount to create the correction
+            Vector2 correctionCoeff;
+            // distance from where the object was last from to the wall
+            Vector2 diff = new Vector2(
+                previousPos.X,
+                previousPos.Y
+                ) - new Vector2(
+                    collided.Position.Center.X,
+                    collided.Position.Center.Y
+                    );
+            // amount the wall and object are currently overlapping
+            Rectangle overlapRect = Rectangle.Intersect(collided.Position, physicsObject.Position);
+            Vector2 overlap = new Vector2(overlapRect.X, overlapRect.Y);
+
+            // generate correction coefficients
+            float absX = Math.Abs(diff.X);
+            float absY = Math.Abs(diff.Y);
+            if (absX > absY)
             {
-                for (int i = 0; i < Math.Abs(velocity.X); i++)
-                {
-                    physicsObject.Move(new Vector2(sign, 0));
-                    if (physicsObject.Position.Intersects(avoidBox))
-                    {
-                        // undo movement bc we're hitting now
-                        physicsObject.Move(new Vector2(-sign, 0));
-                        // we've hit a wall, lets lose our velocity
-                        physicsObject.Velocity = new Vector2(0, physicsObject.Velocity.Y);
-                        break;
-                    }
-                }
+                correctionCoeff = new Vector2(Math.Sign(diff.X), 0);
+            }
+            else
+            {
+                correctionCoeff = new Vector2(0, Math.Sign(diff.Y));
             }
 
-            sign = Math.Sign(velocity.Y);
-            // if we are moving on Y, then move as far as we can
-            if (sign != 0)
-            {
-                for (int i = 0; i < Math.Abs(velocity.Y); i++)
-                {
-                    physicsObject.Move(new Vector2(0, sign));
-                    if (physicsObject.Position.Intersects(avoidBox))
-                    {
-                        // undo movement bc we're hitting now
-                        physicsObject.Move(new Vector2(0, -sign));
-                        // we've hit a wall, lets lose our velocity
-                        physicsObject.Velocity = new Vector2(physicsObject.Velocity.X, 0);
-                        break;
-                    }
-                }
-            }
+            // move object by the right correction amount
+            physicsObject.Move(Vector2.Multiply(-correctionCoeff, overlap));
         }
         
         /// <summary>

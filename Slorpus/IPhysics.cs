@@ -13,6 +13,8 @@ namespace Slorpus
     {
         public Rectangle Position { get; }
         public Vector2 Velocity { get; set; }
+        public Vector2 SubpixelOffset { get; }
+        public Vector2 SubpixelCoords { get; }
 
         /// <summary>
         /// returns velocity
