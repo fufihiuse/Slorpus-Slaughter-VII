@@ -51,6 +51,10 @@ namespace Slorpus
                         physicsObject.OnCollision<Wall>(wall);
                         // correct the location of the object to no be colliding
                         CorrectObject(wall, prev, physicsObject);
+                        // if you collide, remove sub pixel collision so as to prevent
+                        // the object "technically" being inside the wall but not really
+                        physicsObject.Move(-physicsObject.SubpixelOffset);
+                        break;
                     }
                 }
             }
@@ -92,6 +96,17 @@ namespace Slorpus
 
             // move object by the right correction amount
             physicsObject.Move(Vector2.Multiply(correctionCoeff, overlap));
+
+            // check if recursion is necessary
+            foreach (Wall wall in wallList)
+            {
+                if (wall.Collision(physicsObject.Position))
+                {
+                    physicsObject.OnCollision<Wall>(wall);
+                    CorrectObject(wall, previousPos, physicsObject);
+                    break;
+                }
+            }
         }
         
         /// <summary>
