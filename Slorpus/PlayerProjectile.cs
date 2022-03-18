@@ -7,11 +7,13 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Slorpus
 {
-    public class PlayerProjectile : PhysicsObject, IUpdate, IDraw
+    class PlayerProjectile : PhysicsObject, IUpdate, IDraw
     {
-        public PlayerProjectile(Rectangle pos, Vector2 vel): base(pos, vel)
+        Texture2D asset;
+
+        public PlayerProjectile(Rectangle pos, Vector2 vel, Texture2D asset): base(pos, vel)
         {
-            // placeholder
+            this.asset = asset;
         }
 
         void IUpdate.Update(GameTime gameTime)
@@ -21,7 +23,7 @@ namespace Slorpus
 
         void IDraw.Draw(SpriteBatch sb)
         {
-            // drawing
+            sb.Draw(asset, Position, Color.White);
         }
 
         public override void OnCollision<T>(T other) 
@@ -32,14 +34,13 @@ namespace Slorpus
                 Wall tempWall = (Wall)(object)other;
                 if (tempWall.IsMirror)
                 {
-                    Vector2 velocity = this.GetVelocity();
-                    if(Math.Abs(velocity.X) > Math.Abs(Velocity.Y))
+                    if(Math.Abs(vel.X) > Math.Abs(vel.Y))
                     {
-                        this.Velocity *= new Vector2(-1, 1);
+                        vel *= new Vector2(-1, 1);
                     }
                     else
                     {
-                        this.Velocity *= new Vector2(1, -1);
+                        vel *= new Vector2(1, -1);
                     }
                 }
             }

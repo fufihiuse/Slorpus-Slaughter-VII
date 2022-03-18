@@ -68,12 +68,14 @@ namespace Slorpus
             List<GenericEntity> levelList = level.LoadFromFile("..\\..\\..\\levels\\example.sslvl"); //Loads example level and returns entityList
             bulletManager = new BulletManager(bulletList, squareTexture);
             enemyManager = new EnemyManager(enemyList, squareTexture, bulletManager);
-            physicsManager = new PhysicsManager(physicsList, wallList, enemyManager, bulletManager);
-            
+            physicsManager = new PhysicsManager(physicsList, wallList, bulletManager);
+
             // parse data read from level
             levelParser.GetEnemies(enemyList, levelList, squareTexture, squareTexture);
             levelParser.GetWalls(wallList, levelList);
-            levelParser.GetPhysicsObjects(physicsList, levelList, physicsManager, squareTexture, squareTexture);
+            // bullet creation function
+            Action<Point, Vector2> createbullet = (Point loc, Vector2 vel) => CreateBullet(loc, vel);
+            levelParser.GetPhysicsObjects(physicsList, levelList, createbullet, squareTexture, squareTexture);
 
             // miscellaneous, "special" items which dont have a manager
             updateList = levelParser.Updatables;
@@ -160,6 +162,25 @@ namespace Slorpus
 
             base.Draw(gameTime);
             _spriteBatch.End();
+        }
+        
+        /// <summary>
+        /// Proof of concept method that creates the player bullet. Delegated to the player.
+        /// </summary>
+        /// <param name="location">Starting location of the bullet.</param>
+        /// <param name="velocity">Starting velocity of the bullet.</param>
+        public void CreateBullet(Point location, Vector2 velocity)
+        {
+            Rectangle bRect = new Rectangle(location,
+                new Point(
+                    Constants.PLAYER_BULLET_SIZE,
+                    Constants.PLAYER_BULLET_SIZE
+                    )
+                );
+            PlayerProjectile bullet = new PlayerProjectile(bRect, velocity, squareTexture);
+            updateList.Add(bullet);
+            drawList.Add(bullet);
+            physicsList.Add(bullet);
         }
     }
 }

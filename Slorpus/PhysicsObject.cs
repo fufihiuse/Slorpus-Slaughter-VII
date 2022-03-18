@@ -15,7 +15,7 @@ namespace Slorpus
     {
         //fields
         Rectangle pos;
-        Vector2 vel;
+        protected Vector2 vel;
 
         public Rectangle Position { get { return pos;  } }
         public Vector2 Velocity { get { return vel;  } set { vel = value; } }

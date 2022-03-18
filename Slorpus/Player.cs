@@ -9,12 +9,10 @@ namespace Slorpus
 {
     class Player : PhysicsObject, IUpdate, IDraw, IMouseClick, IKeyPress
     {
-        // reference the game's physics manager
-        PhysicsManager physicsManager;
+        Action<Point, Vector2> createBullet;
         // number of bullets the player currently has
         int bullets;
-
-        Texture2D bulletAsset;
+        // player texture
         Texture2D asset;
 
         /// <summary>
@@ -22,11 +20,10 @@ namespace Slorpus
         /// </summary>
         /// <param name="pos"></param>
         /// <param name="vel"></param>
-        public Player(Rectangle pos, Vector2 vel, PhysicsManager physicsManager, Texture2D playerAsset, Texture2D bulletAsset): base(pos, vel)
+        public Player(Rectangle pos, Vector2 vel, Action<Point, Vector2> bulletCreationFunc, Texture2D playerAsset): base(pos, vel)
         {
-            this.physicsManager = physicsManager;
+            this.createBullet = bulletCreationFunc;
             this.asset = playerAsset;
-            this.bulletAsset = bulletAsset;
             bullets = 1;
         }
 
@@ -53,26 +50,22 @@ namespace Slorpus
         void IMouseClick.OnMouseClick(MouseState previous)
         {
             MouseState ms = Mouse.GetState();
-            if (bullets > 0 && ms.LeftButton == ButtonState.Pressed)
+            if (bullets > 0 && ms.LeftButton == ButtonState.Pressed && previous.LeftButton == ButtonState.Released)
             {
-                // use our reference to the physics manager to instantiate the player bullet
-                Rectangle bulletRect = new Rectangle(
-                    new Point(this.Position.X, this.Position.Y),
-                    new Point(Constants.PLAYER_BULLET_SIZE, Constants.PLAYER_BULLET_SIZE)
-                    );
+                Point pos = new Point(Position.X, Position.Y);
 
                 // get distance from player to mouse
                 Vector2 vel = new Vector2(
-                    ms.X-this.Position.X,
-                    ms.Y-this.Position.Y
+                    ms.X-Position.X,
+                    ms.Y-Position.Y
                     );
                 // normalize it
                 vel = Vector2.Normalize(vel);
                 //multiply by speed
                 vel = Vector2.Multiply(vel, Constants.PLAYER_BULLET_SPEED);
-                
-                physicsManager.AddPhysicsObject(new PlayerProjectile(bulletRect, vel));
-                bullets--;
+
+                createBullet(pos, vel);
+                //bullets--;
             }
         }
 

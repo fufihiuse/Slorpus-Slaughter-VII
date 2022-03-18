@@ -171,11 +171,11 @@ namespace Slorpus
         /// Currently returns a list containing only the player.
         /// </summary>
         /// <param name="entityList">List of entities in the level</param>
-        /// <param name="physicsManager">Physics Manager.</param>
+        /// <param name="bulletCreationFunc">Action delegate used to create a new player projectile.</param>
         /// <param name="playerAsset">The player's Texture2D</param>
         /// <param name="playerBulletAsset">The Texture2D used by the bullet the player fires.</param>
         /// <returns>A list containing the player and any other physics objects loaded in from the level.</returns>
-        public void GetPhysicsObjects(List<IPhysics> physicsObjects, List<GenericEntity> entityList, PhysicsManager physicsManager, Texture2D playerAsset, Texture2D playerBulletAsset)
+        public void GetPhysicsObjects(List<IPhysics> physicsObjects, List<GenericEntity> entityList, Action<Point, Vector2> bulletCreationFunc, Texture2D playerAsset, Texture2D playerBulletAsset)
         {
             foreach (GenericEntity ge in entityList)
             {
@@ -187,9 +187,8 @@ namespace Slorpus
                             new Point(Constants.PLAYER_SIZE, Constants.PLAYER_SIZE)
                             ),
                         Vector2.Zero,
-                        physicsManager,
-                        playerAsset,
-                        playerBulletAsset
+                        bulletCreationFunc,
+                        playerAsset
                         );
 
                     SortItem(player);

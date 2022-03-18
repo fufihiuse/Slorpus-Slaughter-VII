@@ -11,14 +11,12 @@ namespace Slorpus
     {
         private List<Wall> wallList;
         private List<IPhysics> physicsObjects;
-        private EnemyManager enemyManager;
         private BulletManager bulletManager;
 
-        public PhysicsManager(List<IPhysics> physicsObjects, List<Wall> wallList, EnemyManager enemyManager, BulletManager bulletManager)
+        public PhysicsManager(List<IPhysics> physicsObjects, List<Wall> wallList, BulletManager bulletManager)
         {
             this.physicsObjects = physicsObjects;
             this.wallList = wallList;
-            this.enemyManager = enemyManager;
             this.bulletManager = bulletManager;
         }
 
