@@ -37,7 +37,7 @@ namespace Slorpus
                     {
                         vel *= new Vector2(-1, 1);
                     }
-                    else
+                    else if(Math.Abs(vel.Y) > Math.Abs(vel.X))
                     {
                         vel *= new Vector2(1, -1);
                     }

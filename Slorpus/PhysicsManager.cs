@@ -50,7 +50,11 @@ namespace Slorpus
                         // handler
                         physicsObject.OnCollision<Wall>(wall);
                         // correct the location of the object to no be colliding
-                        CorrectObject(wall, prev, physicsObject);
+                        if (physicsObject.GetType() != typeof(PlayerProjectile))
+                        {
+                            CorrectObject(wall, prev, physicsObject);
+                        }
+
                         // if you collide, remove sub pixel collision so as to prevent
                         // the object "technically" being inside the wall but not really
                         physicsObject.Move(-physicsObject.SubpixelOffset);
