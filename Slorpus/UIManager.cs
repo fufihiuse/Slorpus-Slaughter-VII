@@ -102,35 +102,50 @@ namespace Slorpus
                     //draw background
 
                     //draw all menuButtons
-
+                    foreach(Button button in menuButtons)
+                    {
+                        button.Draw(sb);
+                    }
                     break;
 
                 case GameState.Game:
                     //draw background
 
                     //draw all gameButtons
-
+                    foreach (Button button in gameButtons)
+                    {
+                        button.Draw(sb);
+                    }
                     break;
 
                 case GameState.GameOver:
                     //draw background
 
                     //draw all gameOverButtons
-
+                    foreach (Button button in gameOverButtons)
+                    {
+                        button.Draw(sb);
+                    }
                     break;
 
                 case GameState.Pause:
                     //draw background
 
                     //draw all pauseButtons
-
+                    foreach (Button button in pauseButtons)
+                    {
+                        button.Draw(sb);
+                    }
                     break;
 
                 case GameState.Settings:
                     //draw background
 
                     //draw all settingsButtons
-
+                    foreach (Button button in settingsButtons)
+                    {
+                        button.Draw(sb);
+                    }
                     break;
             }
         }
