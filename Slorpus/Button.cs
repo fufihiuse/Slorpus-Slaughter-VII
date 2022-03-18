@@ -7,6 +7,9 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Slorpus
 {
+    /// <summary>
+    /// A button that draws itself and tells if its pressed
+    /// </summary>
     public class Button
     {
         //fields

@@ -22,6 +22,9 @@ namespace Slorpus
         Hover,
         Active
     }
+    /// <summary>
+    /// Controls UI
+    /// </summary>
     public class UIManager
     {
         //fields
