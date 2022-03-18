@@ -8,8 +8,6 @@ using Microsoft.Xna.Framework.Input;
 namespace Slorpus
 {
     /* Identical to IPointPhysics but with a Rectangle instead of a Point (added width and height information)
-     * 
-     * 
      */
     public interface IPhysics
     {
@@ -26,7 +24,7 @@ namespace Slorpus
         /// Moves the object relative to its current position.
         /// </summary>
         /// <param name="distance"></param>
-        public void Move(Point distance);
+        public void Move(Vector2 distance);
         
         /// <summary>
         /// Moves the object to a location.

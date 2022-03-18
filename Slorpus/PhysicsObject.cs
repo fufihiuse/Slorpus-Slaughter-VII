@@ -38,7 +38,7 @@ namespace Slorpus
         /// returns velocity
         /// </summary>
         /// <returns></returns>
-        public Vector2 GetVelocity()
+        public virtual Vector2 GetVelocity()
         {
             return vel;
         }
@@ -46,7 +46,7 @@ namespace Slorpus
         /// Moves the object to a set of absolute coordinates
         /// </summary>
         /// <param name="location"></param>
-        public void Teleport(Point location)
+        public virtual void Teleport(Point location)
         {
             pos.X = location.X;
             pos.X = location.X;
@@ -58,10 +58,10 @@ namespace Slorpus
         /// moves the object a certian distance
         /// </summary>
         /// <param name="distance"></param>
-        public void Move(Point distance)
+        public virtual void Move(Vector2 distance)
         {
-            pos.X += distance.X;
-            pos.Y += distance.Y;
+            pos.X += (int)distance.X;
+            pos.Y += (int)distance.Y;
         }
     }
 }

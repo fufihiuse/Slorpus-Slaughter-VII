@@ -54,9 +54,9 @@ namespace Slorpus
                         double dir = Math.Atan2((physicsObject.Position.Y - wall.Position.Y), (physicsObject.Position.X - wall.Position.X));
 
                         physicsObject.Move(
-                            new Point(
-                                (int)Math.Cos(dir)*adjustment_amount,
-                                (int)Math.Sin(dir)*adjustment_amount
+                            new Vector2(
+                                (float)Math.Cos(dir)*adjustment_amount,
+                                (float)Math.Sin(dir)*adjustment_amount
                                 )
                             );
                     }
@@ -81,11 +81,7 @@ namespace Slorpus
                 // move if we didnt already
                 if (no_collision)
                 {
-                    Point real_dist = new Point(
-                        (int)dist.X,
-                        (int)dist.Y
-                        );
-                    physicsObject.Move(real_dist);
+                    physicsObject.Move(dist);
                 }
             }
         }
@@ -106,11 +102,11 @@ namespace Slorpus
             {
                 for (int i = 0; i < Math.Abs(velocity.X); i++)
                 {
-                    physicsObject.Move(new Point(sign, 0));
+                    physicsObject.Move(new Vector2(sign, 0));
                     if (physicsObject.Position.Intersects(avoidBox))
                     {
                         // undo movement bc we're hitting now
-                        physicsObject.Move(new Point(-sign, 0));
+                        physicsObject.Move(new Vector2(-sign, 0));
                         // we've hit a wall, lets lose our velocity
                         physicsObject.Velocity = new Vector2(0, physicsObject.Velocity.Y);
                         break;
@@ -124,11 +120,11 @@ namespace Slorpus
             {
                 for (int i = 0; i < Math.Abs(velocity.Y); i++)
                 {
-                    physicsObject.Move(new Point(0, sign));
+                    physicsObject.Move(new Vector2(0, sign));
                     if (physicsObject.Position.Intersects(avoidBox))
                     {
                         // undo movement bc we're hitting now
-                        physicsObject.Move(new Point(0, -sign));
+                        physicsObject.Move(new Vector2(0, -sign));
                         // we've hit a wall, lets lose our velocity
                         physicsObject.Velocity = new Vector2(physicsObject.Velocity.X, 0);
                         break;
