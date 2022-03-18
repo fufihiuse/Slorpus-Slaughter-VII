@@ -69,7 +69,6 @@ namespace Slorpus
             bulletManager = new BulletManager(bulletList, squareTexture);
             enemyManager = new EnemyManager(enemyList, squareTexture, bulletManager);
             physicsManager = new PhysicsManager(physicsList, wallList, bulletManager);
-
             // parse data read from level
             levelParser.GetEnemies(enemyList, levelList, squareTexture, squareTexture);
             levelParser.GetWalls(wallList, levelList);

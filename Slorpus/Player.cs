@@ -4,6 +4,8 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 
 namespace Slorpus
 {
@@ -14,6 +16,7 @@ namespace Slorpus
         int bullets;
         // player texture
         Texture2D asset;
+        List<SoundEffect> pBulletNoise;
 
         /// <summary>
         /// Creates a new player
@@ -25,6 +28,7 @@ namespace Slorpus
             this.createBullet = bulletCreationFunc;
             this.asset = playerAsset;
             bullets = 1;
+            pBulletNoise = new List<SoundEffect>();
         }
 
         void IUpdate.Update(GameTime gameTime)
@@ -42,7 +46,12 @@ namespace Slorpus
         {
             // key pressed logic
         }
-        
+
+        protected void LoadContent(Microsoft.Xna.Framework.Content.ContentManager content )
+        {
+            pBulletNoise.Add(content.Load<SoundEffect>("Player Bullet Noise"));
+        }
+
         /// <summary>
         /// Called by main whenever mouse state changes.
         /// </summary>
@@ -121,6 +130,10 @@ namespace Slorpus
             if (kb.IsKeyDown(Keys.W) && kb.IsKeyDown(Keys.S))
             {
                 yTemp = 0f;
+            }
+            if (kb.IsKeyDown(Keys.F))
+            {
+                pBulletNoise[0].Play();
             }
 
             xin += xTemp;
