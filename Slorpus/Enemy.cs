@@ -20,6 +20,7 @@ namespace Slorpus
         private int damage;
         private ShootingPattern shootingPattern;
         private bool isDead;
+        private EnemyBullet enemyBullet;
 
         //properties
         public int Health
@@ -63,7 +64,7 @@ namespace Slorpus
         }
 
         //methods:
-        //  shooting goop method, should be two shooting patterns, does damage
+        //  shooting goop method, should be two shooting patterns, does damage      //SHOULD ENEMY SHOOT WHEN PLAYER IS IN CERTAIN RANGE?
         //  can take damage
         //  draw enemy
         //  how to make enemy disappear when dead???
@@ -87,6 +88,7 @@ namespace Slorpus
             {
                 case ShootingPattern.Ensconcing:
                     //  CODE FOR SPIRAL SHOOTY
+                    //  whenever i get access to bullet list, add bullet to list
                     break;
                 case ShootingPattern.HomingAttack:
                     //  CODE FOR HOMING SHOOTY
@@ -94,6 +96,7 @@ namespace Slorpus
                     break;
             }
         }
+
         /// <summary>
         /// when enemy DIES do this
         /// </summary>

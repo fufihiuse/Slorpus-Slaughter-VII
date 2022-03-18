@@ -9,5 +9,6 @@ namespace Slorpus
 {
     public class UIManager
     {
+
     }
 }
