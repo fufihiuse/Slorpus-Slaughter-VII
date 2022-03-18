@@ -26,6 +26,7 @@ namespace Slorpus
     {
         //fields
         GameState currentGameState;
+        Texture2D background;
 
         //buttons
         List<Button> menuButtons;
@@ -51,11 +52,18 @@ namespace Slorpus
 
         //methods
         /// <summary>
-        /// loads all the textures for the buttons and then passes them into  the coresponding buttons
+        /// loads all the textures for the buttons and then passes them into  the coresponding buttons including background
         /// </summary>
-        public void LoadButtons()
+        public void LoadUI()
         {
+            //background
 
+            //buttons
+            menuButtons = new List<Button>();
+            gameButtons = new List<Button>();
+            gameOverButtons = new List<Button>();
+            pauseButtons = new List<Button>();
+            settingsButtons = new List<Button>();
         }
         /// <summary>
         /// updates the ui gamestate depending on which button is pressed
@@ -65,6 +73,9 @@ namespace Slorpus
             switch (currentGameState)
             {
                 case GameState.Menu:
+                    break;
+
+                case GameState.Game:
                     break;
 
                 case GameState.GameOver:
@@ -80,20 +91,43 @@ namespace Slorpus
         /// <summary>
         /// draws all UI
         /// </summary>
-        public void Draw()
+        public void Draw(SpriteBatch sb)
         {
             switch (currentGameState)
             {
                 case GameState.Menu:
+                    //draw background
+
+                    //draw all menuButtons
+
+                    break;
+
+                case GameState.Game:
+                    //draw background
+
+                    //draw all gameButtons
+
                     break;
 
                 case GameState.GameOver:
+                    //draw background
+
+                    //draw all gameOverButtons
+
                     break;
 
                 case GameState.Pause:
+                    //draw background
+
+                    //draw all pauseButtons
+
                     break;
 
                 case GameState.Settings:
+                    //draw background
+
+                    //draw all settingsButtons
+
                     break;
             }
         }
