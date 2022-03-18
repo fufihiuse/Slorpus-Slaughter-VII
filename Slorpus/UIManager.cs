@@ -27,7 +27,7 @@ namespace Slorpus
     /// </summary>
     public class UIManager
     {
-        //fields
+        //fields  
         GameState currentGameState;
         Texture2D background;
 
