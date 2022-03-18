@@ -38,6 +38,6 @@ namespace Slorpus
         /// Called by the PhysicsManager whenever this object collides with a wall.
         /// </summary>
         /// <param name="other">The rectangle of the other object collided with.</param>
-        public void OnCollision(Rectangle other);
+        public void OnCollision<T>(T other);
     }
 }
