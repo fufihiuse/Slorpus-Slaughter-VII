@@ -21,7 +21,8 @@ namespace Slorpus
         private ShootingPattern shootingPattern;
         private bool isDead;
 
-        private EnemyBullet[] wantedGoop;
+        private EnemyBullet[] wantedBullets;
+
 
         //properties
         public int Health
@@ -70,7 +71,7 @@ namespace Slorpus
         /// <param name="sb"></param>
         public void DrawEnemy(SpriteBatch sb)
         {
-            sb.Draw(enemyAsset, this.Position, Color.White);
+            sb.Draw(enemyAsset, Position, Color.White);
         }
 
         /// <summary>
@@ -96,6 +97,7 @@ namespace Slorpus
             switch (enemyGoop)
             {
                 case ShootingPattern.Ensconcing:
+                    //wantedBullets = new EnemyBullet();    //TODO: fix wtf
                     //  CODE FOR SPIRAL SHOOTY
                     break;
                 case ShootingPattern.HomingAttack:

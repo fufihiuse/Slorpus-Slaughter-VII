@@ -106,7 +106,8 @@ namespace Slorpus
             
             // draw bullets and enemies
             bulletManager.DrawBullets(_spriteBatch, new Point(5,5));
-            enemyManager.DrawEnemies(_spriteBatch);
+            foreach(Enemy e in enemyList)
+                e.DrawEnemy(_spriteBatch);
 
             base.Draw(gameTime);
             _spriteBatch.End();
