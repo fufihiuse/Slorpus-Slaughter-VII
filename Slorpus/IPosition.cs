@@ -7,11 +7,8 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Slorpus
 {
-    /*
-     * Generic interface for special objects not already drawn by their own manager classes.
-     */
-    interface IDraw
+    interface IPosition
     {
-        public void Draw(SpriteBatch spriteBatch, Point offset);
+        public Rectangle Position { get; }
     }
 }

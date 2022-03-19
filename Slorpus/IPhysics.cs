@@ -9,9 +9,8 @@ namespace Slorpus
 {
     /* Identical to IPointPhysics but with a Rectangle instead of a Point (added width and height information)
      */
-    public interface IPhysics
+    interface IPhysics : IPosition
     {
-        public Rectangle Position { get; }
         public Vector2 Velocity { get; set; }
         public Vector2 SubpixelOffset { get; }
         public Vector2 SubpixelCoords { get; }

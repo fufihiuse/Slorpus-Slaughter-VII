@@ -33,9 +33,11 @@ namespace Slorpus
             UpdatePlayerPosition();
         }
 
-        void IDraw.Draw(SpriteBatch sb)
+        void IDraw.Draw(SpriteBatch sb, Point offset)
         {
-            sb.Draw(asset, this.Position, Color.White);
+            Rectangle target = Position;
+            target.Location -= offset;
+            sb.Draw(asset, target, Color.White);
         }
 
         void IKeyPress.OnKeyPress(KeyboardState kb)

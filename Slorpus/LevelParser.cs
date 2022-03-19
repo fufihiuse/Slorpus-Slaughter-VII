@@ -175,7 +175,7 @@ namespace Slorpus
         /// <param name="playerAsset">The player's Texture2D</param>
         /// <param name="playerBulletAsset">The Texture2D used by the bullet the player fires.</param>
         /// <returns>A list containing the player and any other physics objects loaded in from the level.</returns>
-        public void GetPhysicsObjects(List<IPhysics> physicsObjects, List<GenericEntity> entityList, Action<Point, Vector2> bulletCreationFunc, Texture2D playerAsset, Texture2D playerBulletAsset)
+        public void GetPhysicsObjects(List<IPhysics> physicsObjects, List<GenericEntity> entityList, Action<Point, Vector2> bulletCreationFunc, Action<IPosition> cameraCreationFunc, Texture2D playerAsset, Texture2D playerBulletAsset)
         {
             foreach (GenericEntity ge in entityList)
             {
@@ -191,6 +191,7 @@ namespace Slorpus
                         playerAsset
                         );
 
+                    cameraCreationFunc(player);
                     SortItem(player);
                     physicsObjects.Add(player);
                 }

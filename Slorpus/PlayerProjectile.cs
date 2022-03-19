@@ -20,9 +20,11 @@ namespace Slorpus
             // perform per-frame game logic
         }
 
-        void IDraw.Draw(SpriteBatch sb)
+        void IDraw.Draw(SpriteBatch sb, Point offset)
         {
-            sb.Draw(asset, Position, Color.White);
+            Rectangle target = Position;
+            target.Location -= offset;
+            sb.Draw(asset, target, Color.White);
         }
 
         public override void OnCollision<T>(T other) 

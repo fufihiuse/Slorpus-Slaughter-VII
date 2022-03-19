@@ -18,6 +18,8 @@ namespace Slorpus
         private Texture2D mirrorAsset;
         private Texture2D invisWallAsset;
 
+        public Point Size { get { return new Point(level.GetLength(0), level.Length); } }
+
         //Constructor
         public Level(List<Wall> walls, Texture2D wallAsset, Texture2D mirrorAsset, Texture2D invisWallAsset)
         {
@@ -78,21 +80,24 @@ namespace Slorpus
         /// Override method to draw the walls
         /// </summary>
         /// <param name="sb"></param>
-        public void Draw(SpriteBatch sb)
+        public void Draw(SpriteBatch sb, Point offset)
         {
+            Rectangle target = Rectangle.Empty;
             foreach (Wall w in walls)
             {
+                target = w.Position;
+                target.Location -= offset;
                 if (w.IsMirror)
                 {
-                    sb.Draw(wallAsset, w.Position, Color.Green);
+                    sb.Draw(wallAsset, target, Color.Green);
                 }
                 else if (w.IsInvis)
                 {
-                    sb.Draw(wallAsset, w.Position, Color.Blue);
+                    sb.Draw(wallAsset, target, Color.Blue);
                 }
                 else
                 {
-                    sb.Draw(wallAsset, w.Position, Color.White);
+                    sb.Draw(wallAsset, target, Color.White);
                 }
             }
         }
