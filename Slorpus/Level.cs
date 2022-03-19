@@ -18,7 +18,7 @@ namespace Slorpus
         private Texture2D mirrorAsset;
         private Texture2D invisWallAsset;
 
-        public Point Size { get { return new Point(level.GetLength(0), level.Length); } }
+        public Point Size { get { return new Point(level.Length/level.GetLength(0), level.GetLength(0)); } }
 
         //Constructor
         public Level(List<Wall> walls, Texture2D wallAsset, Texture2D mirrorAsset, Texture2D invisWallAsset)

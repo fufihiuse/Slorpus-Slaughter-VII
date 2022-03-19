@@ -13,9 +13,6 @@ namespace Slorpus
         private SpriteBatch _spriteBatch;
         private Texture2D squareTexture;
 
-        // mega important objects
-        Camera camera;
-
         // input
         MouseState prevMS;
         KeyboardState prevKB;
@@ -80,7 +77,7 @@ namespace Slorpus
             Action<Point, Vector2> createbullet = (Point loc, Vector2 vel) => CreateBullet(loc, vel);
             Action<IPosition> createCamera = (IPosition player) => CreateCamera(player);
             levelParser.GetPhysicsObjects(physicsList, levelList, createbullet, createCamera, squareTexture, squareTexture);
-            if (camera == null)
+            if (CameraControl.Camera == null)
             {
                 throw new Exception("Player not present in level so camera was not created.");
             }
@@ -116,7 +113,7 @@ namespace Slorpus
             physicsManager.MovePhysics(gameTime);
             // TODO: get rid of the stupid bullet size argument
             physicsManager.CollideAndMoveBullets(gameTime, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE));
-            camera.Update(gameTime);
+            CameraControl.Camera.Update(gameTime);
             
             base.Update(gameTime);
 
@@ -157,17 +154,23 @@ namespace Slorpus
             _spriteBatch.Begin();
             
             // draw the walls
-            level.Draw(_spriteBatch, camera.Offset);
+            level.Draw(_spriteBatch, CameraControl.Camera.Offset);
 
             // draw player and objects
             foreach (IDraw d in drawList)
             {
-                d.Draw(_spriteBatch, camera.Offset);
+                d.Draw(_spriteBatch, CameraControl.Camera.Offset);
             }
             
             // draw bullets and enemies
-            bulletManager.DrawBullets(_spriteBatch, camera.Offset);
-            enemyManager.DrawEnemies(_spriteBatch, camera.Offset);
+            bulletManager.DrawBullets(_spriteBatch,
+                new Point(
+                    Constants.BULLET_SIZE,
+                    Constants.BULLET_SIZE
+                    ),
+                CameraControl.Camera.Offset
+                );
+            enemyManager.DrawEnemies(_spriteBatch, CameraControl.Camera.Offset);
 
             base.Draw(gameTime);
             _spriteBatch.End();
@@ -200,7 +203,7 @@ namespace Slorpus
                     _graphics.PreferredBackBufferWidth,
                     _graphics.PreferredBackBufferHeight);
                 };
-            camera = new Camera(followTarget, Constants.CAMERA_SPEED, getClamp, getScreenSize);
+            CameraControl.Camera = new Camera(followTarget, Constants.CAMERA_SPEED, getClamp, getScreenSize);
         }
 
         private int[] GetCameraClamp()

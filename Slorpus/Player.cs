@@ -67,6 +67,8 @@ namespace Slorpus
                 vel = Vector2.Multiply(vel, Constants.PLAYER_BULLET_SPEED);
 
                 createBullet(pos, vel);
+                // test screenshake
+                CameraControl.Camera.Shake(10, 5);
                 //bullets--;
             }
         }
