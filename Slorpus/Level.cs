@@ -12,13 +12,13 @@ namespace Slorpus
     class Level
     {
         //Fields
-        private char[,] level;
+        private static char[,] level;
         private List<Wall> walls;
         private Texture2D wallAsset;
         private Texture2D mirrorAsset;
         private Texture2D invisWallAsset;
 
-        public Point Size { get { return new Point(level.Length/level.GetLength(0), level.GetLength(0)); } }
+        public static Point Size { get { return new Point(level.Length/level.GetLength(0), level.GetLength(0)); } }
 
         //Constructor
         public Level(List<Wall> walls, Texture2D wallAsset, Texture2D mirrorAsset, Texture2D invisWallAsset)
@@ -80,13 +80,13 @@ namespace Slorpus
         /// Override method to draw the walls
         /// </summary>
         /// <param name="sb"></param>
-        public void Draw(SpriteBatch sb, Point offset)
+        public void Draw(SpriteBatch sb)
         {
             Rectangle target = Rectangle.Empty;
             foreach (Wall w in walls)
             {
                 target = w.Position;
-                target.Location -= offset;
+                target.Location -= Camera.Offset;
                 if (w.IsMirror)
                 {
                     sb.Draw(wallAsset, target, Color.Green);

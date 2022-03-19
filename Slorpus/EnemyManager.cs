@@ -30,12 +30,12 @@ namespace Slorpus
         /// Draws all enemies.
         /// </summary>
         /// <param name="sb">Spritebatch used to draw the enemy textures.</param>
-        public void DrawEnemies(SpriteBatch sb, Point offset)
+        public void DrawEnemies(SpriteBatch sb)
         {
             Rectangle target = Rectangle.Empty;
             foreach (Enemy e in enemyList)
             {
-                target.Location = e.Position.Location - offset;
+                target.Location = e.Position.Location - Camera.Offset;
                 target.Size = e.Position.Size;
                 sb.Draw(enemyAsset, target, Color.White);
             }

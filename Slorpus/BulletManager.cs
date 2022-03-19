@@ -47,12 +47,12 @@ namespace Slorpus
         /// Draws all bullets with a specific size.
         /// </summary>
         /// <param name="sb">Spritebatch used to draw the bullet textures.</param>
-        public void DrawBullets(SpriteBatch sb, Point size, Point offset)
+        public void DrawBullets(SpriteBatch sb, Point size)
         {
             Rectangle drawRect = new Rectangle(new Point(), size);
             for (int i = 0; i < bullets.Length; i ++)
             {
-                drawRect.Location = bullets[i].Position - offset;
+                drawRect.Location = bullets[i].Position - Camera.Offset;
                 sb.Draw(bulletAsset, drawRect, Color.White);
             }
         }
@@ -60,9 +60,9 @@ namespace Slorpus
         /// Draws all bullets.
         /// </summary>
         /// <param name="sb">Spritebatch used to draw the bullet textures.</param>
-        public void DrawBullets(SpriteBatch sb, Point offset)
+        public void DrawBullets(SpriteBatch sb)
         {
-            DrawBullets(sb, new Point(bulletAsset.Width, bulletAsset.Height), offset);
+            DrawBullets(sb, new Point(bulletAsset.Width, bulletAsset.Height));
         }
         
         /// <summary>

@@ -20,10 +20,10 @@ namespace Slorpus
             // perform per-frame game logic
         }
 
-        void IDraw.Draw(SpriteBatch sb, Point offset)
+        void IDraw.Draw(SpriteBatch sb)
         {
             Rectangle target = Position;
-            target.Location -= offset;
+            target.Location -= Camera.Offset;
             sb.Draw(asset, target, Color.White);
         }
 

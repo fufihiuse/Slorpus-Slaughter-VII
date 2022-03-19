@@ -12,6 +12,10 @@ namespace Slorpus
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Texture2D squareTexture;
+        
+        // important objects
+        Camera camera;
+        Screen screen;
 
         // input
         MouseState prevMS;
@@ -53,6 +57,14 @@ namespace Slorpus
             prevMS = Mouse.GetState();
             prevKB = Keyboard.GetState();
 
+            screen = new Screen(
+                new Point(
+                _graphics.PreferredBackBufferWidth,
+                _graphics.PreferredBackBufferHeight
+                )
+            );
+            screen.Use();
+
             base.Initialize();
         }
 
@@ -77,10 +89,6 @@ namespace Slorpus
             Action<Point, Vector2> createbullet = (Point loc, Vector2 vel) => CreateBullet(loc, vel);
             Action<IPosition> createCamera = (IPosition player) => CreateCamera(player);
             levelParser.GetPhysicsObjects(physicsList, levelList, createbullet, createCamera, squareTexture, squareTexture);
-            if (CameraControl.Camera == null)
-            {
-                throw new Exception("Player not present in level so camera was not created.");
-            }
 
             // miscellaneous, "special" items which dont have a manager
             updateList = levelParser.Updatables;
@@ -113,7 +121,7 @@ namespace Slorpus
             physicsManager.MovePhysics(gameTime);
             // TODO: get rid of the stupid bullet size argument
             physicsManager.CollideAndMoveBullets(gameTime, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE));
-            CameraControl.Camera.Update(gameTime);
+            camera.Update(gameTime);
             
             base.Update(gameTime);
 
@@ -154,12 +162,12 @@ namespace Slorpus
             _spriteBatch.Begin();
             
             // draw the walls
-            level.Draw(_spriteBatch, CameraControl.Camera.Offset);
+            level.Draw(_spriteBatch);
 
             // draw player and objects
             foreach (IDraw d in drawList)
             {
-                d.Draw(_spriteBatch, CameraControl.Camera.Offset);
+                d.Draw(_spriteBatch);
             }
             
             // draw bullets and enemies
@@ -167,10 +175,9 @@ namespace Slorpus
                 new Point(
                     Constants.BULLET_SIZE,
                     Constants.BULLET_SIZE
-                    ),
-                CameraControl.Camera.Offset
+                    )
                 );
-            enemyManager.DrawEnemies(_spriteBatch, CameraControl.Camera.Offset);
+            enemyManager.DrawEnemies(_spriteBatch);
 
             base.Draw(gameTime);
             _spriteBatch.End();
@@ -197,19 +204,7 @@ namespace Slorpus
 
         private void CreateCamera(IPosition followTarget)
         {
-            Func<int[]> getClamp = () => GetCameraClamp();
-            Func<Point> getScreenSize = () => {
-                return new Point(
-                    _graphics.PreferredBackBufferWidth,
-                    _graphics.PreferredBackBufferHeight);
-                };
-            CameraControl.Camera = new Camera(followTarget, Constants.CAMERA_SPEED, getClamp, getScreenSize);
-        }
-
-        private int[] GetCameraClamp()
-        {
-            int[] final = { 0, level.Size.X * Constants.WALL_SIZE, 0, level.Size.Y * Constants.WALL_SIZE };
-            return final;
+            camera = new Camera(followTarget, Constants.CAMERA_SPEED);
         }
     }
 }

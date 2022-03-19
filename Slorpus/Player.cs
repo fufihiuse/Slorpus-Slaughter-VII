@@ -33,10 +33,10 @@ namespace Slorpus
             UpdatePlayerPosition();
         }
 
-        void IDraw.Draw(SpriteBatch sb, Point offset)
+        void IDraw.Draw(SpriteBatch sb)
         {
             Rectangle target = Position;
-            target.Location -= offset;
+            target.Location -= Camera.Offset;
             sb.Draw(asset, target, Color.White);
         }
 
@@ -68,7 +68,7 @@ namespace Slorpus
 
                 createBullet(pos, vel);
                 // test screenshake
-                CameraControl.Camera.Shake(10, 5);
+                Camera.Shake(10, 5);
                 //bullets--;
             }
         }

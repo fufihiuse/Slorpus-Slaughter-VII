@@ -12,6 +12,6 @@ namespace Slorpus
      */
     interface IDraw
     {
-        public void Draw(SpriteBatch spriteBatch, Point offset);
+        public void Draw(SpriteBatch spriteBatch);
     }
 }
