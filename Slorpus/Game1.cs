@@ -77,7 +77,7 @@ namespace Slorpus
             // instantiate all the manager classes on the empty, just initialized lists
             level = new Level(wallList, squareTexture, squareTexture, squareTexture);
             LevelParser levelParser = new LevelParser();
-            List<GenericEntity> levelList = level.LoadFromFile("..\\..\\..\\levels\\20.sslvl"); //Loads example level and returns entityList
+            List<GenericEntity> levelList = level.LoadFromFile("..\\..\\..\\levels\\aynrand.sslvl"); //Loads example level and returns entityList
             bulletManager = new BulletManager(bulletList, squareTexture);
             enemyManager = new EnemyManager(enemyList, squareTexture, bulletManager);
             physicsManager = new PhysicsManager(physicsList, wallList, bulletManager);
