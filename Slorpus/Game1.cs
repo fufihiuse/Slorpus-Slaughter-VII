@@ -19,6 +19,7 @@ namespace Slorpus
         EnemyManager enemyManager;
         BulletManager bulletManager;
         PhysicsManager physicsManager;
+        UIManager uiManager;
 
         // debug object
         Player DEBUG;
@@ -41,6 +42,8 @@ namespace Slorpus
             physicsList = new List<IPhysics>();
             enemyList = new List<Enemy>();
             bulletList = new EnemyBullet[100];
+
+            uiManager = new UIManager();
 
             // TODO: properly reallocate space instead of just having a static large array
             kb = new KeyboardState();
@@ -67,6 +70,8 @@ namespace Slorpus
                 new Vector2(0, 0));
             */
 
+            uiManager.LoadUI(Content);
+
             physicsList.Add(DEBUG);
 
             bulletManager = new BulletManager(bulletList, squareTexture);
@@ -76,18 +81,22 @@ namespace Slorpus
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            uiManager.Update(Mouse.GetState());
+            //only update the game if the gamestate is game
+            if(uiManager.CurrentGameState == GameState.Game)
+            {
+                if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                    Exit();
 
-            // TODO: Add your update logic here
-            KeyboardState kb = Keyboard.GetState();
+                // TODO: Add your update logic here
+                KeyboardState kb = Keyboard.GetState();
 
-            enemyManager.UpdateEnemies(gameTime);
-            physicsManager.MovePhysics(gameTime);
-            physicsManager.CollideAndMoveBullets(gameTime, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE));
-            
-            DEBUG.UpdatePlayerPosition(kb);
+                enemyManager.UpdateEnemies(gameTime);
+                physicsManager.MovePhysics(gameTime);
+                physicsManager.CollideAndMoveBullets(gameTime, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE));
 
+                DEBUG.UpdatePlayerPosition(kb);
+            }
             base.Update(gameTime);
         }
 
@@ -97,16 +106,24 @@ namespace Slorpus
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
-            
-            // draw the walls
-            level.Draw(_spriteBatch);
 
-            // draw player and objects
-            _spriteBatch.Draw(squareTexture, DEBUG.Position, Color.White);
-            
-            // draw bullets and enemies
-            bulletManager.DrawBullets(_spriteBatch, new Point(5,5));
-            enemyManager.DrawEnemies(_spriteBatch);
+            //draw ui or game
+            if(uiManager.CurrentGameState == GameState.Game)
+            {
+                // draw the walls
+                level.Draw(_spriteBatch);
+
+                // draw player and objects
+                _spriteBatch.Draw(squareTexture, DEBUG.Position, Color.White);
+
+                // draw bullets and enemies
+                bulletManager.DrawBullets(_spriteBatch, new Point(5, 5));
+                enemyManager.DrawEnemies(_spriteBatch);
+            }
+            else
+            {
+                uiManager.Draw(_spriteBatch);
+            }
 
             base.Draw(gameTime);
             _spriteBatch.End();

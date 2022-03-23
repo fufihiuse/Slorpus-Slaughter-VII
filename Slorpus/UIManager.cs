@@ -31,12 +31,15 @@ namespace Slorpus
         GameState currentGameState;
         Texture2D background;
 
-        //buttons
+        //button lists
         List<Button> menuButtons;
         List<Button> gameButtons;
         List<Button> gameOverButtons;
         List<Button> pauseButtons;
         List<Button> settingsButtons;
+
+        //buttons
+        Button gameStart;
 
         //properties
         public GameState CurrentGameState
@@ -57,16 +60,29 @@ namespace Slorpus
         /// <summary>
         /// loads all the textures for the buttons and then passes them into  the coresponding buttons including background
         /// </summary>
-        public void LoadUI()
+        public void LoadUI(Microsoft.Xna.Framework.Content.ContentManager content)
         {
             //background
+            background = content.Load<Texture2D>("enemy");
 
-            //buttons
+            //testing button textures
+            Texture2D standard = content.Load<Texture2D>("buttonPlaceholder");
+            Texture2D active = content.Load<Texture2D>("buttonPlaceholderActive");
+            Texture2D hover = content.Load<Texture2D>("buttonPlaceholderHover");
+
+            //button lists
             menuButtons = new List<Button>();
             gameButtons = new List<Button>();
             gameOverButtons = new List<Button>();
             pauseButtons = new List<Button>();
             settingsButtons = new List<Button>();
+
+            //make buttons
+            gameStart = new Button(new Rectangle(20, 20, 20, 20),
+                standard, hover, active);
+
+            //add buttons to lists
+            menuButtons.Add(gameStart);
         }
         /// <summary>
         /// updates the ui gamestate depending on which button is pressed
@@ -76,6 +92,11 @@ namespace Slorpus
             switch (currentGameState)
             {
                 case GameState.Menu:
+                    //update buttons
+                    if (gameStart.Update(ms))
+                    {
+                        currentGameState = GameState.Game;
+                    }
                     break;
 
                 case GameState.Game:
@@ -100,6 +121,11 @@ namespace Slorpus
             {
                 case GameState.Menu:
                     //draw background
+                    sb.Draw(
+                        background, 
+                        new Rectangle(0, 0, 600, 600), 
+                        Color.White
+                        );
 
                     //draw all menuButtons
                     foreach(Button button in menuButtons)

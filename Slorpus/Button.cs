@@ -27,6 +27,13 @@ namespace Slorpus
                 return position;
             }
         }
+        public ButtonCondition Bc
+        {
+            get
+            {
+                return bc;
+            }
+        }
 
         //constructors
         public Button(Rectangle position, Texture2D standard, Texture2D hover, Texture2D active)
@@ -52,6 +59,10 @@ namespace Slorpus
             else if (position.Contains(ms.Position))
             {
                 bc = ButtonCondition.Hover;
+            }
+            else
+            {
+                bc = ButtonCondition.Standard;
             }
             return false;
         }
