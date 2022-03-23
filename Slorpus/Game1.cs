@@ -12,6 +12,10 @@ namespace Slorpus
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Texture2D squareTexture;
+        
+        // important objects
+        Camera camera;
+        Screen screen;
 
         // input
         MouseState prevMS;
@@ -53,6 +57,14 @@ namespace Slorpus
             prevMS = Mouse.GetState();
             prevKB = Keyboard.GetState();
 
+            screen = new Screen(
+                new Point(
+                _graphics.PreferredBackBufferWidth,
+                _graphics.PreferredBackBufferHeight
+                )
+            );
+            screen.Use();
+
             base.Initialize();
         }
 
@@ -65,7 +77,7 @@ namespace Slorpus
             // instantiate all the manager classes on the empty, just initialized lists
             level = new Level(wallList, squareTexture, squareTexture, squareTexture);
             LevelParser levelParser = new LevelParser();
-            List<GenericEntity> levelList = level.LoadFromFile("..\\..\\..\\levels\\example.sslvl"); //Loads example level and returns entityList
+            List<GenericEntity> levelList = level.LoadFromFile("..\\..\\..\\levels\\aynrand.sslvl"); //Loads example level and returns entityList
             bulletManager = new BulletManager(bulletList, squareTexture);
             enemyManager = new EnemyManager(enemyList, squareTexture, bulletManager);
             physicsManager = new PhysicsManager(physicsList, wallList, bulletManager);
@@ -75,7 +87,8 @@ namespace Slorpus
             levelParser.GetWalls(wallList, levelList);
             // bullet creation function
             Action<Point, Vector2> createbullet = (Point loc, Vector2 vel) => CreateBullet(loc, vel);
-            levelParser.GetPhysicsObjects(physicsList, levelList, createbullet, squareTexture, squareTexture);
+            Action<IPosition> createCamera = (IPosition player) => CreateCamera(player);
+            levelParser.GetPhysicsObjects(physicsList, levelList, createbullet, createCamera, squareTexture, squareTexture);
 
             // miscellaneous, "special" items which dont have a manager
             updateList = levelParser.Updatables;
@@ -115,6 +128,7 @@ namespace Slorpus
             physicsManager.MovePhysics(gameTime);
             // TODO: get rid of the stupid bullet size argument
             physicsManager.CollideAndMoveBullets(gameTime, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE));
+            camera.Update(gameTime);
             
             base.Update(gameTime);
 
@@ -165,7 +179,12 @@ namespace Slorpus
             }
             
             // draw bullets and enemies
-            bulletManager.DrawBullets(_spriteBatch, new Point(Constants.BULLET_SIZE,Constants.BULLET_SIZE));
+            bulletManager.DrawBullets(_spriteBatch,
+                new Point(
+                    Constants.BULLET_SIZE,
+                    Constants.BULLET_SIZE
+                    )
+                );
             enemyManager.DrawEnemies(_spriteBatch);
 
             base.Draw(gameTime);
@@ -189,6 +208,11 @@ namespace Slorpus
             updateList.Add(bullet);
             drawList.Add(bullet);
             physicsList.Add(bullet);
+        }
+
+        private void CreateCamera(IPosition followTarget)
+        {
+            camera = new Camera(followTarget, Constants.CAMERA_SPEED);
         }
     }
 }

@@ -22,7 +22,9 @@ namespace Slorpus
 
         void IDraw.Draw(SpriteBatch sb)
         {
-            sb.Draw(asset, Position, Color.White);
+            Rectangle target = Position;
+            target.Location -= Camera.Offset;
+            sb.Draw(asset, target, Color.White);
         }
 
         public override void OnCollision<T>(T other) 
@@ -37,7 +39,7 @@ namespace Slorpus
                     {
                         vel *= new Vector2(-1, 1);
                     }
-                    else if(Math.Abs(vel.Y) > Math.Abs(vel.X))
+                    else
                     {
                         vel *= new Vector2(1, -1);
                     }
