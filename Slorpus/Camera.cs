@@ -95,8 +95,8 @@ namespace Slorpus
                         break;
                     case CameraMovement.Centered:
                         // centers the camera in the level
-                        pos.X = Level.Size.X * Constants.WALL_SIZE;
-                        pos.Y = Level.Size.Y * Constants.WALL_SIZE;
+                        pos.X = (Level.Size.X * Constants.WALL_SIZE / 2) - Screen.Size.X/2;
+                        pos.Y = (Level.Size.Y * Constants.WALL_SIZE / 2) - Screen.Size.Y/2;
                         
                         // do nothing on move
                         moveBehavior = () => { };
