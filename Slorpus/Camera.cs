@@ -7,6 +7,16 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Slorpus
 {
+    public enum CameraMovement
+    {
+        // does not go past edges of level
+        // level is aligned to bottom right if smaller than screen
+        Normal,
+        // level does not track anything
+        Centered,
+        // no clamping
+        Free
+    }
     /*
      * Simple struct that describes an instance of screenshake
      * so that multiple shakes can happen at once
@@ -25,6 +35,7 @@ namespace Slorpus
                 return (isConstant) ? maxShake : GetShakeRange();
             }
         }
+
 
         public ShakeRequest(int lifetime, int shake_strength, bool IsConstant)
         {
@@ -48,6 +59,9 @@ namespace Slorpus
         static private Rectangle pos;
         static private Point shakeOffset;
         static private List<ShakeRequest> shakeQueue;
+        private CameraMovement moveConstraint;
+        // method that gets called when moving
+        private Action moveBehavior;
         
         IPosition followTarget;
         float lerpSpeed;
@@ -59,19 +73,62 @@ namespace Slorpus
                 return pos.Location + shakeOffset;
             }
         }
+        public CameraMovement MovementConstraint
+        {
+            get { return moveConstraint; }
+            set
+            {
+                switch (value)
+                {
+                    case CameraMovement.Normal:
+                        // move and then clamp to level size
+                        moveBehavior = () => {
+                            LerpFollow();
+                            Clamp();
+                        };
+                        moveConstraint = CameraMovement.Normal;
+                        break;
+                    case CameraMovement.Free:
+                        // do nothing on move except follow target
+                        moveBehavior = () => { LerpFollow(); };
+                        moveConstraint = CameraMovement.Free;
+                        break;
+                    case CameraMovement.Centered:
+                        // centers the camera in the level
+                        pos.X = Level.Size.X * Constants.WALL_SIZE;
+                        pos.Y = Level.Size.Y * Constants.WALL_SIZE;
+                        
+                        // do nothing on move
+                        moveBehavior = () => { };
+                        moveConstraint = CameraMovement.Centered;
+                        break;
+                }
+            }
+        }
 
         public Camera(IPosition followTarget, float lerpSpeed, bool NoOverrideShake=false)
         {
             this.followTarget = followTarget;
             this.lerpSpeed = lerpSpeed;
+            // default camera mode
+            MovementConstraint = CameraMovement.Normal;
+            // if level is small, do centered instead
+            if (Level.Size.X * Constants.WALL_SIZE < Screen.Size.X || Level.Size.Y *Constants.WALL_SIZE < Screen.Size.Y)
+            {
+                MovementConstraint = CameraMovement.Centered;
+            }
             
             if (!NoOverrideShake)
                 shakeQueue = new List<ShakeRequest>();
             
             gen = new Random();
         }
-
-        public void LerpFollow(float lerpSpeedOverride=-1, bool clamp = true)
+        
+        /// <summary>
+        /// Interpolates the camera position towards its current target.
+        /// </summary>
+        /// <param name="lerpSpeedOverride">Overrides the camera's interpolation speed, a value between 0 and 1. (optional)</param>
+        public void LerpFollow(float lerpSpeedOverride=-1)
         {
             float useSpeed = lerpSpeedOverride;
             if (useSpeed > 1 || useSpeed < 0)
@@ -83,16 +140,11 @@ namespace Slorpus
 
             pos.X = (int)MathHelper.Lerp(pos.X, followTarget.Position.X - (screenOffset.X/2), useSpeed);
             pos.Y = (int)MathHelper.Lerp(pos.Y, followTarget.Position.Y - (screenOffset.Y/2), useSpeed);
-
-            if (clamp)
-            {
-                Clamp();
-            }
         }
 
         public void Update(GameTime gameTime)
         {
-            LerpFollow();
+            moveBehavior();
             // reset last frame's shake
             shakeOffset = Point.Zero;
 
