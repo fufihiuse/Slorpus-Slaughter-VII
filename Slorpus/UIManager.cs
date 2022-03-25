@@ -39,7 +39,20 @@ namespace Slorpus
         List<Button> settingsButtons;
 
         //buttons
-        Button gameStart;
+        //menu
+        Button menuStart;
+        Button menuSettings;
+        Button menuExit;
+        //settings
+        Button godMode;
+        Button back;
+        //pause
+        Button resume;
+        Button pauseSettings;
+        Button pauseExit;
+        //gameover
+        Button retry;
+        Button gameOverMenu;
 
         //properties
         public GameState CurrentGameState
@@ -78,11 +91,11 @@ namespace Slorpus
             settingsButtons = new List<Button>();
 
             //make buttons
-            gameStart = new Button(new Rectangle(20, 20, 20, 20),
+            menuStart = new Button(new Rectangle(20, 20, 20, 20),
                 standard, hover, active);
 
             //add buttons to lists
-            menuButtons.Add(gameStart);
+            menuButtons.Add(menuStart);
         }
         /// <summary>
         /// updates the ui gamestate depending on which button is pressed
@@ -93,7 +106,7 @@ namespace Slorpus
             {
                 case GameState.Menu:
                     //update buttons
-                    if (gameStart.Update(ms))
+                    if (menuStart.Update(ms))
                     {
                         currentGameState = GameState.Game;
                     }
