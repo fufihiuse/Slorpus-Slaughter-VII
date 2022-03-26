@@ -12,18 +12,18 @@ namespace Slorpus
     class SoundEffects
     {
         // Field
-        Microsoft.Xna.Framework.Content.ContentManager content;
+        //Microsoft.Xna.Framework.Content.ContentManager content;
         List<SoundEffect> soundEffectsBank;
 
         // Constructor
         public SoundEffects()
         {
             soundEffectsBank = new List<SoundEffect>();
-            soundEffectsBank.Add(content.Load<SoundEffect>("Bullet Noise"));
+            //soundEffectsBank.Add(content.Load<SoundEffect>("Bullet Noise"));
         }
 
         // Method
-        public void AddSounds()
+        public void AddSounds(Microsoft.Xna.Framework.Content.ContentManager content)
         {
             soundEffectsBank.Add(content.Load<SoundEffect>("Bullet Noise"));
         }
