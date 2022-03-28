@@ -93,9 +93,15 @@ namespace Slorpus
             //make buttons
             menuStart = new Button(new Rectangle(20, 20, 20, 20),
                 standard, hover, active);
+            menuSettings = new Button(new Rectangle(20, 50, 20, 20), 
+                standard, hover, active);
+            menuExit = new Button(new Rectangle(20, 100, 20, 20), 
+                standard, hover, active);
 
             //add buttons to lists
             menuButtons.Add(menuStart);
+            menuButtons.Add(menuSettings);
+            menuButtons.Add(menuExit);
         }
         /// <summary>
         /// updates the ui gamestate depending on which button is pressed
@@ -109,6 +115,14 @@ namespace Slorpus
                     if (menuStart.Update(ms))
                     {
                         currentGameState = GameState.Game;
+                    }
+                    if (menuSettings.Update(ms))
+                    {
+                        currentGameState = GameState.Settings;
+                    }
+                    if (menuExit.Update(ms))
+                    {
+                        Environment.Exit(0);
                     }
                     break;
 
