@@ -116,6 +116,8 @@ namespace Slorpus
         public void Update()
         {
             // enemy logic, called by enemy manager
+
+            FireBullets();
         }
     }
 }

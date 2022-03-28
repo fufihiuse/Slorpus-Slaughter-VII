@@ -38,7 +38,9 @@ namespace Slorpus
 
         void IDraw.Draw(SpriteBatch sb)
         {
-            sb.Draw(asset, this.Position, Color.White);
+            Rectangle target = Position;
+            target.Location -= Camera.Offset;
+            sb.Draw(asset, target, Color.White);
         }
 
         void IKeyPress.OnKeyPress(KeyboardState kb)
@@ -60,8 +62,8 @@ namespace Slorpus
 
                 // get distance from player to mouse
                 Vector2 vel = new Vector2(
-                    ms.X-Position.X,
-                    ms.Y-Position.Y
+                    (ms.X + Camera.Position.X)-Position.X,
+                    (ms.Y + Camera.Position.Y)-Position.Y
                     );
                 // normalize it
                 vel = Vector2.Normalize(vel);
@@ -69,6 +71,8 @@ namespace Slorpus
                 vel = Vector2.Multiply(vel, Constants.PLAYER_BULLET_SPEED);
 
                 createBullet(pos, vel);
+                // test screenshake
+                Camera.Shake(10, 5);
                 //bullets--;
             }
         }

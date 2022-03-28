@@ -52,7 +52,7 @@ namespace Slorpus
             Rectangle drawRect = new Rectangle(new Point(), size);
             for (int i = 0; i < bullets.Length; i ++)
             {
-                drawRect.Location = bullets[i].Position;
+                drawRect.Location = bullets[i].Position - Camera.Offset;
                 sb.Draw(bulletAsset, drawRect, Color.White);
             }
         }
