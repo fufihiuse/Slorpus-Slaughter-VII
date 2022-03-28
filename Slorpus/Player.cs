@@ -16,7 +16,8 @@ namespace Slorpus
         int bullets;
         // player texture
         Texture2D asset;
-        SoundEffects sound = new SoundEffects();
+        SoundEffects soundEffect;
+        Microsoft.Xna.Framework.Content.ContentManager content;
 
         /// <summary>
         /// Creates a new player
@@ -28,6 +29,8 @@ namespace Slorpus
             this.createBullet = bulletCreationFunc;
             this.asset = playerAsset;
             bullets = 1;
+            soundEffect = new SoundEffects();
+            soundEffect.AddSounds(content);
         }
 
         void IUpdate.Update(GameTime gameTime)
@@ -132,7 +135,7 @@ namespace Slorpus
             }
             if (kb.IsKeyDown(Keys.F))
             {
-                sound.PlayEffect(0);
+                soundEffect.PlayEffect(0);
             }
             xin += xTemp;
             yin += yTemp;

@@ -115,6 +115,7 @@ namespace Slorpus
             {
                 OnMouseClick(prevMS);
             }
+            
 
             enemyManager.UpdateEnemies(gameTime);
             physicsManager.MovePhysics(gameTime);
