@@ -9,42 +9,33 @@ using System.IO;
 namespace Slorpus
 {
     //Jackson Majewski
-    public class Level
+    class Level
     {
         //Fields
-        private char[,] level;
+        private static char[,] level;
         private List<Wall> walls;
-        private int tileSize;
-        private Texture2D wallTexture;
-        private Texture2D playerTexture;
-        private Texture2D eEnemyTexture;
-        private Texture2D hEnemyTexture;
-        private List<Enemy> enemyList;
+        private Texture2D wallAsset;
+        private Texture2D mirrorAsset;
+        private Texture2D invisWallAsset;
 
-        //Properties
-        public List<Wall> WallList
-        {
-            get { return walls; }
-        }
+        public static Point Size { get { return new Point(level.Length/level.GetLength(0), level.GetLength(0)); } }
 
         //Constructor
-        public Level(int tileSize, Texture2D wallTexture, Texture2D playerTexture, Texture2D eEnemyTexture, Texture2D hEnemyTexture)
+        public Level(List<Wall> walls, Texture2D wallAsset, Texture2D mirrorAsset, Texture2D invisWallAsset)
         {
-            this.tileSize = tileSize;
-            walls = new List<Wall>();
-            this.wallTexture = wallTexture;
-            this.playerTexture = playerTexture;
-            this.eEnemyTexture = eEnemyTexture;
-            this.hEnemyTexture = hEnemyTexture;
+            this.walls = walls;
+            this.wallAsset = wallAsset;
+            this.mirrorAsset = mirrorAsset;
+            this.invisWallAsset = invisWallAsset;
         }
 
-        //Methods
-        public void LoadFromFile(string filepath,  out Player player, out List<Enemy> enemyList)
+        //Methods 
+
+        public List<GenericEntity> LoadFromFile(string filepath)
         {
             string line;
             string[] data;
-            player = null;
-            enemyList = new List<Enemy>();
+            List<GenericEntity> entityList = new List<GenericEntity>();
 
             //Loading from file
             try
@@ -64,67 +55,24 @@ namespace Slorpus
                     for (int column = 0; column < level.GetLength(1); column++)
                     {
                         level[row, column] = line[column];
-
-                        switch(line[column])
-                        {
-                            case 'W':
-                                walls.Add(
-                                    new Wall(
-                                        new Rectangle(
-                                            column * tileSize,
-                                            row * tileSize,
-                                            tileSize,
-                                            tileSize)));
-                                break;
-
-                            case 'E':
-                                enemyList.Add(
-                                    new Enemy(
-                                        new Rectangle(
-                                            column * tileSize,
-                                            row * tileSize,
-                                            tileSize,
-                                            tileSize),
-                                        Vector2.Zero,
-                                        eEnemyTexture,
-                                        ShootingPattern.Ensconcing));
-                                break;
-
-                            case 'H':
-                                enemyList.Add(
-                                    new Enemy(
-                                        new Rectangle(
-                                            column * tileSize,
-                                            row * tileSize,
-                                            tileSize,
-                                            tileSize),
-                                        Vector2.Zero,
-                                        hEnemyTexture,
-                                        ShootingPattern.HomingAttack));
-                                break;
-
-                            //TODO: Add mirror code when mirrors are added
-
-                            case 'P':
-                                player = new Player(new Rectangle(
-                                            column * tileSize,
-                                            row * tileSize,
-                                            tileSize,
-                                            tileSize),
-                                            Vector2.Zero);
-                                break;
-                        }
-
+                        
+                        entityList.Add(
+                            new GenericEntity(
+                                line[column],
+                                column * Constants.WALL_SIZE,
+                                row * Constants.WALL_SIZE));
                     }
                     line = input.ReadLine();
                 }
 
                 input.Close();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e);
-            }            
+            }
+
+            return entityList;
 
         }
 
@@ -134,9 +82,23 @@ namespace Slorpus
         /// <param name="sb"></param>
         public void Draw(SpriteBatch sb)
         {
-            foreach(Wall w in walls)
+            Rectangle target = Rectangle.Empty;
+            foreach (Wall w in walls)
             {
-                sb.Draw(wallTexture, w.Position, Color.White);
+                target = w.Position;
+                target.Location -= Camera.Offset;
+                if (w.IsMirror)
+                {
+                    sb.Draw(wallAsset, target, Color.Green);
+                }
+                else if (w.IsInvis)
+                {
+                    sb.Draw(wallAsset, target, Color.Blue);
+                }
+                else
+                {
+                    sb.Draw(wallAsset, target, Color.White);
+                }
             }
         }
     }

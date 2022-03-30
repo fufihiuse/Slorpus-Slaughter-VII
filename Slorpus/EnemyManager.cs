@@ -27,6 +27,21 @@ namespace Slorpus
         }
 
         /// <summary>
+        /// Draws all enemies.
+        /// </summary>
+        /// <param name="sb">Spritebatch used to draw the enemy textures.</param>
+        public void DrawEnemies(SpriteBatch sb)
+        {
+            Rectangle target = Rectangle.Empty;
+            foreach (Enemy e in enemyList)
+            {
+                target.Location = e.Position.Location - Camera.Offset;
+                target.Size = e.Position.Size;
+                sb.Draw(enemyAsset, target, Color.White);
+            }
+        }
+        
+        /// <summary>
         /// Updates all enemies, and adding the returned bullets to the bulletlist.
         /// </summary>
         public void UpdateEnemies(GameTime gameTime)
@@ -34,7 +49,7 @@ namespace Slorpus
             foreach (Enemy e in enemyList)
             {
                 e.Update();
-                bulletManager.FireBatch(e.FireBullets(e.ShootingPattern));
+                bulletManager.FireBatch(e.FireBullets());
             }
         }
     }

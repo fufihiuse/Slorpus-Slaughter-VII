@@ -21,9 +21,6 @@ namespace Slorpus
         private ShootingPattern shootingPattern;
         private bool isDead;
 
-        private EnemyBullet[] wantedBullets;
-
-
         //properties
         public int Health
         {
@@ -65,8 +62,14 @@ namespace Slorpus
             isDead = false;
         }
 
+        //methods:
+        //  shooting goop method, should be two shooting patterns, does damage
+        //  can take damage
+        //  draw enemy
+        //  how to make enemy disappear when dead???
+
         /// <summary>
-        /// Draws enemy to screen
+        /// draws enemy
         /// </summary>
         /// <param name="sb"></param>
         public void DrawEnemy(SpriteBatch sb)
@@ -74,6 +77,26 @@ namespace Slorpus
             sb.Draw(enemyAsset, Position, Color.White);
         }
 
+        /// <summary>
+        /// enemy shoots goop, depending on enemy diff goop patterns
+        /// </summary>
+        /// <param name="enemyGoop"></param>
+        public void ShootGoop(ShootingPattern enemyGoop)
+        {
+            switch (enemyGoop)
+            {
+                case ShootingPattern.Ensconcing:
+                    wantedBullets = new EnemyBullet[1];
+                    wantedBullets[0].Position = new Point(Position.X, Position.Y);
+                    
+                    //  bullet is shot from enemy position, velocity is added to pos x and y
+                    break;
+                case ShootingPattern.HomingAttack:
+                    wantedBullets = new EnemyBullet[1];
+
+                    break;
+            }
+        }
         /// <summary>
         /// when enemy DIES do this
         /// </summary>
@@ -87,25 +110,8 @@ namespace Slorpus
             //  PLAY DEATH ANIMATION
         }
 
-        /// <summary>
-        /// enemy shoots goop, depending on enemy diff goop patterns
-        /// </summary>
-        /// <param name="enemyGoop"></param>
-        /// <returns></returns>
-        public EnemyBullet[] FireBullets(ShootingPattern enemyGoop)
+        public EnemyBullet[] FireBullets()
         {
-            switch (enemyGoop)
-            {
-                case ShootingPattern.Ensconcing:
-                    //wantedBullets = new EnemyBullet();    //TODO: fix wtf
-                    //  CODE FOR SPIRAL SHOOTY
-                    break;
-                case ShootingPattern.HomingAttack:
-                    //  CODE FOR HOMING SHOOTY
-                    //  NEED PLAYER COORDS
-                    break;
-            }
-
             // return bullets that we want to fire
             return new EnemyBullet[0];
         }
@@ -113,8 +119,10 @@ namespace Slorpus
         public void Update()
         {
             //checks if enemy is dead or alive
-            //
+            FireBullets(shootingPattern);
             // enemy logic, called by enemy manager
+
+            FireBullets();
         }
     }
 }
