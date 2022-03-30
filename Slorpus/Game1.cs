@@ -33,6 +33,7 @@ namespace Slorpus
         List<Enemy> enemyList;
         EnemyBullet[] bulletList;
         List<Wall> wallList;
+        SoundEffects soundEffects;
         
         // more lists, these are for special objects that subscribe to certain events
         List<IUpdate> updateList;
@@ -63,6 +64,7 @@ namespace Slorpus
                 _graphics.PreferredBackBufferHeight
                 )
             );
+            soundEffects = new SoundEffects();
             screen.Use();
 
             base.Initialize();
@@ -94,6 +96,7 @@ namespace Slorpus
             drawList = levelParser.Drawables;
             mouseClickList = levelParser.MouseClickables;
             keyPressList = levelParser.KeyPressables;
+            SoundEffects.AddSounds(Content);
         }
 
         protected override void Update(GameTime gameTime)

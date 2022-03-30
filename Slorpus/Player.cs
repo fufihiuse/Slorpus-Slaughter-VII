@@ -12,13 +12,10 @@ namespace Slorpus
     class Player : PhysicsObject, IUpdate, IDraw, IMouseClick, IKeyPress
     {
         Action<Point, Vector2> createBullet;
-        private IServiceProvider iserviceProvider;
         // number of bullets the player currently has
         int bullets;
         // player texture
         Texture2D asset;
-        SoundEffects soundEffect;
-        Microsoft.Xna.Framework.Content.ContentManager content;
 
         /// <summary>
         /// Creates a new player
@@ -30,10 +27,6 @@ namespace Slorpus
             this.createBullet = bulletCreationFunc;
             this.asset = playerAsset;
             bullets = 1;
-            content = new Microsoft.Xna.Framework.Content.ContentManager(iserviceProvider);
-            soundEffect = new SoundEffects();
-            soundEffect.AddPlayerSounds(content);
-
         }
 
         void IUpdate.Update(GameTime gameTime)
@@ -80,6 +73,8 @@ namespace Slorpus
                 // test screenshake
                 Camera.Shake(10, 5);
                 //bullets--;
+
+                SoundEffects.PlayEffect(0);
             }
         }
 
@@ -138,7 +133,7 @@ namespace Slorpus
             }
             if (kb.IsKeyDown(Keys.F))
             {
-                soundEffect.PlayEffect(0);
+                SoundEffects.PlayEffect(0);
             }
             xin += xTemp;
             yin += yTemp;

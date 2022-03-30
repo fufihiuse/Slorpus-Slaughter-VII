@@ -13,7 +13,7 @@ namespace Slorpus
     {
         // Field
         //Microsoft.Xna.Framework.Content.ContentManager content;
-        List<SoundEffect> soundEffectsBank;
+        static List<SoundEffect> soundEffectsBank;
 
         // Constructor
         public SoundEffects()
@@ -23,16 +23,12 @@ namespace Slorpus
         }
 
         // Method
-        public void AddPlayerSounds(Microsoft.Xna.Framework.Content.ContentManager content)
+        public static void AddSounds(Microsoft.Xna.Framework.Content.ContentManager content)
         {
             soundEffectsBank.Add(content.Load<SoundEffect>("Bullet Noise"));
         }
 
-        public void AddEnemySounds(Microsoft.Xna.Framework.Content.ContentManager content)
-        {
-
-        }
-        public void PlayEffect(int index)
+        public static void PlayEffect(int index)
         {
             soundEffectsBank[index].Play();
         }
