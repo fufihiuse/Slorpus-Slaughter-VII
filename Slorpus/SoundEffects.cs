@@ -23,11 +23,15 @@ namespace Slorpus
         }
 
         // Method
-        public void AddSounds(Microsoft.Xna.Framework.Content.ContentManager content)
+        public void AddPlayerSounds(Microsoft.Xna.Framework.Content.ContentManager content)
         {
             soundEffectsBank.Add(content.Load<SoundEffect>("Bullet Noise"));
         }
 
+        public void AddEnemySounds(Microsoft.Xna.Framework.Content.ContentManager content)
+        {
+
+        }
         public void PlayEffect(int index)
         {
             soundEffectsBank[index].Play();

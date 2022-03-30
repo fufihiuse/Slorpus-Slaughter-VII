@@ -12,6 +12,7 @@ namespace Slorpus
     class Player : PhysicsObject, IUpdate, IDraw, IMouseClick, IKeyPress
     {
         Action<Point, Vector2> createBullet;
+        private IServiceProvider iserviceProvider;
         // number of bullets the player currently has
         int bullets;
         // player texture
@@ -29,8 +30,10 @@ namespace Slorpus
             this.createBullet = bulletCreationFunc;
             this.asset = playerAsset;
             bullets = 1;
+            content = new Microsoft.Xna.Framework.Content.ContentManager(iserviceProvider);
             soundEffect = new SoundEffects();
-            soundEffect.AddSounds(content);
+            soundEffect.AddPlayerSounds(content);
+
         }
 
         void IUpdate.Update(GameTime gameTime)
