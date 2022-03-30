@@ -1,0 +1,10 @@
+A file with:
+
+sprite height: 16
+frames per strip: 5
+number of strips: 18
+name: multidirectional-bullets
+
+would be named:
+
+16_5_18_multidirectional-bullets.png

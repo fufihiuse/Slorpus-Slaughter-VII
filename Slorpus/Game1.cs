@@ -12,14 +12,33 @@ namespace Slorpus
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Texture2D squareTexture;
-        private KeyboardState kb;
+        
+        // important objects
+        Camera camera;
+        Screen screen;
 
-        // manager(s)
+        // input
+        MouseState prevMS;
+        KeyboardState prevKB;
+
+        // managers
         Level level;
+        EnemyManager enemyManager;
+        BulletManager bulletManager;
+        PhysicsManager physicsManager;
 
         // debug object
-        Player DEBUG;
+        PhysicsObject DEBUG;
         List<IPhysics> physicsList;
+        List<Enemy> enemyList;
+        EnemyBullet[] bulletList;
+        List<Wall> wallList;
+        
+        // more lists, these are for special objects that subscribe to certain events
+        List<IUpdate> updateList;
+        List<IDraw> drawList;
+        List<IMouseClick> mouseClickList;
+        List<IKeyPress> keyPressList;
 
         public Game1()
         {
@@ -30,9 +49,7 @@ namespace Slorpus
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
             physicsList = new List<IPhysics>();
-            kb = new KeyboardState();
             base.Initialize();
         }
 
@@ -40,13 +57,12 @@ namespace Slorpus
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
             squareTexture = Content.Load<Texture2D>("square");
 
-            level = new Level(Constants.WALL_SIZE, squareTexture);
-            level.LoadFromFile("..\\..\\..\\levels\\example.sslvl"); //Loads example level, should be changed
+            LoadLevel("aynrand"); 
+        }
 
-            DEBUG = new Player(
+            DEBUG = new PhysicsObject(
                 new Rectangle(
                     // position
                     new Point(200, 200),
@@ -54,7 +70,21 @@ namespace Slorpus
                     new Point(16, 16)),
                 new Vector2(0, 0));
 
-            physicsList.Add(DEBUG);
+            // parse data read from level
+            levelParser.GetEnemies(enemyList, levelList, squareTexture, squareTexture);
+            levelParser.GetWalls(wallList, levelList);
+            
+            // bullet creation function
+            Action<Point, Vector2> createbullet = (Point loc, Vector2 vel) => CreateBullet(loc, vel);
+            // camera creation function
+            Action<IPosition> createCamera = (IPosition player) => CreateCamera(player);
+            levelParser.GetPhysicsObjects(physicsList, levelList, createbullet, createCamera, squareTexture, squareTexture);
+
+            // miscellaneous, "special" items which dont have a manager
+            updateList = levelParser.Updatables;
+            drawList = levelParser.Drawables;
+            mouseClickList = levelParser.MouseClickables;
+            keyPressList = levelParser.KeyPressables;
         }
 
         protected override void Update(GameTime gameTime)
@@ -63,7 +93,23 @@ namespace Slorpus
                 Exit();
 
             // TODO: Add your update logic here
-            DEBUG.UpdatePlayerPosition(kb);
+            KeyboardState kb = Keyboard.GetState();
+
+            int xin = 0;
+            int yin = 0;
+            float speed = 0.5f;
+
+            if (kb.IsKeyDown(Keys.W))
+                yin -= 1;
+            if (kb.IsKeyDown(Keys.S))
+                yin += 1;
+            if (kb.IsKeyDown(Keys.A))
+                xin -= 1;
+            if (kb.IsKeyDown(Keys.D))
+                xin += 1;
+
+            DEBUG.Velocity = new Vector2((DEBUG.Velocity.X + (xin * speed)) * 0.9f, (DEBUG.Velocity.Y + (yin * speed)) * 0.9f);
+
             PhysicsManager.MovePhysics(physicsList, level.WallList);
 
             base.Update(gameTime);
@@ -75,10 +121,51 @@ namespace Slorpus
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
+            
+            // draw the walls
             level.Draw(_spriteBatch);
-            _spriteBatch.Draw(squareTexture, DEBUG.Position, Color.White);
+
+            // draw player and objects
+            foreach (IDraw d in drawList)
+            {
+                d.Draw(_spriteBatch);
+            }
+            
+            // draw bullets and enemies
+            bulletManager.DrawBullets(_spriteBatch,
+                new Point(
+                    Constants.BULLET_SIZE,
+                    Constants.BULLET_SIZE
+                    )
+                );
+            enemyManager.DrawEnemies(_spriteBatch);
+
             base.Draw(gameTime);
             _spriteBatch.End();
+        }
+        
+        /// <summary>
+        /// Proof of concept method that creates the player bullet. Delegated to the player.
+        /// </summary>
+        /// <param name="location">Starting location of the bullet.</param>
+        /// <param name="velocity">Starting velocity of the bullet.</param>
+        public void CreateBullet(Point location, Vector2 velocity)
+        {
+            Rectangle bRect = new Rectangle(location,
+                new Point(
+                    Constants.PLAYER_BULLET_SIZE,
+                    Constants.PLAYER_BULLET_SIZE
+                    )
+                );
+            PlayerProjectile bullet = new PlayerProjectile(bRect, velocity, squareTexture);
+            updateList.Add(bullet);
+            drawList.Add(bullet);
+            physicsList.Add(bullet);
+        }
+
+        private void CreateCamera(IPosition followTarget)
+        {
+            camera = new Camera(followTarget, Constants.CAMERA_SPEED);
         }
     }
 }

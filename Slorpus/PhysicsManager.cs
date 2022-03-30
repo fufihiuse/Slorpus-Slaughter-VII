@@ -7,141 +7,145 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Slorpus
 {
-    public static class PhysicsManager
+    class PhysicsManager
     {
+        private List<Wall> wallList;
+        private List<IPhysics> physicsObjects;
+        private BulletManager bulletManager;
+
+        public PhysicsManager(List<IPhysics> physicsObjects, List<Wall> wallList, BulletManager bulletManager)
+        {
+            this.physicsObjects = physicsObjects;
+            this.wallList = wallList;
+            this.bulletManager = bulletManager;
+        }
+
+        public void AddPhysicsObject(IPhysics physicsObject)
+        {
+            physicsObjects.Add(physicsObject);
+        }
+
         /// <summary>
         /// Moves objects which implement IPhysics and calls their respective collision handlers if necessary (STRETCH GOAL)
         /// </summary>
-        /// <param name="physicObjects">List of physics objects with speeds and sizes that need to be moved.</param>
-        /// <param name="walls">List of walls that should stop movement.</param>
-        public static void MovePhysics(List<IPhysics> physicObjects, List<Wall> walls)
+        public void MovePhysics(GameTime gameTime)
         {
-            // declare only once to reduce memory reallocation
-            // distance going to be moved
-            Vector2 dist = new Vector2();
-            
+            // declare stuff once to reduce memory allocation and reallocation
+            Vector2 prev = new Vector2();
             // loop through each physics object and move it
-            foreach (IPhysics physicsObject in physicObjects)
+            foreach (IPhysics physicsObject in physicsObjects)
             {
-                // status of collision, used to break out of two loops
-                bool no_collision = true;
-                
-                // distance we are going to move the object
-                dist = physicsObject.GetVelocity();
+                // record the previous position
+                prev = physicsObject.SubpixelCoords;
+                prev.X += physicsObject.Position.Width / 2;
+                prev.Y += physicsObject.Position.Height / 2;
+                // move the physics object
+                physicsObject.Move(physicsObject.Velocity);
 
-                foreach (Wall wall in walls)
+                // now check if it's colliding with any walls n stuff
+                foreach (Wall wall in wallList)
                 {
-                    // check if currently colliding with wall, and if so then move away from it
-                    // this is a failsafe, should not be necessary if the physics are working
-                    if (physicsObject.Position.Intersects(wall.Position))
+                    if (wall.Collision(physicsObject.Position))
                     {
-                        int adjustment_amount = 3;
-                        // create vector pointing away from wall
-                        double dir = Math.Atan2((physicsObject.Position.Y - wall.Position.Y), (physicsObject.Position.X - wall.Position.X));
-
-                        physicsObject.Move(
-                            new Point(
-                                (int)Math.Cos(dir)*adjustment_amount,
-                                (int)Math.Sin(dir)*adjustment_amount
-                                )
-                            );
-                    }
-
-                    Rectangle new_loc = physicsObject.Position;
-                    new_loc.X += (int)dist.X;
-                    new_loc.Y += (int)dist.Y;
-                    // TODO: cache all collided walls, and call moveWithoutCollision with the closest one
-                    if (wall.Collision(new_loc))
-                    {
-                        // call the physic object's collision handler
-                        physicsObject.OnCollision(wall.Position);
-                        
-                        moveWithoutCollision(physicsObject, dist, wall.Position);
-
-                        // we hit something, give up for efficiency's sake
-                        no_collision = false;
+                        // handler
+                        physicsObject.OnCollision<Wall>(wall);
+                        // correct the location of the object to no be colliding
+                        CorrectObject(wall, prev, physicsObject);
+                        // if you collide, remove sub pixel collision so as to prevent
+                        // the object "technically" being inside the wall but not really
+                        physicsObject.Move(-physicsObject.SubpixelOffset);
                         break;
                     }
-                }
-                
-                // move if we didnt already
-                if (no_collision)
-                {
-                    Point real_dist = new Point(
-                        (int)dist.X,
-                        (int)dist.Y
-                        );
-                    physicsObject.Move(real_dist);
                 }
             }
         }
-         
-        /// <summary>
-        /// Moves an object that implements IPhysics by a velocity, but stops if it hits a rectangle.
-        /// </summary>
-        /// <param name="physicsObject">Physics object to move.</param>
-        /// <param name="velocity">Velocity by which the object should be moved.</param>
-        /// <param name="avoidBox">Rectangle hitbox to collide with.</param>
-        /// <returns>Distance to move the object.</returns>
-        private static void moveWithoutCollision(IPhysics physicsObject, Vector2 velocity, Rectangle avoidBox)
-        {           
-            // which direction to increment in
-            int sign = Math.Sign(velocity.X);
-            // if we are moving on X, then move as far as we can
-            if (sign != 0)
+
+        private void CorrectObject(Wall collided, Vector2 previousPos, IPhysics physicsObject)
+        {
+            // this will get multiplied by the overlap amount to create the correction
+            Vector2 correctionCoeff;
+            // distance from where the object was last from to the wall
+            Vector2 diff = new Vector2(
+                previousPos.X,
+                previousPos.Y
+                ) - new Vector2(
+                    collided.Position.Center.X,
+                    collided.Position.Center.Y
+                    );
+            // amount the wall and object are currently overlapping
+            Rectangle overlapRect = Rectangle.Intersect(collided.Position, physicsObject.Position);
+            Vector2 overlap = new Vector2(overlapRect.Width, overlapRect.Height);
+
+            // generate correction coefficients
+            float absX = Math.Abs(diff.X);
+            float absY = Math.Abs(diff.Y);
+            if (absX > absY)
             {
-                for (int i = 0; i < Math.Abs(velocity.X); i++)
-                {
-                    physicsObject.Move(new Point(sign, 0));
-                    if (physicsObject.Position.Intersects(avoidBox))
-                    {
-                        // undo movement bc we're hitting now
-                        physicsObject.Move(new Point(-sign, 0));
-                        // we've hit a wall, lets lose our velocity
-                        physicsObject.Velocity = new Vector2(0, physicsObject.Velocity.Y);
-                        break;
-                    }
-                }
+                correctionCoeff = new Vector2(Math.Sign(diff.X), 0);
+                // we are correcting X which means we collided on that axis
+                // remove X velocity
+                physicsObject.Velocity = new Vector2(0, physicsObject.Velocity.Y);
+            }
+            else
+            {
+                correctionCoeff = new Vector2(0, Math.Sign(diff.Y));
+                // we are correcting Y which means we collided on that axis
+                // remove Y velocity
+                physicsObject.Velocity = new Vector2(physicsObject.Velocity.X, 0);
             }
 
-            sign = Math.Sign(velocity.Y);
-            // if we are moving on Y, then move as far as we can
-            if (sign != 0)
+            // move object by the right correction amount
+            physicsObject.Move(Vector2.Multiply(correctionCoeff, overlap));
+
+            // check if recursion is necessary
+            foreach (Wall wall in wallList)
             {
-                for (int i = 0; i < Math.Abs(velocity.Y); i++)
+                if (wall.Collision(physicsObject.Position))
                 {
-                    physicsObject.Move(new Point(0, sign));
-                    if (physicsObject.Position.Intersects(avoidBox))
-                    {
-                        // undo movement bc we're hitting now
-                        physicsObject.Move(new Point(0, -sign));
-                        // we've hit a wall, lets lose our velocity
-                        physicsObject.Velocity = new Vector2(physicsObject.Velocity.X, 0);
-                        break;
-                    }
+                    physicsObject.OnCollision<Wall>(wall);
+                    CorrectObject(wall, previousPos, physicsObject);
+                    break;
                 }
             }
         }
         
         /// <summary>
-        /// Physics object movement for if a long list of physics objects have identical sizes.
+        /// Moves bullets and calls bulletManager.Destroy if they hit a wall.
         /// </summary>
-        /// <param name="physicObjects">Objects that implement IPointPhysics at least.</param>
         /// <param name="size">The size that every physics object has.</param>
-        /// <param name="walls">List of walls that should stop movement.</param>
-        public static void MovePointPhysics(List<IPointPhysics> physicObjects, Point size, Wall[,] walls)
+        public void CollideAndMoveBullets(GameTime gametime, Point size)
         {
-            foreach (IPhysics p in physicObjects)
+            // indexes of bullets that need to be removed after this loop
+            List<int> queuedBullets = new List<int>();
+            
+            for (int i = 0; i < bulletManager.Length; i++)
             {
                 // placeholder, no collision
                 // TODO : check if this works on value types, or if the changes pass out of scope after this loop
-                p.Move(
+                bulletManager[i].Move(
                     new Point(
-                        (int)p.Velocity.X,
-                        (int)p.Velocity.Y
+                        (int)bulletManager[i].Velocity.X,
+                        (int)bulletManager[i].Velocity.Y
                         )
                     );
+                
+                foreach (IPhysics hit in physicsObjects)
+                {
+                    if (hit.Position.Contains(bulletManager[i].Position))
+                    {
+                        bulletManager[i].OnCollision<IPhysics>(hit);
+                    }
+                }
+                for (int w = 0; w < wallList.Count; w++)
+                {
+                    if (wallList[w].Position.Contains(bulletManager[i].Position))
+                    {
+                        bulletManager[i].OnCollision<Wall>(wallList[w]);
+                        queuedBullets.Add(i);
+                    }
+                }
             }
+            bulletManager.DestroyBatch(queuedBullets.ToArray());
         }
     }
 }
