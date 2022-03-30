@@ -133,7 +133,7 @@ namespace Slorpus
             }
             if (kb.IsKeyDown(Keys.F))
             {
-                SoundEffects.PlayEffect(0);
+                SoundEffects.PlayEffect(1);
             }
             xin += xTemp;
             yin += yTemp;

@@ -35,6 +35,7 @@ namespace Slorpus
                 Wall tempWall = (Wall)(object)other;
                 if (tempWall.IsMirror)
                 {
+                    SoundEffects.PlayEffect(2);
                     if(Math.Abs(vel.X) > Math.Abs(vel.Y))
                     {
                         vel *= new Vector2(-1, 1);
