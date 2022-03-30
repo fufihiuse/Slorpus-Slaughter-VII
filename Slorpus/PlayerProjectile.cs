@@ -22,7 +22,9 @@ namespace Slorpus
 
         void IDraw.Draw(SpriteBatch sb)
         {
-            sb.Draw(asset, Position, Color.White);
+            Rectangle target = Position;
+            target.Location -= Camera.Offset;
+            sb.Draw(asset, target, Color.White);
         }
 
         public override void OnCollision<T>(T other) 

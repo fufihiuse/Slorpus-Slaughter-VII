@@ -121,6 +121,8 @@ namespace Slorpus
             //checks if enemy is dead or alive
             FireBullets(shootingPattern);
             // enemy logic, called by enemy manager
+
+            FireBullets();
         }
     }
 }
