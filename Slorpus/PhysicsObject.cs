@@ -28,7 +28,20 @@ namespace Slorpus
                     pos.Y + subPixelOffset.Y );
             }
         }
-
+        public int posX
+        {
+            get
+            {
+                return pos.X;
+            }
+        }
+        public int PosY
+        {
+            get
+            {
+                return pos.Y;
+            }
+        }        
         //constructor
         public PhysicsObject(Rectangle pos, Vector2 vel, int width, int height)
         {

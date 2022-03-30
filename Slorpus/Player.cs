@@ -44,7 +44,7 @@ namespace Slorpus
         {
             // key pressed logic
         }
-        
+
         /// <summary>
         /// Called by main whenever mouse state changes.
         /// </summary>
