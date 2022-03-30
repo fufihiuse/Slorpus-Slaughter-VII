@@ -23,7 +23,6 @@ namespace Slorpus
 
         private EnemyBullet[] wantedBullets;
 
-
         //properties
         public int Health
         {
@@ -94,12 +93,30 @@ namespace Slorpus
         /// <returns></returns>
         public EnemyBullet[] FireBullets(ShootingPattern enemyGoop)
         {
+            
+        }
+        /// <summary>
+        /// when enemy DIES do this
+        /// </summary>
+        public void DeathAnimation()
+        {
+            if (isDead)
+            {
+
+            }
+            //  WHEN ENEMY HEALTH 0
+            //  PLAY DEATH ANIMATION
+        }
+
+        public EnemyBullet[] FireBullets(ShootingPattern enemyGoop)
+        {
             switch (enemyGoop)
             {
                 case ShootingPattern.Ensconcing:
+
                     wantedBullets = new EnemyBullet[1];
                     wantedBullets[0].Position = new Point(Position.X, Position.Y);
-                    
+
                     //  bullet is shot from enemy position, velocity is added to pos x and y
                     break;
                 case ShootingPattern.HomingAttack:
@@ -108,7 +125,6 @@ namespace Slorpus
                     break;
             }
 
-            // return bullets that we want to fire
             return new EnemyBullet[0];
         }
 
@@ -117,8 +133,6 @@ namespace Slorpus
             //checks if enemy is dead or alive
             FireBullets(shootingPattern);
             // enemy logic, called by enemy manager
-
-            FireBullets();
         }
     }
 }
