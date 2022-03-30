@@ -87,15 +87,6 @@ namespace Slorpus
         }
 
         /// <summary>
-        /// enemy shoots goop, depending on enemy diff goop patterns
-        /// </summary>
-        /// <param name="enemyGoop"></param>
-        /// <returns></returns>
-        public EnemyBullet[] FireBullets(ShootingPattern enemyGoop)
-        {
-            
-        }
-        /// <summary>
         /// when enemy DIES do this
         /// </summary>
         public void DeathAnimation()
@@ -113,9 +104,9 @@ namespace Slorpus
             switch (enemyGoop)
             {
                 case ShootingPattern.Ensconcing:
-
                     wantedBullets = new EnemyBullet[1];
-                    wantedBullets[0].Position = new Point(Position.X, Position.Y);
+                    wantedBullets[0].Move(new Point(1, 1));
+
 
                     //  bullet is shot from enemy position, velocity is added to pos x and y
                     break;
