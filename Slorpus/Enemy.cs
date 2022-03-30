@@ -97,12 +97,14 @@ namespace Slorpus
             switch (enemyGoop)
             {
                 case ShootingPattern.Ensconcing:
-                    //wantedBullets = new EnemyBullet();    //TODO: fix wtf
-                    //  CODE FOR SPIRAL SHOOTY
+                    wantedBullets = new EnemyBullet[1];
+                    wantedBullets[0].Position = new Point(Position.X, Position.Y);
+                    
+                    //  bullet is shot from enemy position, velocity is added to pos x and y
                     break;
                 case ShootingPattern.HomingAttack:
-                    //  CODE FOR HOMING SHOOTY
-                    //  NEED PLAYER COORDS
+                    wantedBullets = new EnemyBullet[1];
+
                     break;
             }
 
@@ -113,8 +115,10 @@ namespace Slorpus
         public void Update()
         {
             //checks if enemy is dead or alive
-            //
+            FireBullets(shootingPattern);
             // enemy logic, called by enemy manager
+
+            FireBullets();
         }
     }
 }
