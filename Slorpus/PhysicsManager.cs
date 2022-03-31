@@ -65,7 +65,14 @@ namespace Slorpus
                 }
             }
         }
-
+        
+        /// <summary>
+        /// Moves an object so that is it no longer colliding with a certain wall,
+        /// and then recurses to ensure it is not colliding with any other walls.
+        /// </summary>
+        /// <param name="collided">The wall being collided with.</param>
+        /// <param name="previousPos">Position of the object before it began overlapping.</param>
+        /// <param name="physicsObject">The object that is colliding.</param>
         private void CorrectObject(Wall collided, Vector2 previousPos, IPhysics physicsObject)
         {
             // this will get multiplied by the overlap amount to create the correction
