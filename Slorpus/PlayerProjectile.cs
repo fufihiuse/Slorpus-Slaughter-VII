@@ -55,12 +55,10 @@ namespace Slorpus
                     if(Math.Abs(Position.X - wantedPosition.X) > Math.Abs(Position.Y - wantedPosition.Y))
                     {
                         vel = prevVel * new Vector2(-1, 1);
-                        Console.WriteLine("Bounced on X");
                     }
                     else
                     {
                         vel = prevVel * new Vector2(1, -1);
-                        Console.WriteLine("Bounced on Y");
                     }
                     //canReflect = false;
                 }
