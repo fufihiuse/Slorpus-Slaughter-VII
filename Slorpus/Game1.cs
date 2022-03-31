@@ -112,13 +112,6 @@ namespace Slorpus
             foreach (IUpdate u in updateList)
             {
                 u.Update(gameTime);
-                
-                //Debug
-                if (u.GetType() == typeof(PlayerProjectile))
-                {
-                    PlayerProjectile tempPP = (PlayerProjectile)(object)u;
-                    Console.WriteLine(tempPP.Velocity);
-                }
             }
 
             // check for changes in input

@@ -42,18 +42,20 @@ namespace Slorpus
                 // move the physics object
                 physicsObject.Move(physicsObject.Velocity);
 
+                Point wantedLocation = physicsObject.Position.Location;
+                Vector2 previousVelocity = physicsObject.Velocity;
+
                 // now check if it's colliding with any walls n stuff
                 foreach (Wall wall in wallList)
                 {
                     if (wall.Collision(physicsObject.Position))
                     {
-                        // handler
-                        physicsObject.OnCollision<Wall>(wall);
                         // correct the location of the object to no be colliding
-                        if (physicsObject.GetType() != typeof(PlayerProjectile))
-                        {
-                            CorrectObject(wall, prev, physicsObject);
-                        }
+                        CorrectObject(wall, prev, physicsObject);
+
+                        // handlers
+                        physicsObject.OnCollisionComplex(wall, previousVelocity, wantedLocation);
+                        physicsObject.OnCollision(wall);
 
                         // if you collide, remove sub pixel collision so as to prevent
                         // the object "technically" being inside the wall but not really

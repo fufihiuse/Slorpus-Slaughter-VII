@@ -42,8 +42,9 @@ namespace Slorpus
             target.Location -= Camera.Offset;
             sb.Draw(asset, target, Color.White);
         }
+        public override void OnCollision<T>(T other) { }
 
-        public override void OnCollision<T>(T other) 
+        public override void OnCollisionComplex<T>(T other, Vector2 prevVel, Point wantedPosition) 
         {
             // get destroyed or play an effect or something when colliding with a wall
             if (typeof(T) == typeof(Wall))
@@ -51,15 +52,17 @@ namespace Slorpus
                 Wall tempWall = (Wall)(object)other;
                 if (tempWall.IsMirror && canReflect)
                 {
-                    if(Math.Abs(this.Position.X - tempWall.Position.X) > Math.Abs(this.Position.Y - tempWall.Position.Y))
+                    if(Math.Abs(Position.X - wantedPosition.X) > Math.Abs(Position.Y - wantedPosition.Y))
                     {
-                        vel *= new Vector2(-1, 1);
+                        vel = prevVel * new Vector2(-1, 1);
+                        Console.WriteLine("Bounced on X");
                     }
                     else
                     {
-                        vel *= new Vector2(1, -1);
+                        vel = prevVel * new Vector2(1, -1);
+                        Console.WriteLine("Bounced on Y");
                     }
-                    canReflect = false;
+                    //canReflect = false;
                 }
             }
         }
