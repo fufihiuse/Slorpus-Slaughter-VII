@@ -56,6 +56,7 @@ namespace Slorpus
                 sb.Draw(bulletAsset, drawRect, Color.White);
             }
         }
+
         /// <summary>
         /// Draws all bullets.
         /// </summary>
