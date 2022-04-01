@@ -7,12 +7,22 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Slorpus
 {
-    class PlayerProjectile : PhysicsObject, IUpdate, IDraw
+    class PlayerProjectile : PhysicsObject, IUpdate, IDraw, IDestroyable
     {
         Texture2D asset;
-        public PlayerProjectile(Rectangle pos, Vector2 vel, Texture2D asset): base(pos, vel)
+        Action<IDestroyable> destroy;
+        
+        /// <summary>
+        /// Creates a bullet projectile which would be fired by the player.
+        /// </summary>
+        /// <param name="pos">Starting position of the bullet.</param>
+        /// <param name="vel">Starting velocity of the bullet, usually constant.</param>
+        /// <param name="asset">The bullet's texture.</param>
+        /// <param name="destroy">Function that is called on the bullet to destroy it.</param>
+        public PlayerProjectile(Rectangle pos, Vector2 vel, Texture2D asset, Action<IDestroyable> destroy): base(pos, vel)
         {
             this.asset = asset;
+            this.destroy = destroy;
         }
 
         void IUpdate.Update(GameTime gameTime)
@@ -27,7 +37,13 @@ namespace Slorpus
             sb.Draw(asset, target, Color.White);
         }
 
-        public override void OnCollision<T>(T other) 
+        public void Destroy()
+        {
+            destroy(this);
+        }
+        
+        // Handles bouncing off mirrors.
+        public override void OnCollisionComplex<T>(T other, Vector2 prevVel, Point wantedPosition) 
         {
             // get destroyed or play an effect or something when colliding with a wall
             if (typeof(T) == typeof(Wall))
@@ -35,14 +51,23 @@ namespace Slorpus
                 Wall tempWall = (Wall)(object)other;
                 if (tempWall.IsMirror)
                 {
-                    if(Math.Abs(vel.X) > Math.Abs(vel.Y))
+                    SoundEffects.PlayEffect(2); // Plays firing off mirror sound effect
+                    // get if the normal is primarily X or Y
+                    if(Math.Abs(Position.X - wantedPosition.X) > Math.Abs(Position.Y - wantedPosition.Y))
                     {
-                        vel *= new Vector2(-1, 1);
+                        // reflect across the Y axis
+                        vel = prevVel * new Vector2(-1, 1);
                     }
                     else
                     {
-                        vel *= new Vector2(1, -1);
+                        // reflect across the X axis
+                        vel = prevVel * new Vector2(1, -1);
                     }
+                }
+                else
+                {
+                    // just hit a regular wall, now destroy
+                    Destroy();
                 }
             }
         }

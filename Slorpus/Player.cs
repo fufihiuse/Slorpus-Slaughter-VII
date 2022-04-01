@@ -4,6 +4,8 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 
 namespace Slorpus
 {
@@ -44,7 +46,8 @@ namespace Slorpus
         {
             // key pressed logic
         }
-        
+
+
         /// <summary>
         /// Called by main whenever mouse state changes.
         /// </summary>
@@ -70,6 +73,8 @@ namespace Slorpus
                 // test screenshake
                 Camera.Shake(10, 5);
                 //bullets--;
+
+                SoundEffects.PlayEffect(0); // Plays firing sound effect
             }
         }
 
@@ -126,7 +131,6 @@ namespace Slorpus
             {
                 yTemp = 0f;
             }
-
             xin += xTemp;
             yin += yTemp;
 

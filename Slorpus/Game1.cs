@@ -16,6 +16,7 @@ namespace Slorpus
         // important objects
         Camera camera;
         Screen screen;
+        Action<IDestroyable> remove_object;
 
         // input
         MouseState prevMS;
@@ -33,6 +34,8 @@ namespace Slorpus
         List<Enemy> enemyList;
         EnemyBullet[] bulletList;
         List<Wall> wallList;
+        SoundEffects soundEffects;
+        Queue<IDestroyable> destroy_queue;
         
         // more lists, these are for special objects that subscribe to certain events
         List<IUpdate> updateList;
@@ -53,6 +56,12 @@ namespace Slorpus
             enemyList = new List<Enemy>();
             wallList = new List<Wall>();
             bulletList = new EnemyBullet[100];
+            destroy_queue = new Queue<IDestroyable>();
+            
+            // anonymous function that is used to destroy any IDestroyable object
+            remove_object = (IDestroyable destroy_bullet) => {
+                destroy_queue.Enqueue(destroy_bullet);
+            };
 
             prevMS = Mouse.GetState();
             prevKB = Keyboard.GetState();
@@ -63,6 +72,7 @@ namespace Slorpus
                 _graphics.PreferredBackBufferHeight
                 )
             );
+            soundEffects = new SoundEffects();
             screen.Use();
 
             base.Initialize();
@@ -86,9 +96,8 @@ namespace Slorpus
             bulletManager = new BulletManager(bulletList, squareTexture);
             enemyManager = new EnemyManager(enemyList, squareTexture, bulletManager);
             physicsManager = new PhysicsManager(physicsList, wallList, bulletManager);
-
             // parse data read from level
-            levelParser.GetEnemies(enemyList, levelList, squareTexture, squareTexture);
+            levelParser.GetEnemies(enemyList, levelList, squareTexture, squareTexture, remove_object);
             levelParser.GetWalls(wallList, levelList);
             
             // bullet creation function
@@ -102,6 +111,7 @@ namespace Slorpus
             drawList = levelParser.Drawables;
             mouseClickList = levelParser.MouseClickables;
             keyPressList = levelParser.KeyPressables;
+            SoundEffects.AddSounds(Content);
         }
 
         protected override void Update(GameTime gameTime)
@@ -123,6 +133,7 @@ namespace Slorpus
             {
                 OnMouseClick(prevMS);
             }
+            
 
             enemyManager.UpdateEnemies(gameTime);
             physicsManager.MovePhysics(gameTime);
@@ -135,6 +146,38 @@ namespace Slorpus
             // update previous keyboard state
             prevKB = Keyboard.GetState();
             prevMS = Mouse.GetState();
+
+            // clean up objects that need to be destroyed
+            while (destroy_queue.Count > 0)
+            {
+                IDestroyable destroy_target = destroy_queue.Dequeue();
+                // try to remove this object from all the lists
+                // with the exception of walls and enemy bullets!!!
+                try
+                {
+                    IUpdate update_version = (IUpdate)destroy_target;
+                    updateList.Remove(update_version);
+                }
+                catch (InvalidCastException) { /* do nothing */ }
+                try
+                {
+                    IDraw draw_target = (IDraw)destroy_target;
+                    drawList.Remove(draw_target);
+                }
+                catch (InvalidCastException) { /* do nothing */ }
+                try
+                {
+                    IPhysics physics_target = (IPhysics)destroy_target;
+                    physicsList.Remove(physics_target);
+                }
+                catch (InvalidCastException) { /* do nothing */ }
+                try
+                {
+                    Enemy enemy_target = (Enemy)destroy_target;
+                    enemyList.Remove(enemy_target);
+                }
+                catch (InvalidCastException) { /* do nothing */ }
+            }
         }
         
         /// <summary>
@@ -189,7 +232,7 @@ namespace Slorpus
             base.Draw(gameTime);
             _spriteBatch.End();
         }
-        
+
         /// <summary>
         /// Proof of concept method that creates the player bullet. Delegated to the player.
         /// </summary>
@@ -203,7 +246,7 @@ namespace Slorpus
                     Constants.PLAYER_BULLET_SIZE
                     )
                 );
-            PlayerProjectile bullet = new PlayerProjectile(bRect, velocity, squareTexture);
+            PlayerProjectile bullet = new PlayerProjectile(bRect, velocity, squareTexture, remove_object);
             updateList.Add(bullet);
             drawList.Add(bullet);
             physicsList.Add(bullet);
