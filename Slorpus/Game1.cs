@@ -81,7 +81,10 @@ namespace Slorpus
 
         protected override void Update(GameTime gameTime)
         {
-            uiManager.Update(Mouse.GetState());
+            KeyboardState kb = Keyboard.GetState();
+            MouseState ms = Mouse.GetState();
+
+            uiManager.Update(ms, kb);
             //only update the game if the gamestate is game
             if(uiManager.CurrentGameState == GameState.Game)
             {
@@ -89,7 +92,6 @@ namespace Slorpus
                     Exit();
 
                 // TODO: Add your update logic here
-                KeyboardState kb = Keyboard.GetState();
 
                 enemyManager.UpdateEnemies(gameTime);
                 physicsManager.MovePhysics(gameTime);
