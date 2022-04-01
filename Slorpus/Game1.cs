@@ -135,6 +135,7 @@ namespace Slorpus
             // update previous keyboard state
             prevKB = Keyboard.GetState();
             prevMS = Mouse.GetState();
+
         }
         
         /// <summary>
