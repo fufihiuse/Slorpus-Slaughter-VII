@@ -36,6 +36,7 @@ namespace Slorpus
                 Wall tempWall = (Wall)(object)other;
                 if (tempWall.IsMirror)
                 {
+                    SoundEffects.PlayEffect(2);
                     // get if the normal is primarily X or Y
                     if(Math.Abs(Position.X - wantedPosition.X) > Math.Abs(Position.Y - wantedPosition.Y))
                     {
