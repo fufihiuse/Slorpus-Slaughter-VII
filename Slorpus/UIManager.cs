@@ -95,26 +95,26 @@ namespace Slorpus
             //menu
             menuStart = new Button(new Rectangle(20, 20, 40, 40),
                 standard, hover, active);
-            menuSettings = new Button(new Rectangle(20, 50, 40, 40), 
+            menuSettings = new Button(new Rectangle(20, 60, 40, 40), 
                 standard, hover, active);
             menuExit = new Button(new Rectangle(20, 100, 40, 40), 
                 standard, hover, active);
             //settings
-            godMode = new Button(new Rectangle(20, 20, 40, 40),
+            godMode = new Button(new Rectangle(60, 20, 40, 40),
                 standard, hover, active);
-            back = new Button(new Rectangle(20, 50, 40, 40),
+            back = new Button(new Rectangle(60, 60, 40, 40),
                 standard, hover, active);
             //pause
-            resume = new Button(new Rectangle(20, 50, 40, 40),
+            resume = new Button(new Rectangle(100, 20, 40, 40),
                 standard, hover, active);
-            pauseSettings = new Button(new Rectangle(20, 50, 40, 40),
+            pauseSettings = new Button(new Rectangle(100, 60, 40, 40),
                 standard, hover, active);
-            pauseExit = new Button(new Rectangle(20, 100, 40, 40),
+            pauseExit = new Button(new Rectangle(100, 100, 40, 40),
                 standard, hover, active);
             //gameover
-            retry = new Button(new Rectangle(20, 20, 40, 40),
+            retry = new Button(new Rectangle(140, 20, 40, 40),
                 standard, hover, active);
-            gameOverMenu = new Button(new Rectangle(20, 50, 40, 40),
+            gameOverMenu = new Button(new Rectangle(140, 60, 40, 40),
                 standard, hover, active);
 
             //add buttons to lists
