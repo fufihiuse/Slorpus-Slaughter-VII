@@ -131,10 +131,6 @@ namespace Slorpus
             {
                 yTemp = 0f;
             }
-            if (kb.IsKeyDown(Keys.F))
-            {
-                SoundEffects.PlayEffect(1);
-            }
             xin += xTemp;
             yin += yTemp;
 
