@@ -12,7 +12,7 @@ namespace Slorpus
         Ensconcing,         //any shooting pattern that doesn't track the enemy
         HomingAttack        //goop ball that tracks the player
     }
-    public class Enemy: PhysicsObject
+    class Enemy: PhysicsObject, IDestroyable
     {
         //fields
         private Texture2D enemyAsset;
@@ -20,6 +20,7 @@ namespace Slorpus
         private int damage;
         private ShootingPattern shootingPattern;
         private bool isDead;
+        Action<IDestroyable> destroy;
 
         //properties
         public int Health
@@ -52,11 +53,15 @@ namespace Slorpus
         /// <param name="vel"></param>
         /// <param name="enemyAsset"></param>
         /// <param name="shootingPattern"></param>
-        public Enemy(Rectangle pos, Vector2 vel, Texture2D enemyAsset ,ShootingPattern shootingPattern)
+        /// <param name="destroyFunc">Action delegate that destroys this enemy.</param>
+        public Enemy(Rectangle pos, Vector2 vel,
+            Texture2D enemyAsset, ShootingPattern shootingPattern,
+            Action<IDestroyable> destroy)
             : base(pos, vel)
         {
             this.enemyAsset = enemyAsset;
             this.shootingPattern = shootingPattern;
+            this.destroy = destroy;
             health = 1;
             damage = 1;
             isDead = false;
@@ -118,6 +123,14 @@ namespace Slorpus
             // enemy logic, called by enemy manager
 
             FireBullets();
+        }
+        
+        /// <summary>
+        /// Destroy this enemy.
+        /// </summary>
+        public void Destroy()
+        {
+            destroy(this);
         }
     }
 }
