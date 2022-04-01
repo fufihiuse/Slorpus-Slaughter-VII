@@ -74,7 +74,7 @@ namespace Slorpus
                 Camera.Shake(10, 5);
                 //bullets--;
 
-                SoundEffects.PlayEffect(0);
+                SoundEffects.PlayEffect(0); // Plays firing sound effect
             }
         }
 
