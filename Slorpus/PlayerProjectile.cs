@@ -7,12 +7,22 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Slorpus
 {
-    class PlayerProjectile : PhysicsObject, IUpdate, IDraw
+    class PlayerProjectile : PhysicsObject, IUpdate, IDraw, IDestroyable
     {
         Texture2D asset;
-        public PlayerProjectile(Rectangle pos, Vector2 vel, Texture2D asset): base(pos, vel)
+        Action<IDestroyable> destroy;
+        
+        /// <summary>
+        /// Creates a bullet projectile which would be fired by the player.
+        /// </summary>
+        /// <param name="pos">Starting position of the bullet.</param>
+        /// <param name="vel">Starting velocity of the bullet, usually constant.</param>
+        /// <param name="asset">The bullet's texture.</param>
+        /// <param name="destroy">Function that is called on the bullet to destroy it.</param>
+        public PlayerProjectile(Rectangle pos, Vector2 vel, Texture2D asset, Action<IDestroyable> destroy): base(pos, vel)
         {
             this.asset = asset;
+            this.destroy = destroy;
         }
 
         void IUpdate.Update(GameTime gameTime)
@@ -25,6 +35,11 @@ namespace Slorpus
             Rectangle target = Position;
             target.Location -= Camera.Offset;
             sb.Draw(asset, target, Color.White);
+        }
+
+        public void Destroy()
+        {
+            destroy(this);
         }
         
         // Handles bouncing off mirrors.
@@ -48,6 +63,11 @@ namespace Slorpus
                         // reflect across the X axis
                         vel = prevVel * new Vector2(1, -1);
                     }
+                }
+                else
+                {
+                    // just hit a regular wall, now destroy
+                    Destroy();
                 }
             }
         }
