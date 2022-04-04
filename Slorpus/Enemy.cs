@@ -12,7 +12,7 @@ namespace Slorpus
         Ensconcing,         //any shooting pattern that doesn't track the enemy
         HomingAttack        //goop ball that tracks the player
     }
-    public class Enemy: PhysicsObject
+    class Enemy: PhysicsObject, IDestroyable
     {
         //fields
         private Texture2D enemyAsset;
@@ -20,6 +20,9 @@ namespace Slorpus
         private int damage;
         private ShootingPattern shootingPattern;
         private bool isDead;
+        Action<IDestroyable> destroy;
+        EnemyBullet[] wantedBullets;
+        int timer;
 
         //properties
         public int Health
@@ -52,14 +55,20 @@ namespace Slorpus
         /// <param name="vel"></param>
         /// <param name="enemyAsset"></param>
         /// <param name="shootingPattern"></param>
-        public Enemy(Rectangle pos, Vector2 vel, Texture2D enemyAsset ,ShootingPattern shootingPattern)
+        /// <param name="destroyFunc">Action delegate that destroys this enemy.</param>
+        public Enemy(Rectangle pos, Vector2 vel,
+            Texture2D enemyAsset, ShootingPattern shootingPattern,
+            Action<IDestroyable> destroy)
             : base(pos, vel)
         {
             this.enemyAsset = enemyAsset;
             this.shootingPattern = shootingPattern;
+            this.destroy = destroy;
             health = 1;
             damage = 1;
             isDead = false;
+            wantedBullets = new EnemyBullet[0];
+            timer = 0;
         }
 
         //methods:
@@ -113,7 +122,9 @@ namespace Slorpus
         public EnemyBullet[] FireBullets()
         {
             // return bullets that we want to fire
-            return new EnemyBullet[0];
+            EnemyBullet[] temp = wantedBullets;
+            wantedBullets = new EnemyBullet[0];
+            return temp;
         }
 
         public void Update()
@@ -121,8 +132,21 @@ namespace Slorpus
             //checks if enemy is dead or alive
             FireBullets(shootingPattern);
             // enemy logic, called by enemy manager
-
-            FireBullets();
+            timer++;
+            if (timer >= 60)
+            {
+                wantedBullets = new EnemyBullet[1];
+                wantedBullets[0] = new EnemyBullet(Position.Location, new Vector2(1, 0));
+                timer = 0;
+            }
+        }
+        
+        /// <summary>
+        /// Destroy this enemy.
+        /// </summary>
+        public void Destroy()
+        {
+            destroy(this);
         }
     }
 }

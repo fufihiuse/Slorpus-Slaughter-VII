@@ -129,7 +129,12 @@ namespace Slorpus
         /// <param name="homeEnemyAsset">Asset for enemies with the homing attack.</param>
         /// <param name="enscEnemyAsset">Assets for enemies with the ensconcing attack.</param>
         /// <returns>A list of all enemies in the current level.</returns>
-        public void GetEnemies(List<Enemy> enemyList, List<GenericEntity> entityList, Texture2D homeEnemyAsset, Texture2D enscEnemyAsset)
+        public void GetEnemies(
+            List<Enemy> enemyList,
+            List<GenericEntity> entityList,
+            Texture2D homeEnemyAsset,
+            Texture2D enscEnemyAsset,
+            Action<IDestroyable> destroy)
         { 
             foreach (GenericEntity ge in entityList)
             {
@@ -144,7 +149,8 @@ namespace Slorpus
                                 ),
                             Vector2.Zero,
                             enscEnemyAsset,
-                            ShootingPattern.Ensconcing);
+                            ShootingPattern.Ensconcing,
+                            destroy);
                         SortItem(e);
                         enemyList.Add(e);
                         break;
@@ -159,7 +165,8 @@ namespace Slorpus
                                 ),
                             Vector2.Zero,
                             homeEnemyAsset,
-                            ShootingPattern.HomingAttack);
+                            ShootingPattern.HomingAttack,
+                            destroy);
                         SortItem(h);
                         enemyList.Add(h);
                         break;
