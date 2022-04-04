@@ -49,7 +49,7 @@ namespace Slorpus
             foreach (Enemy e in enemyList)
             {
                 e.Update();
-                bulletManager.FireBatch(e.FireBullets(e.ShootingPattern));
+                bulletManager.FireBatch(e.FireBullets());
             }
         }
     }
