@@ -122,6 +122,7 @@ namespace Slorpus
             {
                 // placeholder, no collision
                 // TODO : check if this works on value types, or if the changes pass out of scope after this loop
+                
                 bulletManager[i].Move(
                     new Point(
                         (int)bulletManager[i].Velocity.X,

@@ -37,7 +37,7 @@ namespace Slorpus
             {
                 target.Location = e.Position.Location - Camera.Offset;
                 target.Size = e.Position.Size;
-                sb.Draw(enemyAsset, target, Color.White);
+                sb.Draw(enemyAsset, target, Color.Red);
             }
         }
         
