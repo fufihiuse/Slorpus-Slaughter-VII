@@ -16,7 +16,7 @@ namespace Slorpus
         public const int PLAYER_SIZE = 16;
         public const int BULLET_SIZE = 5;
         public const int PLAYER_BULLET_SIZE = 10;
-        public const float PLAYER_BULLET_SPEED = 2f;
+        public const float PLAYER_BULLET_SPEED = 6f;
         public const float CAMERA_SPEED = 0.05f;
 
 
