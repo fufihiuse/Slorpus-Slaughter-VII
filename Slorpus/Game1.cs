@@ -24,6 +24,7 @@ namespace Slorpus
 
         // managers
         Level level;
+        LevelParser levelParser;
         EnemyManager enemyManager;
         BulletManager bulletManager;
         PhysicsManager physicsManager;
@@ -43,6 +44,9 @@ namespace Slorpus
         List<IMouseClick> mouseClickList;
         List<IKeyPress> keyPressList;
 
+        //i need this
+        Rectangle bRect;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -57,7 +61,8 @@ namespace Slorpus
             wallList = new List<Wall>();
             bulletList = new EnemyBullet[100];
             destroy_queue = new Queue<IDestroyable>();
-            
+            levelParser = new LevelParser();
+
             // anonymous function that is used to destroy any IDestroyable object
             remove_object = (IDestroyable destroy_bullet) => {
                 destroy_queue.Enqueue(destroy_bullet);
@@ -91,7 +96,7 @@ namespace Slorpus
         {
             // instantiate all the manager classes on the empty, just initialized lists
             level = new Level(wallList, squareTexture, squareTexture, squareTexture);
-            LevelParser levelParser = new LevelParser();
+            //LevelParser levelParser = new LevelParser();
             List<GenericEntity> levelList = level.LoadFromFile($"..\\..\\..\\levels\\{levelname}.sslvl"); //Loads example level and returns entityList
             bulletManager = new BulletManager(bulletList, squareTexture);
             enemyManager = new EnemyManager(enemyList, squareTexture, bulletManager);
@@ -135,7 +140,7 @@ namespace Slorpus
             }
             
 
-            enemyManager.UpdateEnemies(gameTime);
+            enemyManager.UpdateEnemies(gameTime, levelParser._Player, bRect);
             physicsManager.MovePhysics(gameTime);
             // TODO: get rid of the stupid bullet size argument
             physicsManager.CollideAndMoveBullets(gameTime, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE));
@@ -240,12 +245,13 @@ namespace Slorpus
         /// <param name="velocity">Starting velocity of the bullet.</param>
         public void CreateBullet(Point location, Vector2 velocity)
         {
-            Rectangle bRect = new Rectangle(location,
+            bRect = new Rectangle(location,
                 new Point(
                     Constants.PLAYER_BULLET_SIZE,
                     Constants.PLAYER_BULLET_SIZE
                     )
                 );
+
             PlayerProjectile bullet = new PlayerProjectile(bRect, velocity, squareTexture, remove_object);
             updateList.Add(bullet);
             drawList.Add(bullet);

@@ -25,9 +25,12 @@ namespace Slorpus
             this.destroy = destroy;
         }
 
+        //get player proj pos?
+
         void IUpdate.Update(GameTime gameTime)
         {
             // perform per-frame game logic
+            
         }
 
         void IDraw.Draw(SpriteBatch sb)

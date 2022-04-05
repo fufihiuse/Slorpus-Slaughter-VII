@@ -18,7 +18,7 @@ namespace Slorpus
         public const int PLAYER_BULLET_SIZE = 10;
         public const float PLAYER_BULLET_SPEED = 2f;
         public const float CAMERA_SPEED = 0.05f;
-
-
+        public const float MIN_FOLLOW_DISTANCE = 250f;
+        public const float MIN_DETECTION_DISTANCE = 400;
     }
 }

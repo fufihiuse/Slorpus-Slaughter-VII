@@ -16,6 +16,19 @@ namespace Slorpus
         int bullets;
         // player texture
         Texture2D asset;
+        int health;
+
+        public int Health
+        {
+            get { return health; }
+            set
+            {
+                if(health - value <= 0)
+                {
+                    health = 0;
+                }
+            }
+        }
 
         /// <summary>
         /// Creates a new player

@@ -19,7 +19,7 @@ namespace Slorpus
         protected Vector2 subPixelOffset;
 
         public Vector2 SubpixelOffset { get { return subPixelOffset; } }
-        public Rectangle Position { get { return pos;  } }
+        public virtual Rectangle Position { get { return pos;  } }
         public Vector2 Velocity { get { return vel;  } set { vel = value; } }
         public Vector2 SubpixelCoords { get
             {

@@ -14,29 +14,18 @@ namespace Slorpus
     }
     class Enemy: PhysicsObject, IDestroyable
     {
-        //fields
+        // enemy fields
         private Texture2D enemyAsset;
-        private int health;
         private int damage;
         private ShootingPattern shootingPattern;
-        private bool isDead;
+
+        //bullet fields
         Action<IDestroyable> destroy;
         EnemyBullet[] wantedBullets;
-        int timer;
+        Vector2 direction;
+        private float shoot;
 
         //properties
-        public int Health
-        {
-            get { return health; }
-            set
-            {
-                health = value;
-                if(health <= 0)
-                {
-                    isDead = true;
-                }
-            }
-        }
 
         public int Damage
         {
@@ -64,11 +53,12 @@ namespace Slorpus
             this.enemyAsset = enemyAsset;
             this.shootingPattern = shootingPattern;
             this.destroy = destroy;
-            health = 1;
+
             damage = 1;
-            isDead = false;
+
             wantedBullets = new EnemyBullet[0];
-            timer = 0;
+            direction = new Vector2(1, 0);
+            shoot = 0;
         }
 
         //methods:
@@ -78,42 +68,12 @@ namespace Slorpus
         //  how to make enemy disappear when dead???
 
         /// <summary>
-        /// draws enemy
+        /// Draws enemy
         /// </summary>
         /// <param name="sb"></param>
         public void DrawEnemy(SpriteBatch sb)
         {
             sb.Draw(enemyAsset, Position, Color.White);
-        }
-
-        /// <summary>
-        /// enemy shoots goop, depending on enemy diff goop patterns
-        /// </summary>
-        /// <param name="enemyGoop"></param>
-        public void ShootGoop(ShootingPattern enemyGoop)
-        {
-            switch (enemyGoop)
-            {
-                case ShootingPattern.Ensconcing:
-                    //  CODE FOR SPIRAL SHOOTY
-                    break;
-                case ShootingPattern.HomingAttack:
-                    //  CODE FOR HOMING SHOOTY
-                    //  NEED PLAYER COORDS
-                    break;
-            }
-        }
-        /// <summary>
-        /// when enemy DIES do this
-        /// </summary>
-        public void DeathAnimation()
-        {
-            if (isDead)
-            {
-
-            }
-            //  WHEN ENEMY HEALTH 0
-            //  PLAY DEATH ANIMATION
         }
 
         public EnemyBullet[] FireBullets()
@@ -124,24 +84,118 @@ namespace Slorpus
             return temp;
         }
 
-        public void Update()
+        /// <summary>
+        /// Written to be called each frame and makes enemies shoot a bullet in their respective pattern.
+        /// </summary>
+        /// <param name="shootingPattern"></param>
+        /// <param name="_player"></param>
+        /// <param name="gameTime"></param>
+        public void Update(ShootingPattern shootingPattern, Player _player, GameTime gameTime)
         {
-            // enemy logic, called by enemy manager
-            timer++;
-            if (timer >= 60)
+            shoot += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            wantedBullets = new EnemyBullet[1];         //clears array, loads in new bullet
+            Vector2 toTarget =
+                new Vector2(_player.Position.Location.X, _player.Position.Location.Y) - new Vector2(Position.Location.X, Position.Location.Y);  //gets distance of enemy from player
+
+            switch (shootingPattern)
             {
-                wantedBullets = new EnemyBullet[1];
-                wantedBullets[0] = new EnemyBullet(Position.Location, new Vector2(1, 0));
-                timer = 0;
+                case ShootingPattern.Ensconcing:
+                    if(shoot >= 0.1 && toTarget.Length() <= Constants.MIN_DETECTION_DISTANCE)   //if enough time has passed and player is in range, shoots
+                    {
+                        wantedBullets[0] = new EnemyBullet(
+                                new Point(Position.Location.X + Constants.ENEMY_SIZE / 2, (Position.Location.Y + Constants.ENEMY_SIZE / 2) - 2),
+                                UpdateBulletDirection());
+                        shoot = 0;
+                    }
+                    break;
+
+                case ShootingPattern.HomingAttack:
+                    if(shoot >= 1 && toTarget.Length() <= Constants.MIN_FOLLOW_DISTANCE)    // diff constant, homing should have greater range
+                    {
+                        wantedBullets[0] = new EnemyBullet(
+                            new Point((Position.Location.X + Constants.ENEMY_SIZE/2), (Position.Location.Y + Constants.ENEMY_SIZE/2)-2),
+                            TargetPlayer(_player));
+                        shoot = 0;
+                    }
+                    break;
+                default:
+                    break;
             }
         }
+
+        /// <summary>
+        /// Changes direction vector to make bullets shoot in a spiral pattern and returns new direction.
+        /// </summary>
+        /// //
+        // TODO: having a roatating origin or something could make a nice varied bullet pattern
+        // hardcoded, probs not most efficient but this is what midnight brain yazz could pump out
+        public Vector2 UpdateBulletDirection()
+        {
+            switch (direction)
+            {
+                case (1, 0):
+                    direction = new Vector2(1, 1);
+                    break;
+                case (1, 1):
+                    direction = new Vector2(0, 1);
+                    break;
+                case (0, 1):
+                    direction = new Vector2(-1, 1);
+                    break;
+                case (-1, 1):
+                    direction = new Vector2(-1, 0);
+                    break;
+                case (-1, 0):
+                    direction = new Vector2(-1, -1);
+                    break;
+                case (-1, -1):
+                    direction = new Vector2(0, -1);
+                    break;
+                case (0, -1):
+                    direction = new Vector2(1, -1);
+                    break;
+                case (1, -1):
+                    direction = new Vector2(1, 0);
+                    break;
+                default:
+                    break;
+            }
+            return direction;
+        }
         
+
+        /// <summary>
+        /// Tracks player position and returns updated homing bullet direction.
+        /// </summary>
+        /// <param name="_player"></param>
+        /// <returns></returns>
+        public Vector2 TargetPlayer(Player _player)
+        {
+            Vector2 targetDirection =
+                new Vector2(_player.Position.Location.X, _player.Position.Location.Y) - new Vector2(Position.Location.X, Position.Location.Y);
+            float projSpeed = 4f;
+
+            targetDirection.Normalize();
+            direction = targetDirection * projSpeed; // set to pursuit the target, set speed
+
+            return direction;
+        }
+
         /// <summary>
         /// Destroy this enemy.
         /// </summary>
         public void Destroy()
         {
             destroy(this);
+        }
+
+        //for each enemy in list, should check if bullet is intersecting, remove enemy from list if so
+        public void EnemyDie(Rectangle projectilePos)
+        {
+            if (projectilePos.Intersects(this.Position))
+            {
+                destroy(this);
+            }
         }
     }
 }

@@ -38,9 +38,14 @@ namespace Slorpus
         public void OnCollision<T>(T other)
         {
             // get destroyed or play an effect or something when colliding with a wall
+            // hurt player when colliding with them
             if (typeof(T) == typeof(Wall))
             {
                 // bullet hit wall, etc
+            }
+            else if(typeof(T) == typeof(Player))
+            {
+                
             }
         }
         
