@@ -61,8 +61,8 @@ namespace Slorpus
 
                 // get distance from player to mouse
                 Vector2 vel = new Vector2(
-                    (ms.X + Camera.Position.X)-Position.X,
-                    (ms.Y + Camera.Position.Y)-Position.Y
+                    ((int)ms.X / 16 * 16 + Camera.Position.X)-Position.X,
+                    ((int)ms.Y / 16 * 16 + Camera.Position.Y)-Position.Y
                     );
                 // normalize it
                 vel = Vector2.Normalize(vel);
