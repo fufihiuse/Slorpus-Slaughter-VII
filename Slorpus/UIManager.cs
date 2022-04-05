@@ -32,6 +32,9 @@ namespace Slorpus
         Texture2D background;
         GameState prevGameState;
 
+        //backgrounds
+        Texture2D menuBackground;
+
         //button lists
         List<Button> menuButtons;
         List<Button> gameButtons;
@@ -78,6 +81,7 @@ namespace Slorpus
         {
             //background
             background = content.Load<Texture2D>("enemy");
+            menuBackground = content.Load<Texture2D>("menuBackground");
 
             //testing button textures
             Texture2D standard = content.Load<Texture2D>("buttonPlaceholder");
@@ -93,11 +97,11 @@ namespace Slorpus
 
             //make buttons
             //menu
-            menuStart = new Button(new Rectangle(20, 20, 40, 40),
+            menuStart = new Button(new Rectangle(300, 225, 200, 50),
                 standard, hover, active);
-            menuSettings = new Button(new Rectangle(20, 60, 40, 40), 
+            menuSettings = new Button(new Rectangle(300, 295, 200, 50), 
                 standard, hover, active);
-            menuExit = new Button(new Rectangle(20, 100, 40, 40), 
+            menuExit = new Button(new Rectangle(300, 365, 200, 50), 
                 standard, hover, active);
             //settings
             godMode = new Button(new Rectangle(60, 20, 40, 40),
@@ -213,8 +217,8 @@ namespace Slorpus
                 case GameState.Menu:
                     //draw background
                     sb.Draw(
-                        background, 
-                        new Rectangle(0, 0, 600, 600), 
+                        menuBackground, 
+                        new Rectangle(0, 0, 800, 480), 
                         Color.White
                         );
 
@@ -226,8 +230,6 @@ namespace Slorpus
                     break;
 
                 case GameState.Game:
-                    //draw background
-
                     //draw all gameButtons
                     foreach (Button button in gameButtons)
                     {
@@ -237,6 +239,11 @@ namespace Slorpus
 
                 case GameState.Settings:
                     //draw background
+                    sb.Draw(
+                        background,
+                        new Rectangle(0, 0, 600, 600),
+                        Color.White
+                        );
 
                     //draw all settingsButtons
                     foreach (Button button in settingsButtons)
@@ -247,6 +254,11 @@ namespace Slorpus
 
                 case GameState.Pause:
                     //draw background
+                    sb.Draw(
+                        background,
+                        new Rectangle(0, 0, 600, 600),
+                        Color.White
+                        );
 
                     //draw all pauseButtons
                     foreach (Button button in pauseButtons)
@@ -257,6 +269,11 @@ namespace Slorpus
 
                 case GameState.GameOver:
                     //draw background
+                    sb.Draw(
+                        background,
+                        new Rectangle(0, 0, 600, 600),
+                        Color.White
+                        );
 
                     //draw all gameOverButtons
                     foreach (Button button in gameOverButtons)

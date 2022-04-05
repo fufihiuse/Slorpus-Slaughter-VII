@@ -13,6 +13,7 @@ namespace Slorpus
         private SpriteBatch _spriteBatch;
         private Texture2D squareTexture;
         private KeyboardState kb;
+        private SpriteFont testingFont;
 
         // managers
         Level level;
@@ -71,6 +72,7 @@ namespace Slorpus
             */
 
             uiManager.LoadUI(Content);
+            testingFont = Content.Load<SpriteFont>("Arial12");
 
             physicsList.Add(DEBUG);
 
@@ -125,6 +127,12 @@ namespace Slorpus
             else
             {
                 uiManager.Draw(_spriteBatch);
+                _spriteBatch.DrawString(
+                    testingFont, 
+                    "Width: " + _graphics.PreferredBackBufferWidth + " Height" + _graphics.PreferredBackBufferHeight, 
+                    new Vector2(0,0), 
+                    Color.Black
+                    );
             }
 
             base.Draw(gameTime);
