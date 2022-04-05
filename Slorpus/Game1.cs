@@ -83,7 +83,6 @@ namespace Slorpus
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             squareTexture = Content.Load<Texture2D>("square");
-
             LoadLevel("2");
         }
 
