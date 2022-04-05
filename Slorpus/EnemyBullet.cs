@@ -66,5 +66,7 @@ namespace Slorpus
             pos.X += distance.X;
             pos.Y += distance.Y;
         }
+
+
     }
 }
