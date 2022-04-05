@@ -29,11 +29,14 @@ namespace Slorpus
     {
         //fields  
         GameState currentGameState;
-        Texture2D background;
         GameState prevGameState;
+        MouseState prevMouseState;
 
         //backgrounds
         Texture2D menuBackground;
+        Texture2D settingsBackground;
+        Texture2D pauseBackground;
+        Texture2D gameOverBackground;
 
         //button lists
         List<Button> menuButtons;
@@ -80,8 +83,11 @@ namespace Slorpus
         public void LoadUI(Microsoft.Xna.Framework.Content.ContentManager content)
         {
             //background
-            background = content.Load<Texture2D>("enemy");
             menuBackground = content.Load<Texture2D>("menuBackground");
+            settingsBackground = content.Load<Texture2D>("settingsBackground");
+            pauseBackground = content.Load<Texture2D>("pauseBackground");
+            gameOverBackground = content.Load<Texture2D>("gameOverBackground");
+
 
             //testing button textures
             Texture2D standard = content.Load<Texture2D>("buttonPlaceholder");
@@ -104,21 +110,21 @@ namespace Slorpus
             menuExit = new Button(new Rectangle(300, 365, 200, 50), 
                 standard, hover, active);
             //settings
-            godMode = new Button(new Rectangle(60, 20, 40, 40),
+            godMode = new Button(new Rectangle(300, 295, 200, 50),
                 standard, hover, active);
-            back = new Button(new Rectangle(60, 60, 40, 40),
+            back = new Button(new Rectangle(300, 365, 200, 50),
                 standard, hover, active);
             //pause
-            resume = new Button(new Rectangle(100, 20, 40, 40),
+            resume = new Button(new Rectangle(300, 225, 200, 50),
                 standard, hover, active);
-            pauseSettings = new Button(new Rectangle(100, 60, 40, 40),
+            pauseSettings = new Button(new Rectangle(300, 295, 200, 50),
                 standard, hover, active);
-            pauseExit = new Button(new Rectangle(100, 100, 40, 40),
+            pauseExit = new Button(new Rectangle(300, 365, 200, 50),
                 standard, hover, active);
             //gameover
-            retry = new Button(new Rectangle(140, 20, 40, 40),
+            retry = new Button(new Rectangle(300, 295, 200, 50),
                 standard, hover, active);
-            gameOverMenu = new Button(new Rectangle(140, 60, 40, 40),
+            gameOverMenu = new Button(new Rectangle(300, 365, 200, 50),
                 standard, hover, active);
 
             //add buttons to lists
@@ -142,70 +148,74 @@ namespace Slorpus
         /// </summary>
         public void Update(MouseState ms, KeyboardState ks)
         {
-            switch (currentGameState)
+            if(prevMouseState.LeftButton != ButtonState.Pressed)
             {
-                case GameState.Menu:
-                    //update buttons
-                    if (menuStart.Update(ms))
-                    {
-                        currentGameState = GameState.Game;
-                    }
-                    if (menuSettings.Update(ms))
-                    {
-                        currentGameState = GameState.Settings;
-                        prevGameState = GameState.Menu;
-                    }
-                    if (menuExit.Update(ms))
-                    {
-                        Environment.Exit(0);
-                    }
-                    break;
+                switch (currentGameState)
+                {
+                    case GameState.Menu:
+                        //update buttons
+                        if (menuStart.Update(ms))
+                        {
+                            currentGameState = GameState.Game;
+                        }
+                        if (menuSettings.Update(ms))
+                        {
+                            currentGameState = GameState.Settings;
+                            prevGameState = GameState.Menu;
+                        }
+                        if (menuExit.Update(ms))
+                        {
+                            Environment.Exit(0);
+                        }
+                        break;
 
-                case GameState.Game:
-                    if (ks.IsKeyDown(Keys.P))
-                    {
-                        currentGameState = GameState.Pause;
-                    }
-                    break;
+                    case GameState.Game:
+                        if (ks.IsKeyDown(Keys.P))
+                        {
+                            currentGameState = GameState.Pause;
+                        }
+                        break;
 
-                case GameState.Settings:
-                    if (godMode.Update(ms))
-                    {
+                    case GameState.Settings:
+                        if (godMode.Update(ms))
+                        {
 
-                    }
-                    if (back.Update(ms))
-                    {
-                        currentGameState = prevGameState;
-                    }
-                    break;
+                        }
+                        if (back.Update(ms))
+                        {
+                            currentGameState = prevGameState;
+                        }
+                        break;
 
-                case GameState.Pause:
-                    if (resume.Update(ms))
-                    {
-                        currentGameState = GameState.Game;
-                    }
-                    if (pauseSettings.Update(ms))
-                    {
-                        currentGameState = GameState.Settings;
-                        prevGameState = GameState.Menu;
-                    }
-                    if (pauseExit.Update(ms))
-                    {
-                        currentGameState = GameState.Menu;
-                    }
-                    break;
+                    case GameState.Pause:
+                        if (resume.Update(ms))
+                        {
+                            currentGameState = GameState.Game;
+                        }
+                        if (pauseSettings.Update(ms))
+                        {
+                            currentGameState = GameState.Settings;
+                            prevGameState = GameState.Menu;
+                        }
+                        if (pauseExit.Update(ms))
+                        {
+                            currentGameState = GameState.Menu;
+                        }
+                        break;
 
-                case GameState.GameOver:
-                    if (retry.Update(ms))
-                    {
-                        currentGameState = GameState.Game;
-                    }
-                    if (gameOverMenu.Update(ms))
-                    {
-                        currentGameState = GameState.Menu;
-                    }
-                    break;
+                    case GameState.GameOver:
+                        if (retry.Update(ms))
+                        {
+                            currentGameState = GameState.Game;
+                        }
+                        if (gameOverMenu.Update(ms))
+                        {
+                            currentGameState = GameState.Menu;
+                        }
+                        break;
+                }
             }
+            prevMouseState = ms;
         }
         /// <summary>
         /// draws all UI
@@ -240,8 +250,8 @@ namespace Slorpus
                 case GameState.Settings:
                     //draw background
                     sb.Draw(
-                        background,
-                        new Rectangle(0, 0, 600, 600),
+                        settingsBackground,
+                        new Rectangle(0, 0, 800, 480),
                         Color.White
                         );
 
@@ -255,8 +265,8 @@ namespace Slorpus
                 case GameState.Pause:
                     //draw background
                     sb.Draw(
-                        background,
-                        new Rectangle(0, 0, 600, 600),
+                        pauseBackground,
+                        new Rectangle(0, 0, 800, 480),
                         Color.White
                         );
 
@@ -270,8 +280,8 @@ namespace Slorpus
                 case GameState.GameOver:
                     //draw background
                     sb.Draw(
-                        background,
-                        new Rectangle(0, 0, 600, 600),
+                        gameOverBackground,
+                        new Rectangle(0, 0, 800, 480),
                         Color.White
                         );
 
