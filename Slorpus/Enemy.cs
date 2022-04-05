@@ -21,6 +21,8 @@ namespace Slorpus
         private ShootingPattern shootingPattern;
         private bool isDead;
         Action<IDestroyable> destroy;
+        EnemyBullet[] wantedBullets;
+        int timer;
 
         //properties
         public int Health
@@ -65,6 +67,8 @@ namespace Slorpus
             health = 1;
             damage = 1;
             isDead = false;
+            wantedBullets = new EnemyBullet[0];
+            timer = 0;
         }
 
         //methods:
@@ -115,14 +119,21 @@ namespace Slorpus
         public EnemyBullet[] FireBullets()
         {
             // return bullets that we want to fire
-            return new EnemyBullet[0];
+            EnemyBullet[] temp = wantedBullets;
+            wantedBullets = new EnemyBullet[0];
+            return temp;
         }
 
         public void Update()
         {
             // enemy logic, called by enemy manager
-
-            FireBullets();
+            timer++;
+            if (timer >= 60)
+            {
+                wantedBullets = new EnemyBullet[1];
+                wantedBullets[0] = new EnemyBullet(Position.Location, new Vector2(1, 0));
+                timer = 0;
+            }
         }
         
         /// <summary>
