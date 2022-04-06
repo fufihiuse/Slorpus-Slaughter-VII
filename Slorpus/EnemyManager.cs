@@ -37,18 +37,18 @@ namespace Slorpus
             {
                 target.Location = e.Position.Location - Camera.Offset;
                 target.Size = e.Position.Size;
-                sb.Draw(enemyAsset, target, Color.White);
+                sb.Draw(enemyAsset, target, Color.Red);
             }
         }
         
         /// <summary>
         /// Updates all enemies, and adding the returned bullets to the bulletlist.
         /// </summary>
-        public void UpdateEnemies(GameTime gameTime)
+        public void UpdateEnemies(GameTime gameTime, Player _player, Rectangle projRect)
         {
             foreach (Enemy e in enemyList)
             {
-                e.Update();
+                e.Update(_player, gameTime);
                 bulletManager.FireBatch(e.FireBullets());
             }
         }

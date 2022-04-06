@@ -19,8 +19,22 @@ namespace Slorpus
         List<IDraw> drawables;
         List<IMouseClick> mouseClickables;
         List<IKeyPress> keyPressables;
-        
-        
+
+        Player player;
+        List<Enemy> enemyList;
+
+        //property so enemy class has access to player class
+        public Player _Player
+        {
+            get { return player; }
+        }
+
+        //so projectile class can check if hitting an enemy
+        public List<Enemy> _Enemies
+        {
+            get { return enemyList; }
+        }
+
         // property just to warn if empty
         public List<IUpdate> Updatables
         {
@@ -70,6 +84,7 @@ namespace Slorpus
             drawables = new List<IDraw>();
             mouseClickables = new List<IMouseClick>();
             keyPressables = new List<IKeyPress>();
+            enemyList = new List<Enemy>();
         }
 
         /// <summary>
@@ -113,6 +128,22 @@ namespace Slorpus
                         SortItem(m);
                         // add a new mirror to the wall list
                         walls.Add(m);
+                        break;
+                    case 'B':
+                        Wall b = new Wall(
+                            new Rectangle(
+                                ge.Position,
+                                new Point(
+                                    Constants.WALL_SIZE,
+                                    Constants.WALL_SIZE
+                                    )
+                                ),
+                            false, //is collidable
+                            false //is a mirror
+                            );
+                        SortItem(b);
+                        // add a new mirror to the wall list
+                        walls.Add(b);
                         break;
                 }
             }
@@ -188,7 +219,7 @@ namespace Slorpus
             {
                 if (ge.EntityType == 'P')
                 {
-                    Player player = new Player(
+                    player = new Player(
                         new Rectangle(
                             ge.Position,
                             new Point(Constants.PLAYER_SIZE, Constants.PLAYER_SIZE)

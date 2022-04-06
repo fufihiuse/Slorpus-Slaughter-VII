@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Input;
 namespace Slorpus
 {
     //enums
-    public enum GameState
+    public enum GameStatej
     {
         Menu,
         Game,

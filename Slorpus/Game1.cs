@@ -26,6 +26,7 @@ namespace Slorpus
 
         // managers
         Level level;
+        LevelParser levelParser;
         EnemyManager enemyManager;
         BulletManager bulletManager;
         PhysicsManager physicsManager;
@@ -46,6 +47,9 @@ namespace Slorpus
         List<IMouseClick> mouseClickList;
         List<IKeyPress> keyPressList;
 
+        //i need this
+        Rectangle bRect;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -60,10 +64,11 @@ namespace Slorpus
             wallList = new List<Wall>();
             bulletList = new EnemyBullet[100];
             destroy_queue = new Queue<IDestroyable>();
-            
+            levelParser = new LevelParser();
+
             // anonymous function that is used to destroy any IDestroyable object
-            remove_object = (IDestroyable destroy_bullet) => {
-                destroy_queue.Enqueue(destroy_bullet);
+            remove_object = (IDestroyable destroy_target) => {
+                destroy_queue.Enqueue(destroy_target);
             };
 
             prevMS = Mouse.GetState();
@@ -96,20 +101,21 @@ namespace Slorpus
         {
             // instantiate all the manager classes on the empty, just initialized lists
             level = new Level(wallList, squareTexture, squareTexture, squareTexture);
-            LevelParser levelParser = new LevelParser();
+            //LevelParser levelParser = new LevelParser();
             List<GenericEntity> levelList = level.LoadFromFile($"..\\..\\..\\levels\\{levelname}.sslvl"); //Loads example level and returns entityList
             bulletManager = new BulletManager(bulletList, squareTexture);
             enemyManager = new EnemyManager(enemyList, squareTexture, bulletManager);
             physicsManager = new PhysicsManager(physicsList, wallList, bulletManager);
-            // parse data read from level
-            levelParser.GetEnemies(enemyList, levelList, squareTexture, squareTexture, remove_object);
-            levelParser.GetWalls(wallList, levelList);
             
             // bullet creation function
             Action<Point, Vector2> createbullet = (Point loc, Vector2 vel) => CreateBullet(loc, vel);
             // camera creation function
             Action<IPosition> createCamera = (IPosition player) => CreateCamera(player);
             levelParser.GetPhysicsObjects(physicsList, levelList, createbullet, createCamera, squareTexture, squareTexture);
+            
+            // parse data read from level
+            levelParser.GetEnemies(enemyList, levelList, squareTexture, squareTexture, remove_object);
+            levelParser.GetWalls(wallList, levelList);
 
             uiManager.LoadUI(Content);
             testingFont = Content.Load<SpriteFont>("Arial12");
@@ -121,6 +127,12 @@ namespace Slorpus
             mouseClickList = levelParser.MouseClickables;
             keyPressList = levelParser.KeyPressables;
             SoundEffects.AddSounds(Content);
+
+            // add enemies to physicsobject list
+            foreach (Enemy e in enemyList)
+            {
+                physicsList.Add(e);
+            }
         }
 
         protected override void Update(GameTime gameTime)
@@ -157,7 +169,7 @@ namespace Slorpus
             }
             
 
-            enemyManager.UpdateEnemies(gameTime);
+            enemyManager.UpdateEnemies(gameTime, levelParser._Player, bRect);
             physicsManager.MovePhysics(gameTime);
             // TODO: get rid of the stupid bullet size argument
             physicsManager.CollideAndMoveBullets(gameTime, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE));
@@ -276,12 +288,13 @@ namespace Slorpus
         /// <param name="velocity">Starting velocity of the bullet.</param>
         public void CreateBullet(Point location, Vector2 velocity)
         {
-            Rectangle bRect = new Rectangle(location,
+            bRect = new Rectangle(location,
                 new Point(
                     Constants.PLAYER_BULLET_SIZE,
                     Constants.PLAYER_BULLET_SIZE
                     )
                 );
+
             PlayerProjectile bullet = new PlayerProjectile(bRect, velocity, squareTexture, remove_object);
             updateList.Add(bullet);
             drawList.Add(bullet);
