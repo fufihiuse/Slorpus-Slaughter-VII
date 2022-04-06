@@ -20,6 +20,18 @@
 /processorParam:TextureFormat=Compressed
 /build:Arial12.spritefont
 
+#begin Bullet bounces off wall.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Bullet bounces off wall.wav
+
+#begin Bullet Noise.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Bullet Noise.wav
+
 #begin buttonPlaceholder.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -73,6 +85,18 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Enemy Bullet Noise.wav
+
+#begin Enemy Bullet Noise.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Enemy Bullet Noise.wav
+
+#begin Enemy Death.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Enemy Death.wav
 
 #begin Enemy Death.wav
 /importer:WavImporter
