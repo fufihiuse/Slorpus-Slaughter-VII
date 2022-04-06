@@ -256,12 +256,13 @@ namespace Slorpus
             else
             {
                 uiManager.Draw(_spriteBatch);
+                /*
                 _spriteBatch.DrawString(
                     testingFont, 
                     "Width: " + _graphics.PreferredBackBufferWidth + " Height" + _graphics.PreferredBackBufferHeight, 
                     new Vector2(0,0), 
                     Color.Black
-                    );
+                    );*/
             }
 
             base.Draw(gameTime);
