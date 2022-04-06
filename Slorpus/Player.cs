@@ -16,6 +16,19 @@ namespace Slorpus
         int bullets;
         // player texture
         Texture2D asset;
+        int health;
+
+        public int Health
+        {
+            get { return health; }
+            set
+            {
+                if(health - value <= 0)
+                {
+                    health = 0;
+                }
+            }
+        }
 
         /// <summary>
         /// Creates a new player
@@ -61,8 +74,8 @@ namespace Slorpus
 
                 // get distance from player to mouse
                 Vector2 vel = new Vector2(
-                    ((int)ms.X / Constants.WALL_SIZE * Constants.WALL_SIZE + Camera.Position.X)-Position.X,
-                    ((int)ms.Y / Constants.WALL_SIZE * Constants.WALL_SIZE + Camera.Position.Y)-Position.Y
+                    ((int)ms.X / Constants.WALL_SIZE * Constants.WALL_SIZE + Camera.Position.X) - Position.X,
+                    ((int)ms.Y / Constants.WALL_SIZE * Constants.WALL_SIZE + Camera.Position.Y) - Position.Y
                     );
                 // normalize it
                 vel = Vector2.Normalize(vel);

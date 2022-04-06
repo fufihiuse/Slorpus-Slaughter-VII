@@ -54,13 +54,40 @@ namespace Slorpus
                         CorrectObject(wall, prev, physicsObject);
 
                         // handlers
-                        physicsObject.OnCollisionComplex(wall, previousVelocity, wantedLocation);
-                        physicsObject.OnCollision(wall);
+                        bool cancel_collision_complex = physicsObject.OnCollisionComplex(wall, previousVelocity, wantedLocation);
+                        bool cancel_collision = physicsObject.OnCollision(wall);
 
-                        // if you collide, remove sub pixel collision so as to prevent
-                        // the object "technically" being inside the wall but not really
-                        physicsObject.Move(-physicsObject.SubpixelOffset);
-                        break;
+                        if (!cancel_collision && !cancel_collision_complex)
+                        {
+                            // if you collide, remove sub pixel collision so as to prevent
+                            // the object "technically" being inside the wall but not really
+                            physicsObject.Move(-physicsObject.SubpixelOffset);
+                            break;
+                        }
+                        else
+                        {
+                            // cancel the collision by returning to previous state
+                            Vector2 wantedLocationV = new Vector2(wantedLocation.X, wantedLocation.Y);
+                            Vector2 newLoc = new Vector2(physicsObject.Position.X, physicsObject.Position.Y);
+                            physicsObject.Move(-(newLoc - wantedLocationV));
+                            physicsObject.Velocity = previousVelocity;
+                        }
+                    }
+                }
+
+                foreach (IPhysics other in physicsObjects)
+                {
+                    if (physicsObject == other)
+                    {
+                        continue;
+                    }
+                    if (physicsObject.Position.Intersects(other.Position))
+                    {
+                        // note: its not consistent which object will have its handler called first
+                        physicsObject.OnCollision(other);
+                        physicsObject.OnCollisionComplex(other, previousVelocity, wantedLocation);
+                        other.OnCollision(physicsObject);
+                        other.OnCollisionComplex(physicsObject, previousVelocity, wantedLocation);
                     }
                 }
             }
@@ -135,26 +162,24 @@ namespace Slorpus
             {
                 // placeholder, no collision
                 // TODO : check if this works on value types, or if the changes pass out of scope after this loop
-                bulletManager[i].Move(
-                    new Point(
-                        (int)bulletManager[i].Velocity.X,
-                        (int)bulletManager[i].Velocity.Y
-                        )
-                    );
+                bulletManager[i].Move(bulletManager[i].Velocity);
                 
                 foreach (IPhysics hit in physicsObjects)
                 {
                     if (hit.Position.Contains(bulletManager[i].Position))
                     {
-                        bulletManager[i].OnCollision<IPhysics>(hit);
+                        bulletManager[i].OnCollision(hit);
                     }
                 }
                 for (int w = 0; w < wallList.Count; w++)
                 {
                     if (wallList[w].Position.Contains(bulletManager[i].Position))
                     {
-                        bulletManager[i].OnCollision<Wall>(wallList[w]);
-                        queuedBullets.Add(i);
+                        bool destroyed = bulletManager[i].OnCollision(wallList[w]);
+                        if (destroyed)
+                        {
+                            queuedBullets.Add(i);
+                        }
                     }
                 }
             }

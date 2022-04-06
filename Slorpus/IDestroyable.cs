@@ -7,5 +7,6 @@ namespace Slorpus
     interface IDestroyable
     {
         public void Destroy();
+        
     }
 }

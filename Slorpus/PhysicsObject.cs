@@ -19,7 +19,7 @@ namespace Slorpus
         protected Vector2 subPixelOffset;
 
         public Vector2 SubpixelOffset { get { return subPixelOffset; } }
-        public Rectangle Position { get { return pos;  } }
+        public virtual Rectangle Position { get { return pos;  } }
         public Vector2 Velocity { get { return vel;  } set { vel = value; } }
         public Vector2 SubpixelCoords { get
             {
@@ -61,8 +61,8 @@ namespace Slorpus
             pos.X = location.X;
         }
 
-        public virtual void OnCollision<T>(T other) { }
-        public virtual void OnCollisionComplex<T>(T other, Vector2 previousVelocity, Point wantedPosition) { }
+        public virtual bool OnCollision<T>(T other) { return false; }
+        public virtual bool OnCollisionComplex<T>(T other, Vector2 previousVelocity, Point wantedPosition) { return false; }
 
         /// <summary>
         /// moves the object a certain distance
