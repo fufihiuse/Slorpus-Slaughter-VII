@@ -48,9 +48,8 @@ namespace Slorpus
         {
             foreach (Enemy e in enemyList)
             {
-                e.Update(e.ShootingPattern, _player, gameTime);
+                e.Update(_player, gameTime);
                 bulletManager.FireBatch(e.FireBullets());
-                e.EnemyDie(projRect);
             }
         }
     }

@@ -61,8 +61,8 @@ namespace Slorpus
             pos.X = location.X;
         }
 
-        public virtual void OnCollision<T>(T other) { }
-        public virtual void OnCollisionComplex<T>(T other, Vector2 previousVelocity, Point wantedPosition) { }
+        public virtual bool OnCollision<T>(T other) { return false; }
+        public virtual bool OnCollisionComplex<T>(T other, Vector2 previousVelocity, Point wantedPosition) { return false; }
 
         /// <summary>
         /// moves the object a certain distance

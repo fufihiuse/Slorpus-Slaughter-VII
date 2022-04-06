@@ -22,8 +22,17 @@ namespace Slorpus
         //bullet fields
         Action<IDestroyable> destroy;
         EnemyBullet[] wantedBullets;
-        Vector2 direction;
+        float direction;
         private float shoot;
+        
+        // time in seconds betweens shots for an ensconsing enemy
+        private const float escShotInterval = 0.1f;
+        // same for homing
+        private const float homeShotInterval = 1.0f;
+
+        private const float escBulletSpeed = 1.0f;
+        // NOT IMPLEMENTED
+        private const float homeBulletSpeed = 1.0f;
 
         //properties
 
@@ -57,7 +66,7 @@ namespace Slorpus
             damage = 1;
 
             wantedBullets = new EnemyBullet[0];
-            direction = new Vector2(1, 0);
+            direction = 0;
             shoot = 0;
         }
 
@@ -87,10 +96,9 @@ namespace Slorpus
         /// <summary>
         /// Written to be called each frame and makes enemies shoot a bullet in their respective pattern.
         /// </summary>
-        /// <param name="shootingPattern"></param>
         /// <param name="_player"></param>
         /// <param name="gameTime"></param>
-        public void Update(ShootingPattern shootingPattern, Player _player, GameTime gameTime)
+        public void Update(Player _player, GameTime gameTime)
         {
             shoot += (float)gameTime.ElapsedGameTime.TotalSeconds;
             wantedBullets = new EnemyBullet[1];         //clears array, loads in new bullet
@@ -100,7 +108,7 @@ namespace Slorpus
             switch (shootingPattern)
             {
                 case ShootingPattern.Ensconcing:
-                    if(shoot >= 0.1 && toTarget.Length() <= Constants.MIN_DETECTION_DISTANCE)   //if enough time has passed and player is in range, shoots
+                    if(shoot >= escShotInterval && toTarget.Length() <= Constants.MIN_DETECTION_DISTANCE)   //if enough time has passed and player is in range, shoots
                     {
                         wantedBullets[0] = new EnemyBullet(
                                 new Point(Position.Location.X + Constants.ENEMY_SIZE / 2, (Position.Location.Y + Constants.ENEMY_SIZE / 2) - 2),
@@ -110,7 +118,7 @@ namespace Slorpus
                     break;
 
                 case ShootingPattern.HomingAttack:
-                    if(shoot >= 1 && toTarget.Length() <= Constants.MIN_FOLLOW_DISTANCE)    // diff constant, homing should have greater range
+                    if(shoot >= homeShotInterval && toTarget.Length() <= Constants.MIN_FOLLOW_DISTANCE)    // diff constant, homing should have greater range
                     {
                         wantedBullets[0] = new EnemyBullet(
                             new Point((Position.Location.X + Constants.ENEMY_SIZE/2), (Position.Location.Y + Constants.ENEMY_SIZE/2)-2),
@@ -126,43 +134,18 @@ namespace Slorpus
         /// <summary>
         /// Changes direction vector to make bullets shoot in a spiral pattern and returns new direction.
         /// </summary>
-        /// //
         // TODO: having a roatating origin or something could make a nice varied bullet pattern
         // hardcoded, probs not most efficient but this is what midnight brain yazz could pump out
         public Vector2 UpdateBulletDirection()
         {
-            switch (direction)
-            {
-                case (1, 0):
-                    direction = new Vector2(1, 1);
-                    break;
-                case (1, 1):
-                    direction = new Vector2(0, 1);
-                    break;
-                case (0, 1):
-                    direction = new Vector2(-1, 1);
-                    break;
-                case (-1, 1):
-                    direction = new Vector2(-1, 0);
-                    break;
-                case (-1, 0):
-                    direction = new Vector2(-1, -1);
-                    break;
-                case (-1, -1):
-                    direction = new Vector2(0, -1);
-                    break;
-                case (0, -1):
-                    direction = new Vector2(1, -1);
-                    break;
-                case (1, -1):
-                    direction = new Vector2(1, 0);
-                    break;
-                default:
-                    break;
-            }
-            return direction;
+            direction += MathHelper.ToRadians(22.5f);
+            direction = MathHelper.WrapAngle(direction);
+
+            return new Vector2(
+                MathF.Cos(direction) * escBulletSpeed,
+                MathF.Sin(direction) * escBulletSpeed
+                );
         }
-        
 
         /// <summary>
         /// Tracks player position and returns updated homing bullet direction.
@@ -173,12 +156,10 @@ namespace Slorpus
         {
             Vector2 targetDirection =
                 new Vector2(_player.Position.Location.X, _player.Position.Location.Y) - new Vector2(Position.Location.X, Position.Location.Y);
-            float projSpeed = 4f;
 
             targetDirection.Normalize();
-            direction = targetDirection * projSpeed; // set to pursuit the target, set speed
 
-            return direction;
+            return targetDirection * homeBulletSpeed;
         }
 
         /// <summary>
@@ -187,15 +168,6 @@ namespace Slorpus
         public void Destroy()
         {
             destroy(this);
-        }
-
-        //for each enemy in list, should check if bullet is intersecting, remove enemy from list if so
-        public void EnemyDie(Rectangle projectilePos)
-        {
-            if (projectilePos.Intersects(this.Position))
-            {
-                destroy(this);
-            }
         }
     }
 }

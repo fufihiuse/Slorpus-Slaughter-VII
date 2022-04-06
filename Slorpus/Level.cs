@@ -91,7 +91,7 @@ namespace Slorpus
                 {
                     sb.Draw(wallAsset, target, Color.Green);
                 }
-                else if (w.IsInvis)
+                else if (w.IsBulletCollider)
                 {
                     sb.Draw(wallAsset, target, Color.Blue);
                 }

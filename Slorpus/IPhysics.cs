@@ -37,7 +37,7 @@ namespace Slorpus
         /// Called by the PhysicsManager whenever this object collides with a wall.
         /// </summary>
         /// <param name="other">The rectangle of the other object collided with.</param>
-        public void OnCollision<T>(T other);
+        public bool OnCollision<T>(T other);
         
         /// <summary>
         /// Called by the PhysicsManager whenever this object collides with a wall.
@@ -45,6 +45,6 @@ namespace Slorpus
         /// <param name="other">The rectangle of the other object collided with.</param>
         /// <param name="previousVelocity">The velocity before being corrected for collision.</param>
         /// <param name="wantedPosition">Position of the object before being corrected to prevent collision.</param>
-        public void OnCollisionComplex<T>(T other, Vector2 previousVelocity, Point wantedPosition);
+        public bool OnCollisionComplex<T>(T other, Vector2 previousVelocity, Point wantedPosition);
     }
 }

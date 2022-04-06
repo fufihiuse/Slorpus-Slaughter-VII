@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -46,10 +47,14 @@ namespace Slorpus
         }
         
         // Handles bouncing off mirrors.
-        public override void OnCollisionComplex<T>(T other, Vector2 prevVel, Point wantedPosition) 
+        public override bool OnCollisionComplex<T>(T other, Vector2 prevVel, Point wantedPosition) 
         {
+            if (other is Player)
+            {
+                return false;
+            }
             // get destroyed or play an effect or something when colliding with a wall
-            if (typeof(T) == typeof(Wall))
+            if (other is Wall)
             {
                 Wall tempWall = (Wall)(object)other;
                 if (tempWall.IsMirror)
@@ -69,10 +74,24 @@ namespace Slorpus
                 }
                 else
                 {
-                    // just hit a regular wall, now destroy
-                    Destroy();
+                    if (!tempWall.IsBulletCollider)
+                    {
+                        // cancel collision
+                        return true;
+                    }
+                    else
+                    {
+                        // just hit a regular wall, now destroy
+                        Destroy();
+                    }
                 }
             }
+            else if (other is Enemy)
+            {
+                Enemy tempEnemy = (Enemy)(object)other;
+                tempEnemy.Destroy();
+            }
+            return false;
         }
     }
 }

@@ -64,8 +64,8 @@ namespace Slorpus
             levelParser = new LevelParser();
 
             // anonymous function that is used to destroy any IDestroyable object
-            remove_object = (IDestroyable destroy_bullet) => {
-                destroy_queue.Enqueue(destroy_bullet);
+            remove_object = (IDestroyable destroy_target) => {
+                destroy_queue.Enqueue(destroy_target);
             };
 
             prevMS = Mouse.GetState();
@@ -101,15 +101,16 @@ namespace Slorpus
             bulletManager = new BulletManager(bulletList, squareTexture);
             enemyManager = new EnemyManager(enemyList, squareTexture, bulletManager);
             physicsManager = new PhysicsManager(physicsList, wallList, bulletManager);
-            // parse data read from level
-            levelParser.GetEnemies(enemyList, levelList, squareTexture, squareTexture, remove_object);
-            levelParser.GetWalls(wallList, levelList);
             
             // bullet creation function
             Action<Point, Vector2> createbullet = (Point loc, Vector2 vel) => CreateBullet(loc, vel);
             // camera creation function
             Action<IPosition> createCamera = (IPosition player) => CreateCamera(player);
             levelParser.GetPhysicsObjects(physicsList, levelList, createbullet, createCamera, squareTexture, squareTexture);
+            
+            // parse data read from level
+            levelParser.GetEnemies(enemyList, levelList, squareTexture, squareTexture, remove_object);
+            levelParser.GetWalls(wallList, levelList);
 
             // miscellaneous, "special" items which dont have a manager
             updateList = levelParser.Updatables;
@@ -117,6 +118,12 @@ namespace Slorpus
             mouseClickList = levelParser.MouseClickables;
             keyPressList = levelParser.KeyPressables;
             SoundEffects.AddSounds(Content);
+
+            // add enemies to physicsobject list
+            foreach (Enemy e in enemyList)
+            {
+                physicsList.Add(e);
+            }
         }
 
         protected override void Update(GameTime gameTime)

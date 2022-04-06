@@ -17,6 +17,7 @@ namespace Slorpus
         //fields
         Point pos;
         Vector2 vel;
+        Vector2 subpixel_pos;
         public Point Position { get { return pos;  } set { pos = value;  } }
         public Vector2 Velocity { get { return vel;  } set { vel = value; } }
 
@@ -25,6 +26,7 @@ namespace Slorpus
         {
             pos = position;
             vel = velocity;
+            subpixel_pos = new Vector2(0, 0);
         }
         /// <summary>
         /// Moves the object to a set of absolute coordinates
@@ -35,18 +37,23 @@ namespace Slorpus
             pos = new Point(location.X, location.Y);
         }
 
-        public void OnCollision<T>(T other)
+        public bool OnCollision<T>(T other)
         {
             // get destroyed or play an effect or something when colliding with a wall
             // hurt player when colliding with them
             if (typeof(T) == typeof(Wall))
             {
+                Wall temp = (Wall)(object)other;
                 // bullet hit wall, etc
-            }
-            else if(typeof(T) == typeof(Player))
-            {
                 
+                if (!temp.IsBulletCollider)
+                {
+                    return false;
+                }
+                // normal wall, destroy this bullet
+                return true;
             }
+            return false;
         }
         
         /// <summary>
@@ -61,12 +68,20 @@ namespace Slorpus
         /// moves object
         /// </summary>
         /// <param name="distance"></param>
-        public void Move(Point distance)
+        public void Move(Vector2 distance)
         {
-            pos.X += distance.X;
-            pos.Y += distance.Y;
+            // round down the distance to move
+            Point whole_speed = distance.ToPoint();
+            // sub-pixel speed ( decimal values missing from rounding )
+            Vector2 sub_speed = distance - whole_speed.ToVector2();
+            subpixel_pos += sub_speed;
+
+            // cumulative change in position based on sub-pixel coordinates
+            Point cummove = subpixel_pos.ToPoint();
+            // remove the cumulative changes from the subpixel position
+            subpixel_pos -= cummove.ToVector2();
+            // add them to the actual position
+            pos += cummove + whole_speed;
         }
-
-
     }
 }

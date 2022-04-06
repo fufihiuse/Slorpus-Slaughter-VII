@@ -84,6 +84,7 @@ namespace Slorpus
             drawables = new List<IDraw>();
             mouseClickables = new List<IMouseClick>();
             keyPressables = new List<IKeyPress>();
+            enemyList = new List<Enemy>();
         }
 
         /// <summary>
@@ -127,6 +128,22 @@ namespace Slorpus
                         SortItem(m);
                         // add a new mirror to the wall list
                         walls.Add(m);
+                        break;
+                    case 'B':
+                        Wall b = new Wall(
+                            new Rectangle(
+                                ge.Position,
+                                new Point(
+                                    Constants.WALL_SIZE,
+                                    Constants.WALL_SIZE
+                                    )
+                                ),
+                            false, //is collidable
+                            false //is a mirror
+                            );
+                        SortItem(b);
+                        // add a new mirror to the wall list
+                        walls.Add(b);
                         break;
                 }
             }
