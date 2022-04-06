@@ -12,7 +12,6 @@ namespace Slorpus
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Texture2D squareTexture;
-        private KeyboardState kb;
         private SpriteFont testingFont;
 
         
@@ -79,11 +78,8 @@ namespace Slorpus
             soundEffects = new SoundEffects();
             screen.Use();
 
-
             uiManager = new UIManager();
 
-            // TODO: properly reallocate space instead of just having a static large array
-            kb = new KeyboardState();
             base.Initialize();
         }
 
