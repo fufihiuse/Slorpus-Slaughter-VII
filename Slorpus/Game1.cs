@@ -12,6 +12,8 @@ namespace Slorpus
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Texture2D squareTexture;
+        private SpriteFont testingFont;
+
         
         // important objects
         Camera camera;
@@ -27,6 +29,7 @@ namespace Slorpus
         EnemyManager enemyManager;
         BulletManager bulletManager;
         PhysicsManager physicsManager;
+        UIManager uiManager;
 
         // lists
         // these (usually) should not be modified directly, edit them with the managers
@@ -75,6 +78,8 @@ namespace Slorpus
             soundEffects = new SoundEffects();
             screen.Use();
 
+            uiManager = new UIManager();
+
             base.Initialize();
         }
 
@@ -106,6 +111,10 @@ namespace Slorpus
             Action<IPosition> createCamera = (IPosition player) => CreateCamera(player);
             levelParser.GetPhysicsObjects(physicsList, levelList, createbullet, createCamera, squareTexture, squareTexture);
 
+            uiManager.LoadUI(Content);
+            testingFont = Content.Load<SpriteFont>("Arial12");
+
+
             // miscellaneous, "special" items which dont have a manager
             updateList = levelParser.Updatables;
             drawList = levelParser.Drawables;
@@ -115,6 +124,19 @@ namespace Slorpus
         }
 
         protected override void Update(GameTime gameTime)
+        {
+            KeyboardState kb = Keyboard.GetState();
+            MouseState ms = Mouse.GetState();
+
+            uiManager.Update(ms, kb);
+            //only update the game if the gamestate is game
+            if(uiManager.CurrentGameState == GameState.Game)
+            {
+                GameUpdate(gameTime);
+            }
+        }
+
+        protected void GameUpdate(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -210,24 +232,38 @@ namespace Slorpus
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
-            
-            // draw the walls
-            level.Draw(_spriteBatch);
 
-            // draw player and objects
-            foreach (IDraw d in drawList)
+            //draw ui or game
+            if(uiManager.CurrentGameState == GameState.Game)
             {
-                d.Draw(_spriteBatch);
+                // draw the walls
+                level.Draw(_spriteBatch);
+                // draw player and objects
+                foreach (IDraw d in drawList)
+                {
+                    d.Draw(_spriteBatch);
+                }
+                
+                // draw bullets and enemies
+                bulletManager.DrawBullets(_spriteBatch,
+                    new Point(
+                        Constants.BULLET_SIZE,
+                        Constants.BULLET_SIZE
+                        )
+                    );
+                enemyManager.DrawEnemies(_spriteBatch);
             }
-            
-            // draw bullets and enemies
-            bulletManager.DrawBullets(_spriteBatch,
-                new Point(
-                    Constants.BULLET_SIZE,
-                    Constants.BULLET_SIZE
-                    )
-                );
-            enemyManager.DrawEnemies(_spriteBatch);
+            else
+            {
+                uiManager.Draw(_spriteBatch);
+                /*
+                _spriteBatch.DrawString(
+                    testingFont, 
+                    "Width: " + _graphics.PreferredBackBufferWidth + " Height" + _graphics.PreferredBackBufferHeight, 
+                    new Vector2(0,0), 
+                    Color.Black
+                    );*/
+            }
 
             base.Draw(gameTime);
             _spriteBatch.End();
