@@ -114,19 +114,10 @@ namespace Slorpus
             // camera creation function
             Action<IPosition> createCamera = (IPosition player) => CreateCamera(player);
             levelParser.GetPhysicsObjects(physicsList, levelList, createbullet, createCamera, squareTexture, squareTexture);
-            /*DEBUG = new Player(
-                new Rectangle(
-                    // position
-                    new Point(200, 200),
-                    // size
-                    new Point(16, 16)),
-                new Vector2(0, 0));
-            */
 
             uiManager.LoadUI(Content);
             testingFont = Content.Load<SpriteFont>("Arial12");
 
-            physicsList.Add(DEBUG);
 
             // miscellaneous, "special" items which dont have a manager
             updateList = levelParser.Updatables;
@@ -145,8 +136,14 @@ namespace Slorpus
             //only update the game if the gamestate is game
             if(uiManager.CurrentGameState == GameState.Game)
             {
-                if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                    Exit();
+                GameUpdate(gameTime);
+            }
+        }
+
+        protected void GameUpdate(GameTime gameTime)
+        {
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                Exit();
 
             foreach (IUpdate u in updateList)
             {
@@ -245,12 +242,19 @@ namespace Slorpus
             {
                 // draw the walls
                 level.Draw(_spriteBatch);
-
                 // draw player and objects
-                _spriteBatch.Draw(squareTexture, DEBUG.Position, Color.White);
-
+                foreach (IDraw d in drawList)
+                {
+                    d.Draw(_spriteBatch);
+                }
+                
                 // draw bullets and enemies
-                bulletManager.DrawBullets(_spriteBatch, new Point(5, 5));
+                bulletManager.DrawBullets(_spriteBatch,
+                    new Point(
+                        Constants.BULLET_SIZE,
+                        Constants.BULLET_SIZE
+                        )
+                    );
                 enemyManager.DrawEnemies(_spriteBatch);
             }
             else
@@ -263,20 +267,6 @@ namespace Slorpus
                     Color.Black
                     );
             }
-            // draw player and objects
-            foreach (IDraw d in drawList)
-            {
-                d.Draw(_spriteBatch);
-            }
-            
-            // draw bullets and enemies
-            bulletManager.DrawBullets(_spriteBatch,
-                new Point(
-                    Constants.BULLET_SIZE,
-                    Constants.BULLET_SIZE
-                    )
-                );
-            enemyManager.DrawEnemies(_spriteBatch);
 
             base.Draw(gameTime);
             _spriteBatch.End();
