@@ -34,13 +34,7 @@ namespace Slorpus
         {
             this.bullets = bullets;
             this.bulletAsset = bulletAsset;
-            queuedBullets = new List<int>();
-            
-            Random gen = new Random();
-            for (int i = 0; i < bullets.Length; i++)
-            {
-                bullets[i] = new EnemyBullet(new Point(gen.Next(Constants.WALL_SIZE, 600), gen.Next(Constants.WALL_SIZE, 600)), new Vector2(1f, 2f));
-            }
+            queuedBullets = new List<int>();    
         }
 
         /// <summary>
