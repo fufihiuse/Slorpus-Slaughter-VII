@@ -94,7 +94,7 @@ namespace Slorpus
 
             squareTexture = Content.Load<Texture2D>("square");
 
-            LoadLevel("1"); 
+            LoadLevel("2"); 
         }
 
         public void LoadLevel(string levelname)

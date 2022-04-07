@@ -50,6 +50,8 @@ namespace Slorpus
                 {
                     if (wall.Collision(physicsObject.Position))
                     {
+                        // skip bullet hitting non bullet collider walls
+                        if (!wall.IsBulletCollider && physicsObject is PlayerProjectile) { continue; }
                         // correct the location of the object to no be colliding
                         CorrectObject(wall, prev, physicsObject);
 
