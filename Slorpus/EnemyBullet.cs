@@ -57,7 +57,10 @@ namespace Slorpus
             try
             {
                 Player temp = (Player)(object)other;
-                LevelInfo.ReloadLevel();
+                if (!UIManager.IsGodModeOn)
+                {
+                    LevelInfo.ReloadLevel();
+                } 
             }
             catch (InvalidCastException)
             {
