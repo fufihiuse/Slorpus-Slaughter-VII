@@ -53,9 +53,15 @@ namespace Slorpus
                 // normal wall, destroy this bullet
                 return true;
             }
-            else if (typeof(T) == typeof(Player))
+
+            try
             {
+                Player temp = (Player)(object)other;
                 LevelInfo.ReloadLevel();
+            }
+            catch (InvalidCastException)
+            {
+                // do nothing !!!
             }
             return false;
         }
