@@ -20,5 +20,8 @@ namespace Slorpus
         public const float CAMERA_SPEED = 0.05f;
         public const float MIN_FOLLOW_DISTANCE = 250f;
         public const float MIN_DETECTION_DISTANCE = 400;
+
+        //Array of levels to load
+        public static readonly string[] LEVELS = { "2", "aynrand" };
     }
 }

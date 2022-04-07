@@ -14,7 +14,6 @@ namespace Slorpus
         private Texture2D squareTexture;
         private SpriteFont testingFont;
 
-        
         // important objects
         Camera camera;
         Screen screen;
@@ -50,6 +49,9 @@ namespace Slorpus
         //i need this
         Rectangle bRect;
 
+        //Level int
+        private int nextLevel;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -65,6 +67,7 @@ namespace Slorpus
             bulletList = new EnemyBullet[100];
             destroy_queue = new Queue<IDestroyable>();
             levelParser = new LevelParser();
+            nextLevel = 1;
 
             // anonymous function that is used to destroy any IDestroyable object
             remove_object = (IDestroyable destroy_target) => {
@@ -94,7 +97,7 @@ namespace Slorpus
 
             squareTexture = Content.Load<Texture2D>("square");
 
-            LoadLevel("2"); 
+            LoadLevel(Constants.LEVELS[0]); 
         }
 
         public void LoadLevel(string levelname)
@@ -132,6 +135,20 @@ namespace Slorpus
             foreach (Enemy e in enemyList)
             {
                 physicsList.Add(e);
+            }
+        }
+
+        public void LoadNextLevel()
+        {
+            if (nextLevel < Constants.LEVELS.Length)
+            {
+                LoadLevel(Constants.LEVELS[nextLevel]);
+                nextLevel++;
+            }
+            else
+            {
+                LoadLevel(Constants.LEVELS[0]);
+                nextLevel = 1;
             }
         }
 
