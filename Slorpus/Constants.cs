@@ -22,6 +22,13 @@ namespace Slorpus
         public const float MIN_DETECTION_DISTANCE = 400;
 
         //Array of levels to load
-        public static readonly string[] LEVELS = { "1", "2", "3", "5", "6", "end" };
+        public static readonly string[] LEVELS = { 
+            "ItBegins", //1
+            "ReflectOnIt", //2
+            "OutsideTheBox", //3
+            "Frittata", //5
+            "TMI", //6
+            "Exeunt" }; //End
+        //Awesome idea: seven room either gives you god mode and has a bunch of enemies, OR, counter for how many bullet bounces in 7 room
     }
 }
