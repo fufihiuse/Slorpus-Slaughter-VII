@@ -27,6 +27,10 @@ namespace Slorpus
     /// </summary>
     public class UIManager
     {
+        // big bad public static
+        public static bool IsGodModeOn { get { return isGodModeOn; } }
+        private static bool isGodModeOn = false;
+
         //fields  
         GameState currentGameState;
         GameState prevGameState;
@@ -179,7 +183,7 @@ namespace Slorpus
                     case GameState.Settings:
                         if (godMode.Update(ms))
                         {
-
+                            isGodModeOn = !isGodModeOn;
                         }
                         if (back.Update(ms))
                         {
@@ -200,6 +204,7 @@ namespace Slorpus
                         if (pauseExit.Update(ms))
                         {
                             currentGameState = GameState.Menu;
+                            LevelInfo.ReloadLevel();
                         }
                         break;
 
@@ -237,6 +242,9 @@ namespace Slorpus
                     {
                         button.Draw(sb);
                     }
+
+                    // draw godmode debug message
+                    sb.DrawString(Game1.TestingFont, $"GODMODE: {isGodModeOn}", new Vector2(0, 0), Color.Black);
                     break;
 
                 case GameState.Game:
@@ -260,6 +268,8 @@ namespace Slorpus
                     {
                         button.Draw(sb);
                     }
+                    // godmode debug
+                    sb.DrawString(Game1.TestingFont, $"GODMODE: {isGodModeOn}", new Vector2(0, 0), Color.Black);
                     break;
 
                 case GameState.Pause:

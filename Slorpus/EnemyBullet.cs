@@ -53,6 +53,10 @@ namespace Slorpus
                 // normal wall, destroy this bullet
                 return true;
             }
+            else if (typeof(T) == typeof(Player))
+            {
+                LevelInfo.ReloadLevel();
+            }
             return false;
         }
         
