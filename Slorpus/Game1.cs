@@ -147,7 +147,7 @@ namespace Slorpus
             }
         }
 
-        public void ReloadLevel()
+        public static void ReloadLevel()
         {
             LoadLevel(Constants.LEVELS[currentLevel]);
         }
