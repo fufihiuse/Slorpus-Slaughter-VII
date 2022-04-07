@@ -167,6 +167,7 @@ namespace Slorpus
         /// </summary>
         public void Destroy()
         {
+            SoundEffects.PlayEffect(3);
             destroy(this);
         }
     }

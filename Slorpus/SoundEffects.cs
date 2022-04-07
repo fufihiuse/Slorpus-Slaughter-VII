@@ -35,7 +35,7 @@ namespace Slorpus
         public static void AddSounds(Microsoft.Xna.Framework.Content.ContentManager content)
         {
             soundEffectsBank.Add(content.Load<SoundEffect>("Bullet Noise"));
-            soundEffectsBank.Add(content.Load<SoundEffect>("Enemy Bullet Noise"));
+            soundEffectsBank.Add(content.Load<SoundEffect>("Player Death"));
             soundEffectsBank.Add(content.Load<SoundEffect>("Bullet bounces off wall"));
             soundEffectsBank.Add(content.Load<SoundEffect>("Enemy Death"));
         }

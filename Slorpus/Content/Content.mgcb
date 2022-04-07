@@ -86,18 +86,6 @@
 /processorParam:Quality=Best
 /build:Enemy Bullet Noise.wav
 
-#begin Enemy Bullet Noise.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Enemy Bullet Noise.wav
-
-#begin Enemy Death.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Enemy Death.wav
-
 #begin Enemy Death.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -151,6 +139,12 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:pauseBackground.png
+
+#begin Player Death.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Player Death.wav
 
 #begin player.png
 /importer:TextureImporter
