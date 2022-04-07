@@ -12,6 +12,7 @@ namespace Slorpus
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Texture2D squareTexture;
+        private Texture2D gridTexture;
         private SpriteFont testingFont;
 
         
@@ -93,14 +94,15 @@ namespace Slorpus
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             squareTexture = Content.Load<Texture2D>("square");
+            gridTexture = Content.Load<Texture2D>("grid");
 
-            LoadLevel("2"); 
+            LoadLevel("4"); 
         }
 
         public void LoadLevel(string levelname)
         {
             // instantiate all the manager classes on the empty, just initialized lists
-            level = new Level(wallList, squareTexture, squareTexture, squareTexture);
+            level = new Level(wallList, squareTexture, squareTexture, squareTexture, gridTexture);
             //LevelParser levelParser = new LevelParser();
             List<GenericEntity> levelList = level.LoadFromFile($"..\\..\\..\\levels\\{levelname}.sslvl"); //Loads example level and returns entityList
             bulletManager = new BulletManager(bulletList, squareTexture);
