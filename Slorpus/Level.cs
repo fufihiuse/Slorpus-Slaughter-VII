@@ -104,6 +104,7 @@ namespace Slorpus
             }
 
             //TODO: TOGGLE FALSE BEFORE BUILD
+            /*
             if (true)
             {
                 for (int i = 0; i < level.GetLength(0); i++)
@@ -114,6 +115,7 @@ namespace Slorpus
                     }
                 }
             }
+            */
         }
     }
 }
