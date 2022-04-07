@@ -26,7 +26,8 @@ namespace Slorpus
             "ItBegins", //1
             "ReflectOnIt", //2
             "OutsideTheBox", //3
-            "Frittata", //5
+            "Frittata", //4
+            "Diamond", //5
             "TMI", //6
             "Exeunt" }; //End
         //Awesome idea: seven room either gives you god mode and has a bunch of enemies, OR, counter for how many bullet bounces in 7 room
