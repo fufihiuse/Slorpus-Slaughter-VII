@@ -34,7 +34,6 @@ namespace Slorpus
         //fields  
         GameState currentGameState;
         GameState prevGameState;
-        MouseState prevMouseState;
 
         //backgrounds
         Texture2D menuBackground;
@@ -152,75 +151,71 @@ namespace Slorpus
         /// </summary>
         public void Update(MouseState ms, KeyboardState ks)
         {
-            if(prevMouseState.LeftButton != ButtonState.Pressed)
+            switch (currentGameState)
             {
-                switch (currentGameState)
-                {
-                    case GameState.Menu:
-                        //update buttons
-                        if (menuStart.Update(ms))
-                        {
-                            currentGameState = GameState.Game;
-                        }
-                        if (menuSettings.Update(ms))
-                        {
-                            currentGameState = GameState.Settings;
-                            prevGameState = GameState.Menu;
-                        }
-                        if (menuExit.Update(ms))
-                        {
-                            Environment.Exit(0);
-                        }
-                        break;
+                case GameState.Menu:
+                    //update buttons
+                    if (menuStart.Update(ms))
+                    {
+                        currentGameState = GameState.Game;
+                    }
+                    if (menuSettings.Update(ms))
+                    {
+                        currentGameState = GameState.Settings;
+                        prevGameState = GameState.Menu;
+                    }
+                    if (menuExit.Update(ms))
+                    {
+                        Environment.Exit(0);
+                    }
+                    break;
 
-                    case GameState.Game:
-                        if (ks.IsKeyDown(Keys.P))
-                        {
-                            currentGameState = GameState.Pause;
-                        }
-                        break;
+                case GameState.Game:
+                    if (ks.IsKeyDown(Keys.P))
+                    {
+                        currentGameState = GameState.Pause;
+                    }
+                    break;
 
-                    case GameState.Settings:
-                        if (godMode.Update(ms))
-                        {
-                            isGodModeOn = !isGodModeOn;
-                        }
-                        if (back.Update(ms))
-                        {
-                            currentGameState = prevGameState;
-                        }
-                        break;
+                case GameState.Settings:
+                    if (godMode.Update(ms))
+                    {
+                        isGodModeOn = !isGodModeOn;
+                    }
+                    if (back.Update(ms))
+                    {
+                        currentGameState = prevGameState;
+                    }
+                    break;
 
-                    case GameState.Pause:
-                        if (resume.Update(ms))
-                        {
-                            currentGameState = GameState.Game;
-                        }
-                        if (pauseSettings.Update(ms))
-                        {
-                            currentGameState = GameState.Settings;
-                            prevGameState = GameState.Menu;
-                        }
-                        if (pauseExit.Update(ms))
-                        {
-                            currentGameState = GameState.Menu;
-                            LevelInfo.ReloadLevel();
-                        }
-                        break;
+                case GameState.Pause:
+                    if (resume.Update(ms))
+                    {
+                        currentGameState = GameState.Game;
+                    }
+                    if (pauseSettings.Update(ms))
+                    {
+                        currentGameState = GameState.Settings;
+                        prevGameState = GameState.Menu;
+                    }
+                    if (pauseExit.Update(ms))
+                    {
+                        currentGameState = GameState.Menu;
+                        LevelInfo.ReloadLevel();
+                    }
+                    break;
 
-                    case GameState.GameOver:
-                        if (retry.Update(ms))
-                        {
-                            currentGameState = GameState.Game;
-                        }
-                        if (gameOverMenu.Update(ms))
-                        {
-                            currentGameState = GameState.Menu;
-                        }
-                        break;
-                }
+                case GameState.GameOver:
+                    if (retry.Update(ms))
+                    {
+                        currentGameState = GameState.Game;
+                    }
+                    if (gameOverMenu.Update(ms))
+                    {
+                        currentGameState = GameState.Menu;
+                    }
+                    break;
             }
-            prevMouseState = ms;
         }
         /// <summary>
         /// draws all UI
