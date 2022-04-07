@@ -13,7 +13,6 @@ namespace Slorpus
         private SpriteBatch _spriteBatch;
         private Texture2D squareTexture;
         private Texture2D gridTexture;
-        private SpriteFont testingFont;
 
 
         private static SpriteFont testingFont;
@@ -147,13 +146,16 @@ namespace Slorpus
         {
             KeyboardState kb = Keyboard.GetState();
             MouseState ms = Mouse.GetState();
-
-            uiManager.Update(ms, kb);
-            //only update the game if the gamestate is game
-            if(uiManager.CurrentGameState == GameState.Game)
+            if (prevMS.LeftButton != ButtonState.Pressed)
             {
-                GameUpdate(gameTime);
+                //only update the game if the gamestate is game
+                if (uiManager.CurrentGameState == GameState.Game)
+                {
+                    GameUpdate(gameTime);
+                }
+                uiManager.Update(ms, kb);
             }
+            prevMS = ms;
         }
 
         protected void GameUpdate(GameTime gameTime)
