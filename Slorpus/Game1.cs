@@ -160,8 +160,6 @@ namespace Slorpus
 
         protected void GameUpdate(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
 
             foreach (IUpdate u in updateList)
             {

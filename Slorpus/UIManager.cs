@@ -171,7 +171,7 @@ namespace Slorpus
                     break;
 
                 case GameState.Game:
-                    if (ks.IsKeyDown(Keys.P))
+                    if (ks.IsKeyDown(Keys.Escape))
                     {
                         currentGameState = GameState.Pause;
                     }
@@ -239,7 +239,7 @@ namespace Slorpus
                     }
 
                     // draw godmode debug message
-                    sb.DrawString(Game1.TestingFont, $"GODMODE: {isGodModeOn}", new Vector2(0, 0), Color.Black);
+                    sb.DrawString(Game1.TestingFont, $"GODMODE: {isGodModeOn}", new Vector2(0, 0), Color.Red);
                     break;
 
                 case GameState.Game:
@@ -264,7 +264,7 @@ namespace Slorpus
                         button.Draw(sb);
                     }
                     // godmode debug
-                    sb.DrawString(Game1.TestingFont, $"GODMODE: {isGodModeOn}", new Vector2(0, 0), Color.Black);
+                    sb.DrawString(Game1.TestingFont, $"GODMODE: {isGodModeOn}", new Vector2(0, 0), Color.Red);
                     break;
 
                 case GameState.Pause:
