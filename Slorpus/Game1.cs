@@ -50,7 +50,7 @@ namespace Slorpus
         Rectangle bRect;
 
         //Level int
-        private int nextLevel;
+        private int currentLevel;
 
         public Game1()
         {
@@ -67,7 +67,7 @@ namespace Slorpus
             bulletList = new EnemyBullet[100];
             destroy_queue = new Queue<IDestroyable>();
             levelParser = new LevelParser();
-            nextLevel = 1;
+            currentLevel = 0;
 
             // anonymous function that is used to destroy any IDestroyable object
             remove_object = (IDestroyable destroy_target) => {
@@ -138,18 +138,22 @@ namespace Slorpus
             }
         }
 
+        public void ReloadLevel()
+        {
+            LoadLevel(Constants.LEVELS[currentLevel]);
+        }
+
         public void LoadNextLevel()
         {
-            if (nextLevel < Constants.LEVELS.Length)
+            if (currentLevel + 1 < Constants.LEVELS.Length)
             {
-                LoadLevel(Constants.LEVELS[nextLevel]);
-                nextLevel++;
+                currentLevel++;
             }
             else
             {
-                LoadLevel(Constants.LEVELS[0]);
-                nextLevel = 1;
+                currentLevel = 0;
             }
+            LoadLevel(Constants.LEVELS[currentLevel]);
         }
 
         protected override void Update(GameTime gameTime)
