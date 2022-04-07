@@ -55,7 +55,7 @@ namespace Slorpus
             }
             else if (typeof(T) == typeof(Player))
             {
-                Game1.ReloadLevel();
+                LevelInfo.ReloadLevel();
             }
             return false;
         }

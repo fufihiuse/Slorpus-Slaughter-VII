@@ -12,11 +12,15 @@ namespace Slorpus
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Texture2D squareTexture;
-        private SpriteFont testingFont;
 
-        // important objects
+
+        private static SpriteFont testingFont;
+        public static SpriteFont TestingFont { get { return testingFont; } }
+
+        // important misc objects
         Camera camera;
         Screen screen;
+        LevelInfo _levelInfo;
         Action<IDestroyable> remove_object;
 
         // input
@@ -49,9 +53,6 @@ namespace Slorpus
         //i need this
         Rectangle bRect;
 
-        //Level int
-        private int currentLevel;
-
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -61,13 +62,8 @@ namespace Slorpus
 
         protected override void Initialize()
         {
-            physicsList = new List<IPhysics>();
-            enemyList = new List<Enemy>();
-            wallList = new List<Wall>();
-            bulletList = new EnemyBullet[100];
-            destroy_queue = new Queue<IDestroyable>();
-            levelParser = new LevelParser();
-            currentLevel = 0;
+
+            _levelInfo = new LevelInfo(this);
 
             // anonymous function that is used to destroy any IDestroyable object
             remove_object = (IDestroyable destroy_target) => {
@@ -83,9 +79,9 @@ namespace Slorpus
                 _graphics.PreferredBackBufferHeight
                 )
             );
-            soundEffects = new SoundEffects();
             screen.Use();
-
+            
+            soundEffects = new SoundEffects();
             uiManager = new UIManager();
 
             base.Initialize();
@@ -102,15 +98,13 @@ namespace Slorpus
 
         public void LoadLevel(string levelname)
         {
-            level = null;
-            bulletManager = null;
-            enemyManager = null;
-            physicsManager = null;
-            updateList = null;
-            drawList = null;
-            mouseClickList = null;
-            keyPressList = null;
-
+            physicsList = new List<IPhysics>();
+            enemyList = new List<Enemy>();
+            wallList = new List<Wall>();
+            bulletList = new EnemyBullet[100];
+            destroy_queue = new Queue<IDestroyable>();
+            levelParser = new LevelParser();
+            
             // instantiate all the manager classes on the empty, just initialized lists
             level = new Level(wallList, squareTexture, squareTexture, squareTexture);
             //LevelParser levelParser = new LevelParser();
@@ -132,7 +126,6 @@ namespace Slorpus
             uiManager.LoadUI(Content);
             testingFont = Content.Load<SpriteFont>("Arial12");
 
-
             // miscellaneous, "special" items which dont have a manager
             updateList = levelParser.Updatables;
             drawList = levelParser.Drawables;
@@ -147,24 +140,6 @@ namespace Slorpus
             }
         }
 
-        public static void ReloadLevel()
-        {
-            LoadLevel(Constants.LEVELS[currentLevel]);
-        }
-
-        public void LoadNextLevel()
-        {
-            if (currentLevel + 1 < Constants.LEVELS.Length)
-            {
-                currentLevel++;
-            }
-            else
-            {
-                currentLevel = 0;
-            }
-            LoadLevel(Constants.LEVELS[currentLevel]);
-        }
-
         protected override void Update(GameTime gameTime)
         {
             KeyboardState kb = Keyboard.GetState();
@@ -176,12 +151,6 @@ namespace Slorpus
             {
                 GameUpdate(gameTime);
             }
-
-            //TODO: remove
-            if (kb.IsKeyDown(Keys.R))
-            { ReloadLevel(); }
-            if (kb.IsKeyDown(Keys.N))
-            { LoadNextLevel(); }
         }
 
         protected void GameUpdate(GameTime gameTime)
@@ -239,12 +208,23 @@ namespace Slorpus
                 {
                     IPhysics physics_target = (IPhysics)destroy_target;
                     physicsList.Remove(physics_target);
+                    if (!UIManager.IsGodModeOn && physics_target is PlayerProjectile && enemyList.Count != 0)
+                    {
+                        // FAIL STATE / LOSE CONDITION
+                        LevelInfo.ReloadLevel();
+                    }
                 }
                 catch (InvalidCastException) { /* do nothing */ }
                 try
                 {
                     Enemy enemy_target = (Enemy)destroy_target;
                     enemyList.Remove(enemy_target);
+                    
+                    // WIN CONDITION
+                    if (enemyList.Count == 0)
+                    {
+                        LevelInfo.LoadNextLevel();
+                    }
                 }
                 catch (InvalidCastException) { /* do nothing */ }
             }
