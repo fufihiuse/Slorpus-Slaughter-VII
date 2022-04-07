@@ -22,6 +22,6 @@ namespace Slorpus
         public const float MIN_DETECTION_DISTANCE = 400;
 
         //Array of levels to load
-        public static readonly string[] LEVELS = { "2", "aynrand" };
+        public static readonly string[] LEVELS = { "1", "2", "3", "5" };
     }
 }

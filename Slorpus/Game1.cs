@@ -13,9 +13,6 @@ namespace Slorpus
         private SpriteBatch _spriteBatch;
         private Texture2D squareTexture;
         private Texture2D gridTexture;
-        private SpriteFont testingFont;
-
-
         private static SpriteFont testingFont;
         public static SpriteFont TestingFont { get { return testingFont; } }
 
