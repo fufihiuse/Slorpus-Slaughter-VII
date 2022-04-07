@@ -102,6 +102,15 @@ namespace Slorpus
 
         public void LoadLevel(string levelname)
         {
+            level = null;
+            bulletManager = null;
+            enemyManager = null;
+            physicsManager = null;
+            updateList = null;
+            drawList = null;
+            mouseClickList = null;
+            keyPressList = null;
+
             // instantiate all the manager classes on the empty, just initialized lists
             level = new Level(wallList, squareTexture, squareTexture, squareTexture);
             //LevelParser levelParser = new LevelParser();
@@ -167,6 +176,12 @@ namespace Slorpus
             {
                 GameUpdate(gameTime);
             }
+
+            //TODO: remove
+            if (kb.IsKeyDown(Keys.R))
+            { ReloadLevel(); }
+            if (kb.IsKeyDown(Keys.N))
+            { LoadNextLevel(); }
         }
 
         protected void GameUpdate(GameTime gameTime)
