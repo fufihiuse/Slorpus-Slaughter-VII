@@ -30,8 +30,6 @@ namespace Slorpus
 
         // managers
         Level level;
-        LevelParser levelParser;
-        EnemyManager enemyManager;
         BulletManager bulletManager;
         PhysicsManager physicsManager;
         UIManager uiManager;
@@ -39,7 +37,6 @@ namespace Slorpus
         // lists
         // these (usually) should not be modified directly, edit them with the managers
         List<IPhysics> physicsList;
-        List<Enemy> enemyList;
         EnemyBullet[] bulletList;
         List<Wall> wallList;
         SoundEffects soundEffects;
@@ -101,19 +98,18 @@ namespace Slorpus
         public void LoadLevel(string levelname)
         {
             physicsList = new List<IPhysics>();
-            enemyList = new List<Enemy>();
             wallList = new List<Wall>();
             bulletList = new EnemyBullet[100];
             destroy_queue = new Queue<IDestroyable>();
-            levelParser = new LevelParser();
             
             // instantiate all the manager classes on the empty, just initialized lists
             level = new Level(wallList, squareTexture, squareTexture, squareTexture, gridTexture);
             //LevelParser levelParser = new LevelParser();
             List<GenericEntity> levelList = level.LoadFromFile($"..\\..\\..\\levels\\{levelname}.sslvl"); //Loads example level and returns entityList
             bulletManager = new BulletManager(bulletList, squareTexture);
-            enemyManager = new EnemyManager(enemyList, squareTexture, bulletManager);
             physicsManager = new PhysicsManager(physicsList, wallList, bulletManager);
+            
+            LevelParser levelParser = new LevelParser(bulletManager, physicsManager);
             
             // bullet creation function
             Action<Point, Vector2> createbullet = (Point loc, Vector2 vel) => CreateBullet(loc, vel);
@@ -122,7 +118,6 @@ namespace Slorpus
             levelParser.GetPhysicsObjects(physicsList, levelList, createbullet, createCamera, squareTexture, squareTexture);
             
             // parse data read from level
-            levelParser.GetEnemies(enemyList, levelList, squareTexture, squareTexture, remove_object);
             levelParser.GetWalls(wallList, levelList);
 
             uiManager.LoadUI(Content);
@@ -134,12 +129,6 @@ namespace Slorpus
             mouseClickList = levelParser.MouseClickables;
             keyPressList = levelParser.KeyPressables;
             SoundEffects.AddSounds(Content);
-
-            // add enemies to physicsobject list
-            foreach (Enemy e in enemyList)
-            {
-                physicsList.Add(e);
-            }
         }
 
         protected override void Update(GameTime gameTime)
@@ -190,6 +179,14 @@ namespace Slorpus
             prevMS = Mouse.GetState();
 
             // clean up objects that need to be destroyed
+            Cleanup();
+        }
+        
+        /// <summary>
+        /// Removes references to all objects in the Game1 destroy queue.
+        /// </summary>
+        private void Cleanup()
+        {
             while (destroy_queue.Count > 0)
             {
                 IDestroyable destroy_target = destroy_queue.Dequeue();
@@ -305,7 +302,7 @@ namespace Slorpus
         /// </summary>
         /// <param name="location">Starting location of the bullet.</param>
         /// <param name="velocity">Starting velocity of the bullet.</param>
-        public void CreateBullet(Point location, Vector2 velocity)
+        private void CreateBullet(Point location, Vector2 velocity)
         {
             bRect = new Rectangle(location,
                 new Point(
