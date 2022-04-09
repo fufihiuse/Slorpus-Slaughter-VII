@@ -4,12 +4,11 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Content;
 
 namespace Slorpus
 {
-    class Player : PhysicsObject, IUpdate, IDraw, IMouseClick, IKeyPress
+    class Player : PhysicsObject, IUpdate, IDraw, IMouseClick, IKeyPress, ILoad
     {
         Action<Point, Vector2> createBullet;
         // number of bullets the player currently has
@@ -17,7 +16,11 @@ namespace Slorpus
         // player texture
         Texture2D asset;
         int health;
-
+        
+        // publicly expose players position
+        private static Player current;
+        public static new Rectangle Position { get { return current.pos; } }
+        
         public int Health
         {
             get { return health; }
@@ -35,11 +38,15 @@ namespace Slorpus
         /// </summary>
         /// <param name="pos"></param>
         /// <param name="vel"></param>
-        public Player(Rectangle pos, Vector2 vel, Action<Point, Vector2> bulletCreationFunc, Texture2D playerAsset): base(pos, vel)
+        public Player(Rectangle pos, ContentManager content, Action<Point, Vector2> bulletCreationFunc): base(pos, Vector2.Zero)
         {
             this.createBullet = bulletCreationFunc;
-            this.asset = playerAsset;
             bullets = 1;
+
+            // select most recently instatiated player as the current player
+            current = this;
+
+            LoadContent(content);
         }
 
         void IUpdate.Update(GameTime gameTime)
@@ -53,6 +60,11 @@ namespace Slorpus
             Rectangle target = Position;
             target.Location -= Camera.Offset;
             sb.Draw(asset, target, Color.White);
+        }
+
+        public void LoadContent(ContentManager content)
+        {
+            asset = content.Load<Texture2D>("square");
         }
 
         void IKeyPress.OnKeyPress(KeyboardState kb)

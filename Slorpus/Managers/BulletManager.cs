@@ -19,6 +19,8 @@ namespace Slorpus
         // list of bullets queued for removal
         private List<int> queuedBullets;
 
+        private static BulletManager current;
+
         // get a reference to a given bullet
         public ref EnemyBullet this[int i]
         {
@@ -34,7 +36,9 @@ namespace Slorpus
         {
             this.bullets = bullets;
             this.bulletAsset = bulletAsset;
-            queuedBullets = new List<int>();    
+            queuedBullets = new List<int>();
+
+            current = this;
         }
 
         /// <summary>
@@ -82,6 +86,15 @@ namespace Slorpus
             bullets = new EnemyBullet[bullets.Length + new_bullets.Length];
             original.CopyTo(bullets, 0);
             new_bullets.CopyTo(bullets, original.Length);
+        }
+        
+        /// <summary>
+        /// Static version of the BulletManager's FireBatch method.
+        /// </summary>
+        /// <param name="bullets">Bullets to add to the game.</param>
+        public static void FireBullets(EnemyBullet[] bullets)
+        {
+            current.FireBatch(bullets);
         }
 
         public void Destroy(int bulletIndex, bool clean=true)

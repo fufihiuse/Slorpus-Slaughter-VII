@@ -22,7 +22,7 @@ namespace Slorpus
         Camera camera;
         Screen screen;
         LevelInfo _levelInfo;
-        Action<IDestroyable> remove_object;
+        Dereferencer _dereferencer;
 
         // input
         MouseState prevMS;
@@ -61,12 +61,11 @@ namespace Slorpus
         protected override void Initialize()
         {
 
+            destroy_queue = new Queue<IDestroyable>();
             _levelInfo = new LevelInfo(this);
+            _dereferencer = new Dereferencer(destroy_queue);
 
             // anonymous function that is used to destroy any IDestroyable object
-            remove_object = (IDestroyable destroy_target) => {
-                destroy_queue.Enqueue(destroy_target);
-            };
 
             prevMS = Mouse.GetState();
             prevKB = Keyboard.GetState();
@@ -91,7 +90,15 @@ namespace Slorpus
 
             squareTexture = Content.Load<Texture2D>("square");
             gridTexture = Content.Load<Texture2D>("grid");
-
+            
+            // load UI
+            uiManager.LoadUI(Content);
+            testingFont = Content.Load<SpriteFont>("Arial12");
+            
+            // load sound effects
+            SoundEffects.AddSounds(Content);
+            
+            // load first level
             LoadLevel(Constants.LEVELS[0]); 
         }
 
@@ -100,35 +107,30 @@ namespace Slorpus
             physicsList = new List<IPhysics>();
             wallList = new List<Wall>();
             bulletList = new EnemyBullet[100];
-            destroy_queue = new Queue<IDestroyable>();
             
-            // instantiate all the manager classes on the empty, just initialized lists
+            // read the level out of a file
             level = new Level(wallList, squareTexture, squareTexture, squareTexture, gridTexture);
-            //LevelParser levelParser = new LevelParser();
             List<GenericEntity> levelList = level.LoadFromFile($"..\\..\\..\\levels\\{levelname}.sslvl"); //Loads example level and returns entityList
+            
+            // create managers and utils
             bulletManager = new BulletManager(bulletList, squareTexture);
             physicsManager = new PhysicsManager(physicsList, wallList, bulletManager);
-            
-            LevelParser levelParser = new LevelParser(bulletManager, physicsManager);
+            LevelParser levelParser = new LevelParser(Content);
             
             // bullet creation function
             Action<Point, Vector2> createbullet = (Point loc, Vector2 vel) => CreateBullet(loc, vel);
             // camera creation function
             Action<IPosition> createCamera = (IPosition player) => CreateCamera(player);
-            levelParser.GetPhysicsObjects(physicsList, levelList, createbullet, createCamera, squareTexture, squareTexture);
             
             // parse data read from level
             levelParser.GetWalls(wallList, levelList);
-
-            uiManager.LoadUI(Content);
-            testingFont = Content.Load<SpriteFont>("Arial12");
-
+            levelParser.GetPhysicsObjects(physicsList, levelList, createbullet, createCamera);
+            
             // miscellaneous, "special" items which dont have a manager
             updateList = levelParser.Updatables;
             drawList = levelParser.Drawables;
             mouseClickList = levelParser.MouseClickables;
             keyPressList = levelParser.KeyPressables;
-            SoundEffects.AddSounds(Content);
         }
 
         protected override void Update(GameTime gameTime)
@@ -166,7 +168,6 @@ namespace Slorpus
             }
             
 
-            enemyManager.UpdateEnemies(gameTime, levelParser._Player, bRect);
             physicsManager.MovePhysics(gameTime);
             // TODO: get rid of the stupid bullet size argument
             physicsManager.CollideAndMoveBullets(gameTime, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE));
@@ -208,22 +209,18 @@ namespace Slorpus
                 {
                     IPhysics physics_target = (IPhysics)destroy_target;
                     physicsList.Remove(physics_target);
-                    if (!UIManager.IsGodModeOn && physics_target is PlayerProjectile && enemyList.Count != 0)
+                    if (!UIManager.IsGodModeOn && physics_target is PlayerProjectile)
                     {
-                        // FAIL STATE / LOSE CONDITION
-                        LevelInfo.ReloadLevel();
-                    }
-                }
-                catch (InvalidCastException) { /* do nothing */ }
-                try
-                {
-                    Enemy enemy_target = (Enemy)destroy_target;
-                    enemyList.Remove(enemy_target);
-                    
-                    // WIN CONDITION
-                    if (enemyList.Count == 0)
-                    {
-                        LevelInfo.LoadNextLevel();
+                        if (Enemy.Count > 0)
+                        {
+                            // FAIL STATE / LOSE CONDITION
+                            LevelInfo.ReloadLevel();
+                        }
+                        else
+                        {
+                            // WIN CONDITION
+                            LevelInfo.LoadNextLevel();
+                        }
                     }
                 }
                 catch (InvalidCastException) { /* do nothing */ }
@@ -279,7 +276,6 @@ namespace Slorpus
                         Constants.BULLET_SIZE
                         )
                     );
-                enemyManager.DrawEnemies(_spriteBatch);
             }
             else
             {
@@ -311,12 +307,16 @@ namespace Slorpus
                     )
                 );
 
-            PlayerProjectile bullet = new PlayerProjectile(bRect, velocity, squareTexture, remove_object);
+            PlayerProjectile bullet = new PlayerProjectile(bRect, velocity, Content);
             updateList.Add(bullet);
             drawList.Add(bullet);
             physicsList.Add(bullet);
         }
-
+        
+        /// <summary>
+        /// Instantiates the camera object.
+        /// </summary>
+        /// <param name="followTarget"></param>
         private void CreateCamera(IPosition followTarget)
         {
             camera = new Camera(followTarget, Constants.CAMERA_SPEED);

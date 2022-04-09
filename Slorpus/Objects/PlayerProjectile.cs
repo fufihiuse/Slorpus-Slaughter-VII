@@ -3,27 +3,19 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace Slorpus
 {
-    class PlayerProjectile : PhysicsObject, IUpdate, IDraw, IDestroyable
+    class PlayerProjectile : PhysicsObject, IUpdate, IDraw, IDestroyable, ILoad
     {
         Texture2D asset;
-        Action<IDestroyable> destroy;
         
-        /// <summary>
-        /// Creates a bullet projectile which would be fired by the player.
-        /// </summary>
-        /// <param name="pos">Starting position of the bullet.</param>
-        /// <param name="vel">Starting velocity of the bullet, usually constant.</param>
-        /// <param name="asset">The bullet's texture.</param>
-        /// <param name="destroy">Function that is called on the bullet to destroy it.</param>
-        public PlayerProjectile(Rectangle pos, Vector2 vel, Texture2D asset, Action<IDestroyable> destroy): base(pos, vel)
+        public PlayerProjectile(Rectangle pos, Vector2 vel, ContentManager content): base(pos, vel)
         {
-            this.asset = asset;
-            this.destroy = destroy;
+            LoadContent(content);
         }
 
         //get player proj pos?
@@ -41,9 +33,14 @@ namespace Slorpus
             sb.Draw(asset, target, Color.White);
         }
 
+        public void LoadContent(ContentManager content)
+        {
+            asset = content.Load<Texture2D>("square");
+        }
+
         public void Destroy()
         {
-            destroy(this);
+            Dereferencer.Destroy(this);
         }
         
         // Handles bouncing off mirrors.

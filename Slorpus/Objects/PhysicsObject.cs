@@ -14,7 +14,7 @@ namespace Slorpus
     public class PhysicsObject: IPhysics
     {
         //fields
-        Rectangle pos;
+        protected Rectangle pos;
         protected Vector2 vel;
         protected Vector2 subPixelOffset;
 
