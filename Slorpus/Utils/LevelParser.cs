@@ -149,8 +149,7 @@ namespace Slorpus
         public void GetPhysicsObjects(
             List<IPhysics> physicsObjects,
             List<GenericEntity> entityList,
-            Action<Point, Vector2> bulletCreationFunc,
-            Action<IPosition> cameraCreationFunc)
+            Action<Point, Vector2> bulletCreationFunc)
         {
             foreach (GenericEntity ge in entityList)
             {
@@ -165,8 +164,6 @@ namespace Slorpus
                             content,
                             bulletCreationFunc
                             );
-
-                        cameraCreationFunc(player);
                         SortItem(player);
                         physicsObjects.Add(player);
                         break;

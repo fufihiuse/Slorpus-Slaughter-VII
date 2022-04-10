@@ -44,12 +44,9 @@ namespace Slorpus
         
         // more lists, these are for special objects that subscribe to certain events
         List<IUpdate> updateList;
-        List<IDraw> drawList;
+        List<List<IDraw>> layers;
         List<IMouseClick> mouseClickList;
         List<IKeyPress> keyPressList;
-
-        //i need this
-        Rectangle bRect;
 
         public Game1()
         {
@@ -104,6 +101,19 @@ namespace Slorpus
 
         public void LoadLevel(string levelname)
         {
+            // reset the number of enemies by actually destroying each one
+            if (physicsList != null)
+            {
+                foreach (IPhysics p in physicsList)
+                {
+                    try
+                    {
+                        Enemy temp = (Enemy)p;
+                        temp.Destroy();
+                    }
+                    catch (InvalidCastException) { }
+                }
+            }
             physicsList = new List<IPhysics>();
             wallList = new List<Wall>();
             bulletList = new EnemyBullet[100];
@@ -119,18 +129,54 @@ namespace Slorpus
             
             // bullet creation function
             Action<Point, Vector2> createbullet = (Point loc, Vector2 vel) => CreateBullet(loc, vel);
-            // camera creation function
-            Action<IPosition> createCamera = (IPosition player) => CreateCamera(player);
             
             // parse data read from level
             levelParser.GetWalls(wallList, levelList);
-            levelParser.GetPhysicsObjects(physicsList, levelList, createbullet, createCamera);
+            levelParser.GetPhysicsObjects(physicsList, levelList, createbullet);
             
             // miscellaneous, "special" items which dont have a manager
             updateList = levelParser.Updatables;
-            drawList = levelParser.Drawables;
             mouseClickList = levelParser.MouseClickables;
             keyPressList = levelParser.KeyPressables;
+            
+            // handle different draw layers
+            List<IDraw> drawables = levelParser.Drawables;
+
+            // instantiate layers
+            layers = new List<List<IDraw>>();
+            for (int i = 0; i < Layers.Count; i++)
+            {
+                layers.Add(new List<IDraw>());
+            }
+
+            // add all drawable objects to their respective layers
+            for (int i = 0; i < Layers.Count; i++)
+            {
+                Queue<IDraw> remove = new Queue<IDraw>();
+                foreach (IDraw d in drawables)
+                {
+                    try
+                    {
+                        Convert.ChangeType(d, Layers.LayerIndex[i]);
+                        // the object d is of the selected type if the previous
+                        // line succeeded
+                        layers[i].Add(d);
+                        remove.Enqueue(d);
+                    }
+                    catch { }
+                }
+                // remove queued objects
+                while (remove.Count > 0)
+                {
+                    IDraw d = remove.Dequeue();
+                    drawables.Remove(d);
+                }
+            }
+            
+            // function to retrieve the camera's target coordinates
+            Func<Rectangle> getFollowTarget = () => { return Player.Position; };
+            // create camera
+            camera = new Camera(getFollowTarget, Constants.CAMERA_SPEED);
         }
 
         protected override void Update(GameTime gameTime)
@@ -202,7 +248,11 @@ namespace Slorpus
                 try
                 {
                     IDraw draw_target = (IDraw)destroy_target;
-                    drawList.Remove(draw_target);
+                    // remove from all layers
+                    foreach (List<IDraw> drawList in layers)
+                    {
+                        drawList.Remove(draw_target);
+                    }
                 }
                 catch (InvalidCastException) { /* do nothing */ }
                 try
@@ -264,9 +314,12 @@ namespace Slorpus
                 // draw the walls
                 level.Draw(_spriteBatch);
                 // draw player and objects
-                foreach (IDraw d in drawList)
+                foreach (List<IDraw> drawList in layers)
                 {
-                    d.Draw(_spriteBatch);
+                    foreach (IDraw d in drawList)
+                    {
+                        d.Draw(_spriteBatch);
+                    }
                 }
                 
                 // draw bullets and enemies
@@ -300,26 +353,17 @@ namespace Slorpus
         /// <param name="velocity">Starting velocity of the bullet.</param>
         private void CreateBullet(Point location, Vector2 velocity)
         {
-            bRect = new Rectangle(location,
+            Rectangle pRect = new Rectangle(location,
                 new Point(
                     Constants.PLAYER_BULLET_SIZE,
                     Constants.PLAYER_BULLET_SIZE
                     )
                 );
 
-            PlayerProjectile bullet = new PlayerProjectile(bRect, velocity, Content);
-            updateList.Add(bullet);
-            drawList.Add(bullet);
-            physicsList.Add(bullet);
-        }
-        
-        /// <summary>
-        /// Instantiates the camera object.
-        /// </summary>
-        /// <param name="followTarget"></param>
-        private void CreateCamera(IPosition followTarget)
-        {
-            camera = new Camera(followTarget, Constants.CAMERA_SPEED);
+            PlayerProjectile projectile = new PlayerProjectile(pRect, velocity, Content);
+            updateList.Add(projectile);
+            layers[Layers.GetLayer<PlayerProjectile>()].Add(projectile);
+            physicsList.Add(projectile);
         }
     }
 }

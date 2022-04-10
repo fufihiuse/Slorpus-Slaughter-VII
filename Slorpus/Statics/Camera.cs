@@ -63,7 +63,7 @@ namespace Slorpus
         // method that gets called when moving
         private Action moveBehavior;
         
-        IPosition followTarget;
+        Func<Rectangle> followTarget;
         float lerpSpeed;
         Random gen;
 
@@ -106,7 +106,7 @@ namespace Slorpus
             }
         }
 
-        public Camera(IPosition followTarget, float lerpSpeed, bool NoOverrideShake=false)
+        public Camera(Func<Rectangle> followTarget, float lerpSpeed, bool NoOverrideShake=false)
         {
             this.followTarget = followTarget;
             this.lerpSpeed = lerpSpeed;
@@ -123,7 +123,7 @@ namespace Slorpus
             
             gen = new Random();
         }
-        
+
         /// <summary>
         /// Interpolates the camera position towards its current target.
         /// </summary>
@@ -138,8 +138,8 @@ namespace Slorpus
 
             Point screenOffset = Screen.Size;
 
-            pos.X = (int)MathHelper.Lerp(pos.X, followTarget.Position.X - (screenOffset.X/2), useSpeed);
-            pos.Y = (int)MathHelper.Lerp(pos.Y, followTarget.Position.Y - (screenOffset.Y/2), useSpeed);
+            pos.X = (int)MathHelper.Lerp(pos.X, followTarget().X - (screenOffset.X/2), useSpeed);
+            pos.Y = (int)MathHelper.Lerp(pos.Y, followTarget().Y - (screenOffset.Y/2), useSpeed);
         }
 
         public void Update(GameTime gameTime)
