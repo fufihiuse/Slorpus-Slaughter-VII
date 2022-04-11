@@ -23,6 +23,7 @@ namespace Slorpus
         Screen screen;
         LevelInfo _levelInfo;
         Dereferencer _dereferencer;
+        Dictionary<int, int> layerTransform;
 
         // input
         MouseState prevMS;
@@ -101,22 +102,8 @@ namespace Slorpus
 
         public void LoadLevel(string levelname)
         {
-            // reset the number of enemies by actually destroying each one
-            if (physicsList != null)
-            {
-                foreach (IPhysics p in physicsList)
-                {
-                    try
-                    {
-                        Enemy temp = (Enemy)p;
-                        temp.Destroy();
-                    }
-                    catch (InvalidCastException) { }
-                }
-            }
-            physicsList = new List<IPhysics>();
-            wallList = new List<Wall>();
-            bulletList = new EnemyBullet[100];
+            ResetLists();
+            SetupLayers();
             
             // read the level out of a file
             level = new Level(wallList, squareTexture, squareTexture, squareTexture, gridTexture);
@@ -141,37 +128,12 @@ namespace Slorpus
             
             // handle different draw layers
             List<IDraw> drawables = levelParser.Drawables;
-
-            // instantiate layers
-            layers = new List<List<IDraw>>();
-            for (int i = 0; i < Layers.Count; i++)
+            // sort all the drawables into their respective layers
+            foreach (IDraw d in drawables)
             {
-                layers.Add(new List<IDraw>());
+                layers[d.Layer].Add(d);
             }
 
-            // add all drawable objects to their respective layers
-            for (int i = 0; i < Layers.Count; i++)
-            {
-                Queue<IDraw> remove = new Queue<IDraw>();
-                foreach (IDraw d in drawables)
-                {
-                    try
-                    {
-                        Convert.ChangeType(d, Layers.LayerIndex[i]);
-                        // the object d is of the selected type if the previous
-                        // line succeeded
-                        layers[i].Add(d);
-                        remove.Enqueue(d);
-                    }
-                    catch { }
-                }
-                // remove queued objects
-                while (remove.Count > 0)
-                {
-                    IDraw d = remove.Dequeue();
-                    drawables.Remove(d);
-                }
-            }
             
             // function to retrieve the camera's target coordinates
             Func<Rectangle> getFollowTarget = () => { return Player.Position; };
@@ -362,8 +324,64 @@ namespace Slorpus
 
             PlayerProjectile projectile = new PlayerProjectile(pRect, velocity, Content);
             updateList.Add(projectile);
-            layers[Layers.GetLayer<PlayerProjectile>()].Add(projectile);
+            layers[projectile.Layer].Add(projectile);
             physicsList.Add(projectile);
+        }
+        
+        private void SetupLayers()
+        {
+            layers = new List<List<IDraw>>();
+            layerTransform = new Dictionary<int, int>();
+            // get all types
+            Type[] AllTypes = System.Reflection.Assembly.GetExecutingAssembly().GetTypes();
+            
+            // reduce that to all types that implement IDraw
+            Type[] IDrawTypes = new Type[AllTypes.Length];
+            // vv total number of types that implement IDraw vv
+            int drawTypeCounter = 0;
+            foreach (Type t in AllTypes)
+            {
+                if (t.GetInterface("IDraw") != null)
+                {
+                    layers.Add(new List<IDraw>());
+                    int layer = ((IDraw)(object)Activator.CreateInstance(t)).Layer;
+                    layerTransform.Add(layer, layer);
+                    drawTypeCounter++;
+                }
+            }
+
+
+            // consolidate all layer information
+            typeLayer = new Dictionary<Type, int>();
+            foreach (Type t in IDrawTypes)
+            {
+                // wizard shit
+                typeLayer.Add(t, (int)t.GetProperty("Layer").GetValue(Activator.CreateInstance(t)));
+                layers.Add(new List<IDraw>());
+            }
+        }
+        
+        /// <summary>
+        /// Completely reset the contents of the physics list, wall list, and bullet list.
+        /// </summary>
+        private void ResetLists()
+        {
+            // reset the number of enemies by actually destroying each one
+            if (physicsList != null)
+            {
+                foreach (IPhysics p in physicsList)
+                {
+                    try
+                    {
+                        Enemy temp = (Enemy)p;
+                        temp.Destroy();
+                    }
+                    catch (InvalidCastException) { }
+                }
+            }
+            physicsList = new List<IPhysics>();
+            wallList = new List<Wall>();
+            bulletList = new EnemyBullet[100];
         }
     }
 }

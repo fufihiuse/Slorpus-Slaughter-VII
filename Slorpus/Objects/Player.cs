@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Content;
 
 namespace Slorpus
 {
-    class Player : PhysicsObject, IUpdate, IDraw, IMouseClick, IKeyPress, ILoad
+    partial class Player : PhysicsObject, IUpdate, IDraw, IMouseClick, IKeyPress, ILoad
     {
         Action<Point, Vector2> createBullet;
         // number of bullets the player currently has

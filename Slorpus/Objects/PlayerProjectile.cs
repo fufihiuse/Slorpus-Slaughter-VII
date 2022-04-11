@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Slorpus
 {
-    class PlayerProjectile : PhysicsObject, IUpdate, IDraw, IDestroyable, ILoad
+    partial class PlayerProjectile : PhysicsObject, IUpdate, IDraw, IDestroyable, ILoad
     {
         Texture2D asset;
         

@@ -11,7 +11,7 @@ namespace Slorpus
      * Every class that needs to implement IPhysics but doesn't already have a parent class
      * should inherit from this so as to minimize copypasting code
      */
-    public class PhysicsObject: IPhysics
+    class PhysicsObject: IPhysics
     {
         //fields
         protected Rectangle pos;

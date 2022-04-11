@@ -13,7 +13,7 @@ namespace Slorpus
         Ensconcing,         //any shooting pattern that doesn't track the enemy
         HomingAttack        //goop ball that tracks the player
     }
-    class Enemy: PhysicsObject, IUpdate, IDraw, IDestroyable, ILoad
+    partial class Enemy: PhysicsObject, IUpdate, IDraw, IDestroyable, ILoad
     {
         // counter for how many enemies exist
         private static int count = 0;
