@@ -132,6 +132,10 @@ namespace Slorpus
                 layers.Add(d);
             }
 
+            // also add the bullets and level to be drawn
+            layers.Add(bulletManager);
+            layers.Add(level);
+
             if (Player.Position != null)
             {
                 // function to retrieve the camera's target coordinates
@@ -274,8 +278,6 @@ namespace Slorpus
             //draw ui or game
             if(uiManager.CurrentGameState == GameState.Game)
             {
-                // draw the walls
-                level.Draw(_spriteBatch);
                 // draw player and objects
                 foreach (List<IDraw> drawList in layers)
                 {
@@ -284,14 +286,6 @@ namespace Slorpus
                         d.Draw(_spriteBatch);
                     }
                 }
-                
-                // draw bullets and enemies
-                bulletManager.DrawBullets(_spriteBatch,
-                    new Point(
-                        Constants.BULLET_SIZE,
-                        Constants.BULLET_SIZE
-                        )
-                    );
             }
             else
             {
