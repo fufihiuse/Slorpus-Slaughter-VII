@@ -146,7 +146,7 @@ namespace Slorpus
         {
             KeyboardState kb = Keyboard.GetState();
             MouseState ms = Mouse.GetState();
-            if (prevMS.LeftButton != ButtonState.Pressed)
+            if (prevMS.LeftButton != ButtonState.Pressed || uiManager.CurrentGameState == GameState.Game)
             {
                 //only update the game if the gamestate is game
                 if (uiManager.CurrentGameState == GameState.Game)
