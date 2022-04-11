@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Slorpus
 {
-    class PhysicsManager
+    class PhysicsManager: IUpdate
     {
         private List<Wall> wallList;
         private List<IPhysics> physicsObjects;
@@ -18,6 +18,12 @@ namespace Slorpus
             this.physicsObjects = physicsObjects;
             this.wallList = wallList;
             this.bulletManager = bulletManager;
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            MovePhysics(gameTime);
+            CollideAndMoveBullets(gameTime, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE));
         }
 
         public void AddPhysicsObject(IPhysics physicsObject)

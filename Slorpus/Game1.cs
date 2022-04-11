@@ -119,6 +119,20 @@ namespace Slorpus
             levelParser.GetWalls(wallList, levelList);
             levelParser.GetPhysicsObjects(physicsList, levelList, createbullet);
             
+            // instantiate camera
+            if (Player.Position != null)
+            {
+                // function to retrieve the camera's target coordinates
+                Func<Rectangle> getFollowTarget = () => { return Player.Position; };
+                // create camera
+                camera = new Camera(getFollowTarget, Constants.CAMERA_SPEED);
+            }
+            else
+            {
+                throw new Exception("A player is needed to instantiate the player camera, " +
+                    "but no player was created on this level.");
+            }
+            
             // miscellaneous, "special" items which dont have a manager
             updateList = levelParser.Updatables;
             mouseClickList = levelParser.MouseClickables;
@@ -136,18 +150,9 @@ namespace Slorpus
             layers.Add(bulletManager);
             layers.Add(level);
 
-            if (Player.Position != null)
-            {
-                // function to retrieve the camera's target coordinates
-                Func<Rectangle> getFollowTarget = () => { return Player.Position; };
-                // create camera
-                camera = new Camera(getFollowTarget, Constants.CAMERA_SPEED);
-            }
-            else
-            {
-                throw new Exception("A player is needed to instantiate the player camera, " +
-                    "but no player was created on this level.");
-            }
+            // add camera and physics to be updated
+            updateList.Add(camera);
+            updateList.Add(physicsManager);
         }
 
         protected override void Update(GameTime gameTime)
@@ -184,11 +189,6 @@ namespace Slorpus
                 OnMouseClick(prevMS);
             }
             
-
-            physicsManager.MovePhysics(gameTime);
-            // TODO: get rid of the stupid bullet size argument
-            physicsManager.CollideAndMoveBullets(gameTime, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE));
-            camera.Update(gameTime);
             
             base.Update(gameTime);
 

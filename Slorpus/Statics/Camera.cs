@@ -54,7 +54,7 @@ namespace Slorpus
      * This class contains and offset and some options for modifying it
      * as well as a follow target that it can linearly interpolate towards
      */
-    class Camera
+    class Camera: IUpdate
     {
         static private Rectangle pos;
         static private Point shakeOffset;
