@@ -11,10 +11,10 @@ namespace Slorpus
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        private Texture2D squareTexture;
-        private Texture2D gridTexture;
 
-
+        // debug assets for use everywhere
+        private static Texture2D squareTexture;
+        public static Texture2D SquareTexture { get { return squareTexture; } }
         private static SpriteFont testingFont;
         public static SpriteFont TestingFont { get { return testingFont; } }
 
@@ -23,7 +23,7 @@ namespace Slorpus
         Screen screen;
         LevelInfo _levelInfo;
         Dereferencer _dereferencer;
-        Dictionary<int, int> layerTransform;
+        Layers layers;
 
         // input
         MouseState prevMS;
@@ -45,7 +45,6 @@ namespace Slorpus
         
         // more lists, these are for special objects that subscribe to certain events
         List<IUpdate> updateList;
-        List<List<IDraw>> layers;
         List<IMouseClick> mouseClickList;
         List<IKeyPress> keyPressList;
 
@@ -87,11 +86,10 @@ namespace Slorpus
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             squareTexture = Content.Load<Texture2D>("square");
-            gridTexture = Content.Load<Texture2D>("grid");
+            testingFont = Content.Load<SpriteFont>("Arial12");
             
             // load UI
             uiManager.LoadUI(Content);
-            testingFont = Content.Load<SpriteFont>("Arial12");
             
             // load sound effects
             SoundEffects.AddSounds(Content);
@@ -103,11 +101,11 @@ namespace Slorpus
         public void LoadLevel(string levelname)
         {
             ResetLists();
-            SetupLayers();
+            layers = new Layers();
             
             // read the level out of a file
-            level = new Level(wallList, squareTexture, squareTexture, squareTexture, gridTexture);
-            List<GenericEntity> levelList = level.LoadFromFile($"..\\..\\..\\levels\\{levelname}.sslvl"); //Loads example level and returns entityList
+            level = new Level(wallList, Content);
+            List<GenericEntity> levelList = level.LoadFromFile($"..\\..\\..\\levels\\{levelname}.sslvl");            
             
             // create managers and utils
             bulletManager = new BulletManager(bulletList, squareTexture);
@@ -117,7 +115,7 @@ namespace Slorpus
             // bullet creation function
             Action<Point, Vector2> createbullet = (Point loc, Vector2 vel) => CreateBullet(loc, vel);
             
-            // parse data read from level
+            // parse data read from level (player requires the bullet creation func)
             levelParser.GetWalls(wallList, levelList);
             levelParser.GetPhysicsObjects(physicsList, levelList, createbullet);
             
@@ -131,14 +129,21 @@ namespace Slorpus
             // sort all the drawables into their respective layers
             foreach (IDraw d in drawables)
             {
-                layers[d.Layer].Add(d);
+                layers.Add(d);
             }
 
-            
-            // function to retrieve the camera's target coordinates
-            Func<Rectangle> getFollowTarget = () => { return Player.Position; };
-            // create camera
-            camera = new Camera(getFollowTarget, Constants.CAMERA_SPEED);
+            if (Player.Position != null)
+            {
+                // function to retrieve the camera's target coordinates
+                Func<Rectangle> getFollowTarget = () => { return Player.Position; };
+                // create camera
+                camera = new Camera(getFollowTarget, Constants.CAMERA_SPEED);
+            }
+            else
+            {
+                throw new Exception("A player is needed to instantiate the player camera, " +
+                    "but no player was created on this level.");
+            }
         }
 
         protected override void Update(GameTime gameTime)
@@ -210,11 +215,7 @@ namespace Slorpus
                 try
                 {
                     IDraw draw_target = (IDraw)destroy_target;
-                    // remove from all layers
-                    foreach (List<IDraw> drawList in layers)
-                    {
-                        drawList.Remove(draw_target);
-                    }
+                    layers.Remove(draw_target);
                 }
                 catch (InvalidCastException) { /* do nothing */ }
                 try
@@ -324,41 +325,8 @@ namespace Slorpus
 
             PlayerProjectile projectile = new PlayerProjectile(pRect, velocity, Content);
             updateList.Add(projectile);
-            layers[projectile.Layer].Add(projectile);
+            layers.Add(projectile);
             physicsList.Add(projectile);
-        }
-        
-        private void SetupLayers()
-        {
-            layers = new List<List<IDraw>>();
-            layerTransform = new Dictionary<int, int>();
-            // get all types
-            Type[] AllTypes = System.Reflection.Assembly.GetExecutingAssembly().GetTypes();
-            
-            // reduce that to all types that implement IDraw
-            Type[] IDrawTypes = new Type[AllTypes.Length];
-            // vv total number of types that implement IDraw vv
-            int drawTypeCounter = 0;
-            foreach (Type t in AllTypes)
-            {
-                if (t.GetInterface("IDraw") != null)
-                {
-                    layers.Add(new List<IDraw>());
-                    int layer = ((IDraw)(object)Activator.CreateInstance(t)).Layer;
-                    layerTransform.Add(layer, layer);
-                    drawTypeCounter++;
-                }
-            }
-
-
-            // consolidate all layer information
-            typeLayer = new Dictionary<Type, int>();
-            foreach (Type t in IDrawTypes)
-            {
-                // wizard shit
-                typeLayer.Add(t, (int)t.GetProperty("Layer").GetValue(Activator.CreateInstance(t)));
-                layers.Add(new List<IDraw>());
-            }
         }
         
         /// <summary>

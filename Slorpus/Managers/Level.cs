@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.IO;
@@ -9,7 +10,7 @@ using System.IO;
 namespace Slorpus
 {
     //Jackson Majewski
-    class Level
+    class Level: IDraw
     {
         //Fields
         private static char[,] level;
@@ -22,13 +23,13 @@ namespace Slorpus
         public static Point Size { get { return new Point(level.Length/level.GetLength(0), level.GetLength(0)); } }
 
         //Constructor
-        public Level(List<Wall> walls, Texture2D wallAsset, Texture2D mirrorAsset, Texture2D invisWallAsset, Texture2D gridAsset)
+        public Level(List<Wall> walls, ContentManager content)
         {
             this.walls = walls;
-            this.wallAsset = wallAsset;
-            this.mirrorAsset = mirrorAsset;
-            this.invisWallAsset = invisWallAsset;
-            this.gridAsset = gridAsset;
+            this.wallAsset = Game1.SquareTexture; // content.Load<Texture2D>("square");
+            this.mirrorAsset = Game1.SquareTexture; //  content.Load<Texture2D>("square");
+            this.invisWallAsset = Game1.SquareTexture; // content.Load<Texture2D>("square");
+            this.gridAsset = content.Load<Texture2D>("grid");;
         }
 
         //Methods 

@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Content;
 
 namespace Slorpus
 {
-    partial class Player : PhysicsObject, IUpdate, IDraw, IMouseClick, IKeyPress, ILoad
+    class Player : PhysicsObject, IUpdate, IDraw, IMouseClick, IKeyPress, ILoad, IDestroyable
     {
         Action<Point, Vector2> createBullet;
         // number of bullets the player currently has
@@ -64,7 +64,7 @@ namespace Slorpus
 
         public void LoadContent(ContentManager content)
         {
-            asset = content.Load<Texture2D>("square");
+            asset = Game1.SquareTexture; // content.Load<Texture2D>("square");
         }
 
         void IKeyPress.OnKeyPress(KeyboardState kb)
@@ -164,6 +164,16 @@ namespace Slorpus
             yin += yTemp;
 
             Velocity = new Vector2((Velocity.X + (xin * speed)) * 0.9f, (Velocity.Y + (yin * speed)) * 0.9f);
+        }
+
+        public void Destroy()
+        {
+            // clean up static variable
+            if (current == this)
+            {
+                current = null;
+            }
+            Dereferencer.Destroy(this);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Slorpus
      * which wrap around things like selecting a certain bullet from
      * the array and moving it.
      */
-    class BulletManager
+    class BulletManager: IDraw, IDestroyable
     {
         private EnemyBullet[] bullets;
         private Texture2D bulletAsset;
@@ -59,7 +59,7 @@ namespace Slorpus
         /// Draws all bullets.
         /// </summary>
         /// <param name="sb">Spritebatch used to draw the bullet textures.</param>
-        public void DrawBullets(SpriteBatch sb)
+        public void Draw(SpriteBatch sb)
         {
             DrawBullets(sb, new Point(bulletAsset.Width, bulletAsset.Height));
         }
@@ -145,6 +145,15 @@ namespace Slorpus
             // reset queuedbullets
             queuedBullets.Clear();
             bullets = narray;
+        }
+
+        public void Destroy()
+        {
+            if (current == this)
+            {
+                current = null;
+            }
+            Dereferencer.Destroy(this);
         }
     }
 }

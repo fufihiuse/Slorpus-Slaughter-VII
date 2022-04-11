@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Slorpus
 {
-    partial class PlayerProjectile : PhysicsObject, IUpdate, IDraw, IDestroyable, ILoad
+    class PlayerProjectile : PhysicsObject, IUpdate, IDraw, IDestroyable, ILoad
     {
         Texture2D asset;
         
@@ -35,7 +35,7 @@ namespace Slorpus
 
         public void LoadContent(ContentManager content)
         {
-            asset = content.Load<Texture2D>("square");
+            asset = Game1.SquareTexture; // content.Load<Texture2D>("square");
         }
 
         public void Destroy()

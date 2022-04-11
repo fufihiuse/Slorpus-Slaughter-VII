@@ -13,7 +13,7 @@ namespace Slorpus
         Ensconcing,         //any shooting pattern that doesn't track the enemy
         HomingAttack        //goop ball that tracks the player
     }
-    partial class Enemy: PhysicsObject, IUpdate, IDraw, IDestroyable, ILoad
+    class Enemy: PhysicsObject, IUpdate, IDraw, IDestroyable, ILoad
     {
         // counter for how many enemies exist
         private static int count = 0;
@@ -81,7 +81,7 @@ namespace Slorpus
         public void LoadContent(ContentManager content)
         {
             // add stuff for different textures per ShootingPattern
-            enemyAsset = content.Load<Texture2D>("square");
+            enemyAsset = Game1.SquareTexture; // content.Load<Texture2D>("square");
         }
 
         /// <summary>
