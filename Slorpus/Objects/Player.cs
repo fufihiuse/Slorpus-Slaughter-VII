@@ -1,15 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Content;
 
-namespace Slorpus
+using Slorpus.Managers;
+using Slorpus.Interfaces;
+using Slorpus.Interfaces.Base;
+using Slorpus.Statics;
+
+namespace Slorpus.Objects
 {
-    class Player : PhysicsObject, IUpdate, IDraw, IMouseClick, IKeyPress
+    class Player : PhysicsObject, IUpdate, IDraw, IMouseClick, IKeyPress, ILoad, IDestroyable
     {
         Action<Point, Vector2> createBullet;
         // number of bullets the player currently has
@@ -17,7 +19,11 @@ namespace Slorpus
         // player texture
         Texture2D asset;
         int health;
-
+        
+        // publicly expose players position
+        private static Player current;
+        public static new Rectangle Position { get { return current.pos; } }
+        
         public int Health
         {
             get { return health; }
@@ -35,11 +41,15 @@ namespace Slorpus
         /// </summary>
         /// <param name="pos"></param>
         /// <param name="vel"></param>
-        public Player(Rectangle pos, Vector2 vel, Action<Point, Vector2> bulletCreationFunc, Texture2D playerAsset): base(pos, vel)
+        public Player(Rectangle pos, ContentManager content, Action<Point, Vector2> bulletCreationFunc): base(pos, Vector2.Zero)
         {
             this.createBullet = bulletCreationFunc;
-            this.asset = playerAsset;
             bullets = 1;
+
+            // select most recently instatiated player as the current player
+            current = this;
+
+            LoadContent(content);
         }
 
         void IUpdate.Update(GameTime gameTime)
@@ -53,6 +63,11 @@ namespace Slorpus
             Rectangle target = Position;
             target.Location -= Camera.Offset;
             sb.Draw(asset, target, Color.White);
+        }
+
+        public void LoadContent(ContentManager content)
+        {
+            asset = Game1.SquareTexture; // content.Load<Texture2D>("square");
         }
 
         void IKeyPress.OnKeyPress(KeyboardState kb)
@@ -70,7 +85,10 @@ namespace Slorpus
             MouseState ms = Mouse.GetState();
             if (bullets > 0 && ms.LeftButton == ButtonState.Pressed && previous.LeftButton == ButtonState.Released)
             {
-                Point pos = new Point(Position.X, Position.Y);
+                Point pos = new Point(
+                    Position.Center.X - (Constants.BULLET_SIZE/2),
+                    Position.Center.Y - (Constants.BULLET_SIZE/2)
+                    );
 
                 // get distance from player to mouse
                 Vector2 vel = new Vector2(
@@ -152,6 +170,16 @@ namespace Slorpus
             yin += yTemp;
 
             Velocity = new Vector2((Velocity.X + (xin * speed)) * 0.9f, (Velocity.Y + (yin * speed)) * 0.9f);
+        }
+
+        public void Destroy()
+        {
+            // clean up static variable
+            if (current == this)
+            {
+                current = null;
+            }
+            Dereferencer.Destroy(this);
         }
     }
 }

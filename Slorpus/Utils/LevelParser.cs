@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Content;
 
-namespace Slorpus
+using Slorpus.Objects;
+using Slorpus.Statics;
+using Slorpus.Interfaces;
+using Slorpus.Interfaces.Base;
+
+namespace Slorpus.Utils
 {
     /*
      * This class is used to parse the output of Level.LoadFromFile().
@@ -19,21 +22,9 @@ namespace Slorpus
         List<IDraw> drawables;
         List<IMouseClick> mouseClickables;
         List<IKeyPress> keyPressables;
-
-        Player player;
-        List<Enemy> enemyList;
-
-        //property so enemy class has access to player class
-        public Player _Player
-        {
-            get { return player; }
-        }
-
-        //so projectile class can check if hitting an enemy
-        public List<Enemy> _Enemies
-        {
-            get { return enemyList; }
-        }
+        
+        // for passing to objects to load their textures
+        ContentManager content;
 
         // property just to warn if empty
         public List<IUpdate> Updatables
@@ -78,14 +69,15 @@ namespace Slorpus
             }
         }
 
-        public LevelParser()
+        public LevelParser(ContentManager content)
         {
+            this.content = content;
             updateables = new List<IUpdate>();
             drawables = new List<IDraw>();
             mouseClickables = new List<IMouseClick>();
             keyPressables = new List<IKeyPress>();
-            enemyList = new List<Enemy>();
         }
+
 
         /// <summary>
         /// Returns a list of walls, made based on the information parsed from entityList.
@@ -148,28 +140,35 @@ namespace Slorpus
                 }
             }
         }
-
-        // TODO: split mirrors into a different list so we dont have to check if things
-        // are a mirror every frame
-        // static List<Wall> GetMirrors(List<GenericEntity> entityList)
         
         /// <summary>
-        /// Creates a set of enemies based on GenericEntities.
+        /// Fills out the physicsObjects list with any generic physics objects
         /// </summary>
-        /// <param name="entityList">Entities and their positions.</param>
-        /// <param name="homeEnemyAsset">Asset for enemies with the homing attack.</param>
-        /// <param name="enscEnemyAsset">Assets for enemies with the ensconcing attack.</param>
-        /// <returns>A list of all enemies in the current level.</returns>
-        public void GetEnemies(
-            List<Enemy> enemyList,
+        /// <param name="physicsObjects"></param>
+        /// <param name="entityList"></param>
+        /// <param name="bulletCreationFunc"></param>
+        /// <param name="cameraCreationFunc"></param>
+        public void GetPhysicsObjects(
+            List<IPhysics> physicsObjects,
             List<GenericEntity> entityList,
-            Texture2D homeEnemyAsset,
-            Texture2D enscEnemyAsset,
-            Action<IDestroyable> destroy)
-        { 
+            Action<Point, Vector2> bulletCreationFunc)
+        {
             foreach (GenericEntity ge in entityList)
             {
-                switch (ge.EntityType) {
+                switch (ge.EntityType)
+                {
+                    case 'P':
+                        Player player = new Player(
+                            new Rectangle(
+                                ge.Position,
+                                new Point(Constants.PLAYER_SIZE, Constants.PLAYER_SIZE)
+                                ),
+                            content,
+                            bulletCreationFunc
+                            );
+                        SortItem(player);
+                        physicsObjects.Add(player);
+                        break;
                     case 'E':
                         Enemy e = new Enemy(
                             new Rectangle(
@@ -178,12 +177,10 @@ namespace Slorpus
                                     Constants.ENEMY_SIZE,
                                     Constants.ENEMY_SIZE)
                                 ),
-                            Vector2.Zero,
-                            enscEnemyAsset,
-                            ShootingPattern.Ensconcing,
-                            destroy);
+                            content,
+                            ShootingPattern.Ensconcing);
                         SortItem(e);
-                        enemyList.Add(e);
+                        physicsObjects.Add(e);
                         break;
 
                     case 'H':
@@ -194,44 +191,11 @@ namespace Slorpus
                                     Constants.ENEMY_SIZE,
                                     Constants.ENEMY_SIZE)
                                 ),
-                            Vector2.Zero,
-                            homeEnemyAsset,
-                            ShootingPattern.HomingAttack,
-                            destroy);
+                            content,
+                            ShootingPattern.HomingAttack);
                         SortItem(h);
-                        enemyList.Add(h);
+                        physicsObjects.Add(h);
                         break;
-                }
-            }
-        }
-        
-        /// <summary>
-        /// Currently returns a list containing only the player.
-        /// </summary>
-        /// <param name="entityList">List of entities in the level</param>
-        /// <param name="bulletCreationFunc">Action delegate used to create a new player projectile.</param>
-        /// <param name="playerAsset">The player's Texture2D</param>
-        /// <param name="playerBulletAsset">The Texture2D used by the bullet the player fires.</param>
-        /// <returns>A list containing the player and any other physics objects loaded in from the level.</returns>
-        public void GetPhysicsObjects(List<IPhysics> physicsObjects, List<GenericEntity> entityList, Action<Point, Vector2> bulletCreationFunc, Action<IPosition> cameraCreationFunc, Texture2D playerAsset, Texture2D playerBulletAsset)
-        {
-            foreach (GenericEntity ge in entityList)
-            {
-                if (ge.EntityType == 'P')
-                {
-                    player = new Player(
-                        new Rectangle(
-                            ge.Position,
-                            new Point(Constants.PLAYER_SIZE, Constants.PLAYER_SIZE)
-                            ),
-                        Vector2.Zero,
-                        bulletCreationFunc,
-                        playerAsset
-                        );
-
-                    cameraCreationFunc(player);
-                    SortItem(player);
-                    physicsObjects.Add(player);
                 }
             }
         }

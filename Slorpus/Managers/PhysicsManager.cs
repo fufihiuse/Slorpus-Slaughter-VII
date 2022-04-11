@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
-namespace Slorpus
+using Slorpus.Objects;
+using Slorpus.Interfaces;
+using Slorpus.Interfaces.Base;
+using Slorpus.Statics;
+
+namespace Slorpus.Managers
 {
-    class PhysicsManager
+    class PhysicsManager: IUpdate
     {
         private List<Wall> wallList;
         private List<IPhysics> physicsObjects;
@@ -18,6 +20,12 @@ namespace Slorpus
             this.physicsObjects = physicsObjects;
             this.wallList = wallList;
             this.bulletManager = bulletManager;
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            MovePhysics(gameTime);
+            CollideAndMoveBullets(gameTime, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE));
         }
 
         public void AddPhysicsObject(IPhysics physicsObject)

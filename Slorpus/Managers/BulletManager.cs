@@ -1,23 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
-namespace Slorpus
+using Slorpus.Objects;
+using Slorpus.Statics;
+using Slorpus.Interfaces.Base;
+
+namespace Slorpus.Managers
 {
     /* Class created out of necessity, due to all the operations that
      * needed to be done to the bullets array. This class has functions
      * which wrap around things like selecting a certain bullet from
      * the array and moving it.
      */
-    class BulletManager
+    class BulletManager: IDraw, IDestroyable
     {
         private EnemyBullet[] bullets;
         private Texture2D bulletAsset;
         // list of bullets queued for removal
         private List<int> queuedBullets;
+
+        private static BulletManager current;
 
         // get a reference to a given bullet
         public ref EnemyBullet this[int i]
@@ -34,7 +38,9 @@ namespace Slorpus
         {
             this.bullets = bullets;
             this.bulletAsset = bulletAsset;
-            queuedBullets = new List<int>();    
+            queuedBullets = new List<int>();
+
+            current = this;
         }
 
         /// <summary>
@@ -55,9 +61,10 @@ namespace Slorpus
         /// Draws all bullets.
         /// </summary>
         /// <param name="sb">Spritebatch used to draw the bullet textures.</param>
-        public void DrawBullets(SpriteBatch sb)
+        public void Draw(SpriteBatch sb)
         {
-            DrawBullets(sb, new Point(bulletAsset.Width, bulletAsset.Height));
+            //DrawBullets(sb, new Point(bulletAsset.Width, bulletAsset.Height));
+            DrawBullets(sb, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE));
         }
         
         /// <summary>
@@ -82,6 +89,15 @@ namespace Slorpus
             bullets = new EnemyBullet[bullets.Length + new_bullets.Length];
             original.CopyTo(bullets, 0);
             new_bullets.CopyTo(bullets, original.Length);
+        }
+        
+        /// <summary>
+        /// Static version of the BulletManager's FireBatch method.
+        /// </summary>
+        /// <param name="bullets">Bullets to add to the game.</param>
+        public static void FireBullets(EnemyBullet[] bullets)
+        {
+            current.FireBatch(bullets);
         }
 
         public void Destroy(int bulletIndex, bool clean=true)
@@ -132,6 +148,15 @@ namespace Slorpus
             // reset queuedbullets
             queuedBullets.Clear();
             bullets = narray;
+        }
+
+        public void Destroy()
+        {
+            if (current == this)
+            {
+                current = null;
+            }
+            Dereferencer.Destroy(this);
         }
     }
 }

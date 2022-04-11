@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace Slorpus
+namespace Slorpus.Interfaces.Base
 {
     /*
      * simple interface that "special" objects like the player use.

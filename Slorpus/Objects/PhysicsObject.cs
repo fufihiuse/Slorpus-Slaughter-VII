@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework;
 
-namespace Slorpus
+using Slorpus.Interfaces;
+
+namespace Slorpus.Objects
 {
     /*
      * Every class that needs to implement IPhysics but doesn't already have a parent class
      * should inherit from this so as to minimize copypasting code
      */
-    public class PhysicsObject: IPhysics
+    class PhysicsObject: IPhysics
     {
         //fields
-        Rectangle pos;
+        protected Rectangle pos;
         protected Vector2 vel;
         protected Vector2 subPixelOffset;
 

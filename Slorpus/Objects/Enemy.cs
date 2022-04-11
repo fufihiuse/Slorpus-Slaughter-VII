@@ -1,26 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
-namespace Slorpus
+using Slorpus.Managers;
+using Slorpus.Interfaces.Base;
+using Slorpus.Statics;
+
+namespace Slorpus.Objects
 {
     public enum ShootingPattern
     {
         Ensconcing,         //any shooting pattern that doesn't track the enemy
         HomingAttack        //goop ball that tracks the player
     }
-    class Enemy: PhysicsObject, IDestroyable
+    class Enemy: PhysicsObject, IUpdate, IDraw, IDestroyable, ILoad
     {
+        // counter for how many enemies exist
+        private static int count = 0;
+        public static int Count { get { return count; } }
+
         // enemy fields
         private Texture2D enemyAsset;
         private int damage;
         private ShootingPattern shootingPattern;
 
         //bullet fields
-        Action<IDestroyable> destroy;
         EnemyBullet[] wantedBullets;
         float direction;
         private float shoot;
@@ -45,65 +50,66 @@ namespace Slorpus
         {
             get { return shootingPattern; }
         }
-
+        
         /// <summary>
-        /// parameterized constructor
+        /// Enemy class of variable shooting pattern.
         /// </summary>
-        /// <param name="pos"></param>
-        /// <param name="vel"></param>
-        /// <param name="enemyAsset"></param>
-        /// <param name="shootingPattern"></param>
-        /// <param name="destroyFunc">Action delegate that destroys this enemy.</param>
-        public Enemy(Rectangle pos, Vector2 vel,
-            Texture2D enemyAsset, ShootingPattern shootingPattern,
-            Action<IDestroyable> destroy)
-            : base(pos, vel)
+        /// <param name="pos">Starting position of the enemy.</param>
+        /// <param name="content">ContentManager for loading the enemy textures.</param>
+        /// <param name="shootingPattern">The logic the enemy uses to shoot bullets.</param>
+        /// <param name="destroy">Function that queues this object for dereferencing.</param>
+        public Enemy(
+            Rectangle pos,
+            ContentManager content,
+            ShootingPattern shootingPattern)
+            // default to 0,0 velocity
+            : base(pos, new Vector2(0,0))
         {
-            this.enemyAsset = enemyAsset;
             this.shootingPattern = shootingPattern;
-            this.destroy = destroy;
 
             damage = 1;
 
             wantedBullets = new EnemyBullet[0];
             direction = 0;
             shoot = 0;
+            
+            // increase the number of enemies that exist
+            count++;
+
+            LoadContent(content);
         }
 
-        //methods:
-        //  shooting goop method, should be two shooting patterns, does damage
-        //  can take damage
-        //  draw enemy
-        //  how to make enemy disappear when dead???
+        public void LoadContent(ContentManager content)
+        {
+            // add stuff for different textures per ShootingPattern
+            enemyAsset = Game1.SquareTexture; // content.Load<Texture2D>("square");
+        }
 
         /// <summary>
         /// Draws enemy
         /// </summary>
         /// <param name="sb"></param>
-        public void DrawEnemy(SpriteBatch sb)
+        public void Draw(SpriteBatch sb)
         {
-            sb.Draw(enemyAsset, Position, Color.White);
-        }
-
-        public EnemyBullet[] FireBullets()
-        {
-            // return bullets that we want to fire
-            EnemyBullet[] temp = wantedBullets;
-            wantedBullets = new EnemyBullet[0];
-            return temp;
+            Rectangle target = Position;
+            target.Location -= Camera.Offset;
+            sb.Draw(enemyAsset, target, Color.Red);
         }
 
         /// <summary>
         /// Written to be called each frame and makes enemies shoot a bullet in their respective pattern.
         /// </summary>
-        /// <param name="_player"></param>
         /// <param name="gameTime"></param>
-        public void Update(Player _player, GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
+            BulletManager.FireBullets(wantedBullets);
+            wantedBullets = new EnemyBullet[0];
+
+
             shoot += (float)gameTime.ElapsedGameTime.TotalSeconds;
             wantedBullets = new EnemyBullet[1];         //clears array, loads in new bullet
             Vector2 toTarget =
-                new Vector2(_player.Position.Location.X, _player.Position.Location.Y) - new Vector2(Position.Location.X, Position.Location.Y);  //gets distance of enemy from player
+                new Vector2(Player.Position.Location.X, Player.Position.Location.Y) - new Vector2(Position.Location.X, Position.Location.Y);  //gets distance of enemy from player
 
             switch (shootingPattern)
             {
@@ -122,7 +128,7 @@ namespace Slorpus
                     {
                         wantedBullets[0] = new EnemyBullet(
                             new Point((Position.Location.X + Constants.ENEMY_SIZE/2), (Position.Location.Y + Constants.ENEMY_SIZE/2)-2),
-                            TargetPlayer(_player));
+                            TargetPlayer());
                         shoot = 0;
                     }
                     break;
@@ -152,10 +158,10 @@ namespace Slorpus
         /// </summary>
         /// <param name="_player"></param>
         /// <returns></returns>
-        public Vector2 TargetPlayer(Player _player)
+        public Vector2 TargetPlayer()
         {
             Vector2 targetDirection =
-                new Vector2(_player.Position.Location.X, _player.Position.Location.Y) - new Vector2(Position.Location.X, Position.Location.Y);
+                new Vector2(Player.Position.Location.X, Player.Position.Location.Y) - new Vector2(Position.Location.X, Position.Location.Y);
 
             targetDirection.Normalize();
 
@@ -167,7 +173,8 @@ namespace Slorpus
         /// </summary>
         public void Destroy()
         {
-            destroy(this);
+            count--;
+            Dereferencer.Destroy(this);
         }
     }
 }

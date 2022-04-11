@@ -1,9 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+
+using Slorpus.Utils;
+using Slorpus.Managers;
+using Slorpus.Objects;
+using Slorpus.Statics;
+using Slorpus.Interfaces;
+using Slorpus.Interfaces.Base;
 
 namespace Slorpus
 {
@@ -11,10 +17,10 @@ namespace Slorpus
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        private Texture2D squareTexture;
-        private Texture2D gridTexture;
 
-
+        // debug assets for use everywhere
+        private static Texture2D squareTexture;
+        public static Texture2D SquareTexture { get { return squareTexture; } }
         private static SpriteFont testingFont;
         public static SpriteFont TestingFont { get { return testingFont; } }
 
@@ -22,7 +28,8 @@ namespace Slorpus
         Camera camera;
         Screen screen;
         LevelInfo _levelInfo;
-        Action<IDestroyable> remove_object;
+        Dereferencer _dereferencer;
+        Layers layers;
 
         // input
         MouseState prevMS;
@@ -30,8 +37,6 @@ namespace Slorpus
 
         // managers
         Level level;
-        LevelParser levelParser;
-        EnemyManager enemyManager;
         BulletManager bulletManager;
         PhysicsManager physicsManager;
         UIManager uiManager;
@@ -39,7 +44,6 @@ namespace Slorpus
         // lists
         // these (usually) should not be modified directly, edit them with the managers
         List<IPhysics> physicsList;
-        List<Enemy> enemyList;
         EnemyBullet[] bulletList;
         List<Wall> wallList;
         SoundEffects soundEffects;
@@ -47,12 +51,8 @@ namespace Slorpus
         
         // more lists, these are for special objects that subscribe to certain events
         List<IUpdate> updateList;
-        List<IDraw> drawList;
         List<IMouseClick> mouseClickList;
         List<IKeyPress> keyPressList;
-
-        //i need this
-        Rectangle bRect;
 
         public Game1()
         {
@@ -64,12 +64,11 @@ namespace Slorpus
         protected override void Initialize()
         {
 
+            destroy_queue = new Queue<IDestroyable>();
             _levelInfo = new LevelInfo(this);
+            _dereferencer = new Dereferencer(destroy_queue);
 
             // anonymous function that is used to destroy any IDestroyable object
-            remove_object = (IDestroyable destroy_target) => {
-                destroy_queue.Enqueue(destroy_target);
-            };
 
             prevMS = Mouse.GetState();
             prevKB = Keyboard.GetState();
@@ -93,53 +92,73 @@ namespace Slorpus
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             squareTexture = Content.Load<Texture2D>("square");
-            gridTexture = Content.Load<Texture2D>("grid");
-
+            testingFont = Content.Load<SpriteFont>("Arial12");
+            
+            // load UI
+            uiManager.LoadUI(Content);
+            
+            // load sound effects
+            SoundEffects.AddSounds(Content);
+            
+            // load first level
             LoadLevel(Constants.LEVELS[0]); 
         }
 
         public void LoadLevel(string levelname)
         {
-            physicsList = new List<IPhysics>();
-            enemyList = new List<Enemy>();
-            wallList = new List<Wall>();
-            bulletList = new EnemyBullet[100];
-            destroy_queue = new Queue<IDestroyable>();
-            levelParser = new LevelParser();
+            ResetLists();
+            layers = new Layers();
             
-            // instantiate all the manager classes on the empty, just initialized lists
-            level = new Level(wallList, squareTexture, squareTexture, squareTexture, gridTexture);
-            //LevelParser levelParser = new LevelParser();
-            List<GenericEntity> levelList = level.LoadFromFile($"..\\..\\..\\levels\\{levelname}.sslvl"); //Loads example level and returns entityList
+            // read the level out of a file
+            level = new Level(wallList, Content);
+            List<GenericEntity> levelList = level.LoadFromFile($"..\\..\\..\\levels\\{levelname}.sslvl");
+            
+            // create managers and utils
             bulletManager = new BulletManager(bulletList, squareTexture);
-            enemyManager = new EnemyManager(enemyList, squareTexture, bulletManager);
             physicsManager = new PhysicsManager(physicsList, wallList, bulletManager);
+            LevelParser levelParser = new LevelParser(Content);
             
             // bullet creation function
             Action<Point, Vector2> createbullet = (Point loc, Vector2 vel) => CreateBullet(loc, vel);
-            // camera creation function
-            Action<IPosition> createCamera = (IPosition player) => CreateCamera(player);
-            levelParser.GetPhysicsObjects(physicsList, levelList, createbullet, createCamera, squareTexture, squareTexture);
             
-            // parse data read from level
-            levelParser.GetEnemies(enemyList, levelList, squareTexture, squareTexture, remove_object);
+            // parse data read from level (player requires the bullet creation func)
             levelParser.GetWalls(wallList, levelList);
-
-            uiManager.LoadUI(Content);
-            testingFont = Content.Load<SpriteFont>("Arial12");
-
+            levelParser.GetPhysicsObjects(physicsList, levelList, createbullet);
+            
+            // instantiate camera
+            if (Player.Position != null)
+            {
+                // function to retrieve the camera's target coordinates
+                Func<Rectangle> getFollowTarget = () => { return Player.Position; };
+                // create camera
+                camera = new Camera(getFollowTarget, Constants.CAMERA_SPEED);
+            }
+            else
+            {
+                throw new Exception("A player is needed to instantiate the player camera, " +
+                    "but no player was created on this level.");
+            }
+            
             // miscellaneous, "special" items which dont have a manager
             updateList = levelParser.Updatables;
-            drawList = levelParser.Drawables;
             mouseClickList = levelParser.MouseClickables;
             keyPressList = levelParser.KeyPressables;
-            SoundEffects.AddSounds(Content);
-
-            // add enemies to physicsobject list
-            foreach (Enemy e in enemyList)
+            
+            // handle different draw layers
+            List<IDraw> drawables = levelParser.Drawables;
+            // sort all the drawables into their respective layers
+            foreach (IDraw d in drawables)
             {
-                physicsList.Add(e);
+                layers.Add(d);
             }
+
+            // also add the bullets and level to be drawn
+            layers.Add(bulletManager);
+            layers.Add(level);
+
+            // add camera and physics to be updated
+            updateList.Add(camera);
+            updateList.Add(physicsManager);
         }
 
         protected override void Update(GameTime gameTime)
@@ -176,12 +195,6 @@ namespace Slorpus
                 OnMouseClick(prevMS);
             }
             
-
-            enemyManager.UpdateEnemies(gameTime, levelParser._Player, bRect);
-            physicsManager.MovePhysics(gameTime);
-            // TODO: get rid of the stupid bullet size argument
-            physicsManager.CollideAndMoveBullets(gameTime, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE));
-            camera.Update(gameTime);
             
             base.Update(gameTime);
 
@@ -190,6 +203,14 @@ namespace Slorpus
             prevMS = Mouse.GetState();
 
             // clean up objects that need to be destroyed
+            Cleanup();
+        }
+        
+        /// <summary>
+        /// Removes references to all objects in the Game1 destroy queue.
+        /// </summary>
+        private void Cleanup()
+        {
             while (destroy_queue.Count > 0)
             {
                 IDestroyable destroy_target = destroy_queue.Dequeue();
@@ -204,29 +225,27 @@ namespace Slorpus
                 try
                 {
                     IDraw draw_target = (IDraw)destroy_target;
-                    drawList.Remove(draw_target);
+                    layers.Remove(draw_target);
                 }
                 catch (InvalidCastException) { /* do nothing */ }
                 try
                 {
                     IPhysics physics_target = (IPhysics)destroy_target;
                     physicsList.Remove(physics_target);
-                    if (!UIManager.IsGodModeOn && physics_target is PlayerProjectile && enemyList.Count != 0)
+                    if (physics_target is PlayerProjectile)
                     {
-                        // FAIL STATE / LOSE CONDITION
-                        LevelInfo.ReloadLevel();
+                        if (!UIManager.IsGodModeOn && Enemy.Count > 0)
+                        {
+                            // FAIL STATE / LOSE CONDITION
+                            LevelInfo.ReloadLevel();
+                        }
                     }
-                }
-                catch (InvalidCastException) { /* do nothing */ }
-                try
-                {
-                    Enemy enemy_target = (Enemy)destroy_target;
-                    enemyList.Remove(enemy_target);
-                    
-                    // WIN CONDITION
-                    if (enemyList.Count == 0)
+                    else if (physics_target is Enemy)
                     {
-                        LevelInfo.LoadNextLevel();
+                        if (Enemy.Count <= 0)
+                        {
+                            LevelInfo.LoadNextLevel();
+                        }
                     }
                 }
                 catch (InvalidCastException) { /* do nothing */ }
@@ -267,22 +286,14 @@ namespace Slorpus
             //draw ui or game
             if(uiManager.CurrentGameState == GameState.Game)
             {
-                // draw the walls
-                level.Draw(_spriteBatch);
                 // draw player and objects
-                foreach (IDraw d in drawList)
+                foreach (List<IDraw> drawList in layers)
                 {
-                    d.Draw(_spriteBatch);
+                    foreach (IDraw d in drawList)
+                    {
+                        d.Draw(_spriteBatch);
+                    }
                 }
-                
-                // draw bullets and enemies
-                bulletManager.DrawBullets(_spriteBatch,
-                    new Point(
-                        Constants.BULLET_SIZE,
-                        Constants.BULLET_SIZE
-                        )
-                    );
-                enemyManager.DrawEnemies(_spriteBatch);
             }
             else
             {
@@ -305,24 +316,42 @@ namespace Slorpus
         /// </summary>
         /// <param name="location">Starting location of the bullet.</param>
         /// <param name="velocity">Starting velocity of the bullet.</param>
-        public void CreateBullet(Point location, Vector2 velocity)
+        private void CreateBullet(Point location, Vector2 velocity)
         {
-            bRect = new Rectangle(location,
+            Rectangle pRect = new Rectangle(location,
                 new Point(
                     Constants.PLAYER_BULLET_SIZE,
                     Constants.PLAYER_BULLET_SIZE
                     )
                 );
 
-            PlayerProjectile bullet = new PlayerProjectile(bRect, velocity, squareTexture, remove_object);
-            updateList.Add(bullet);
-            drawList.Add(bullet);
-            physicsList.Add(bullet);
+            PlayerProjectile projectile = new PlayerProjectile(pRect, velocity, Content);
+            updateList.Add(projectile);
+            layers.Add(projectile);
+            physicsList.Add(projectile);
         }
-
-        private void CreateCamera(IPosition followTarget)
+        
+        /// <summary>
+        /// Completely reset the contents of the physics list, wall list, and bullet list.
+        /// </summary>
+        private void ResetLists()
         {
-            camera = new Camera(followTarget, Constants.CAMERA_SPEED);
+            // reset the number of enemies by actually destroying each one
+            if (physicsList != null)
+            {
+                foreach (IPhysics p in physicsList)
+                {
+                    try
+                    {
+                        Enemy temp = (Enemy)p;
+                        temp.Destroy();
+                    }
+                    catch (InvalidCastException) { }
+                }
+            }
+            physicsList = new List<IPhysics>();
+            wallList = new List<Wall>();
+            bulletList = new EnemyBullet[100];
         }
     }
 }
