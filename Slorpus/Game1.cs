@@ -17,6 +17,9 @@ namespace Slorpus
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        // no more underscore, I know what I'm doing >:)
+        private SpriteBatch shaderBatch;
+        private RenderTarget2D finalTarget;
 
         // debug assets for use everywhere
         private static Texture2D squareTexture;
@@ -90,6 +93,8 @@ namespace Slorpus
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            shaderBatch = new ShaderBatch(GraphicsDevice);
+            finalTarget = new RenderTarget2D(GraphicsDevice, Screen.Size.X, Screen.Size.Y);
 
             squareTexture = Content.Load<Texture2D>("square");
             testingFont = Content.Load<SpriteFont>("Arial12");
