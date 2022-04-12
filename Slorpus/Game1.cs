@@ -92,9 +92,21 @@ namespace Slorpus
 
         protected override void LoadContent()
         {
+
+            Window.AllowUserResizing = true;
+
+            // subscribe OnResize method to resizing event
+            Window.ClientSizeChanged += OnResize;
+
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             shaderBatch = new ShaderBatch(GraphicsDevice);
-            finalTarget = new RenderTarget2D(GraphicsDevice, Screen.Size.X, Screen.Size.Y);
+            finalTarget = new RenderTarget2D(
+                GraphicsDevice,
+                Screen.Size.X, Screen.Size.Y,
+                false,
+                GraphicsDevice.PresentationParameters.BackBufferFormat,
+                DepthFormat.Depth24
+                );
 
             squareTexture = Content.Load<Texture2D>("square");
             testingFont = Content.Load<SpriteFont>("Arial12");
@@ -210,7 +222,23 @@ namespace Slorpus
             // clean up objects that need to be destroyed
             Cleanup();
         }
-        
+        public void OnResize(Object sender, EventArgs e)
+        {
+            if ((_graphics.PreferredBackBufferWidth != _graphics.GraphicsDevice.Viewport.Width) ||
+                (_graphics.PreferredBackBufferHeight != _graphics.GraphicsDevice.Viewport.Height))
+            {
+                _graphics.PreferredBackBufferWidth = _graphics.GraphicsDevice.Viewport.Width;
+                _graphics.PreferredBackBufferHeight = _graphics.GraphicsDevice.Viewport.Height;
+                _graphics.ApplyChanges();
+            }
+
+            // update screen variable
+            screen.SetTrueScreenSize(new Point(
+                _graphics.PreferredBackBufferWidth,
+                _graphics.PreferredBackBufferHeight));
+        }
+
+
         /// <summary>
         /// Removes references to all objects in the Game1 destroy queue.
         /// </summary>
@@ -281,12 +309,42 @@ namespace Slorpus
             }
         }
 
-        protected override void Draw(GameTime gameTime)
+        private void PreDraw()
         {
             GraphicsDevice.Clear(Color.Black);
 
-            // TODO: Add your drawing code here
+            // draw to small render target
+            GraphicsDevice.SetRenderTarget(finalTarget);
+
             _spriteBatch.Begin();
+        }
+
+        private void PostDraw()
+        {
+            _spriteBatch.End();
+
+            // null will cause it to draw to the screen
+            GraphicsDevice.SetRenderTarget(null);
+
+            // _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, effect: fullScreenShader);
+            _spriteBatch.Begin();
+            
+            // draw the small render target to the whole screen
+            _spriteBatch.Draw(
+                finalTarget,
+                new Rectangle(
+                    0, 0,
+                    _graphics.PreferredBackBufferWidth,
+                    _graphics.PreferredBackBufferHeight
+                    ),
+                Color.White);
+
+            _spriteBatch.End();
+        }
+
+        protected override void Draw(GameTime gameTime)
+        {
+            PreDraw();
 
             //draw ui or game
             if(uiManager.CurrentGameState == GameState.Game)
@@ -299,21 +357,23 @@ namespace Slorpus
                         d.Draw(_spriteBatch);
                     }
                 }
-            }
-            else
-            {
-                uiManager.Draw(_spriteBatch);
-                /*
+                
                 _spriteBatch.DrawString(
                     testingFont, 
                     "Width: " + _graphics.PreferredBackBufferWidth + " Height" + _graphics.PreferredBackBufferHeight, 
                     new Vector2(0,0), 
-                    Color.Black
-                    );*/
+                    Color.White
+                    );
+            }
+            else
+            {
+                uiManager.Draw(_spriteBatch);
+                
             }
 
             base.Draw(gameTime);
-            _spriteBatch.End();
+
+            PostDraw();
         }
 
         /// <summary>

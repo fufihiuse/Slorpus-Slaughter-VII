@@ -10,11 +10,20 @@ namespace Slorpus.Statics
     {
         Point localSize;
         static private Point size;
+        static private Point trueSize;
         static public Point Size { get { return size; } }
+
+        static public Point TrueSize { get { return trueSize; } }
+
+        static public Vector2 Scale { get { return trueSize.ToVector2() / size.ToVector2(); } }
 
         public void SetScreenSize(Point size)
         {
             Screen.size = size;
+        }
+        public void SetTrueScreenSize(Point size)
+        {
+            Screen.trueSize = size;
         }
         /// <summary>
         /// Creates a new screen.

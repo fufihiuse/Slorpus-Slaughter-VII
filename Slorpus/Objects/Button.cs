@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 using Slorpus.Managers;
+using Slorpus.Statics;
 
 namespace Slorpus.Objects
 {
@@ -50,12 +51,14 @@ namespace Slorpus.Objects
         /// <param name="ms"></param>
         public bool Update(MouseState ms)
         {
-            if (position.Contains(ms.Position) && ms.LeftButton == ButtonState.Pressed)
+            Vector2 scaledPos = new Vector2(ms.X, ms.Y);
+
+            if (position.Contains(scaledPos.ToPoint()) && ms.LeftButton == ButtonState.Pressed)
             {
                 bc = ButtonCondition.Active;
                 return true;
             }
-            else if (position.Contains(ms.Position))
+            else if (position.Contains(scaledPos.ToPoint()))
             {
                 bc = ButtonCondition.Hover;
             }
