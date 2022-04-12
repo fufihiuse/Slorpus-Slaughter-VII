@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
-namespace Slorpus
+using Slorpus.Interfaces.Base;
+
+namespace Slorpus.Statics
 {
     class Dereferencer
     {

@@ -1,12 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
-namespace Slorpus
+using Slorpus.Managers;
+using Slorpus.Interfaces.Base;
+using Slorpus.Statics;
+
+namespace Slorpus.Objects
 {
     public enum ShootingPattern
     {

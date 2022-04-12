@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace Slorpus
+using Slorpus.Managers;
+
+namespace Slorpus.Objects
 {
     /// <summary>
     /// A button that draws itself and tells if its pressed

@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
-namespace Slorpus
+using Slorpus.Objects;
+using Slorpus.Statics;
+using Slorpus.Interfaces;
+using Slorpus.Interfaces.Base;
+
+namespace Slorpus.Utils
 {
     /*
      * This class is used to parse the output of Level.LoadFromFile().
@@ -22,7 +24,7 @@ namespace Slorpus
         List<IKeyPress> keyPressables;
         
         // for passing to objects to load their textures
-        Microsoft.Xna.Framework.Content.ContentManager content;
+        ContentManager content;
 
         // property just to warn if empty
         public List<IUpdate> Updatables

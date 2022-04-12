@@ -1,9 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+
+using Slorpus.Utils;
+using Slorpus.Managers;
+using Slorpus.Objects;
+using Slorpus.Statics;
+using Slorpus.Interfaces;
+using Slorpus.Interfaces.Base;
 
 namespace Slorpus
 {
@@ -105,7 +111,7 @@ namespace Slorpus
             
             // read the level out of a file
             level = new Level(wallList, Content);
-            List<GenericEntity> levelList = level.LoadFromFile($"..\\..\\..\\levels\\{levelname}.sslvl");            
+            List<GenericEntity> levelList = level.LoadFromFile($"..\\..\\..\\levels\\{levelname}.sslvl");
             
             // create managers and utils
             bulletManager = new BulletManager(bulletList, squareTexture);
@@ -226,16 +232,18 @@ namespace Slorpus
                 {
                     IPhysics physics_target = (IPhysics)destroy_target;
                     physicsList.Remove(physics_target);
-                    if (!UIManager.IsGodModeOn && physics_target is PlayerProjectile)
+                    if (physics_target is PlayerProjectile)
                     {
-                        if (Enemy.Count > 0)
+                        if (!UIManager.IsGodModeOn && Enemy.Count > 0)
                         {
                             // FAIL STATE / LOSE CONDITION
                             LevelInfo.ReloadLevel();
                         }
-                        else
+                    }
+                    else if (physics_target is Enemy)
+                    {
+                        if (Enemy.Count <= 0)
                         {
-                            // WIN CONDITION
                             LevelInfo.LoadNextLevel();
                         }
                     }

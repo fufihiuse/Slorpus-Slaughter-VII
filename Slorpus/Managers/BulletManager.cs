@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
-namespace Slorpus
+using Slorpus.Objects;
+using Slorpus.Statics;
+using Slorpus.Interfaces.Base;
+
+namespace Slorpus.Managers
 {
     /* Class created out of necessity, due to all the operations that
      * needed to be done to the bullets array. This class has functions

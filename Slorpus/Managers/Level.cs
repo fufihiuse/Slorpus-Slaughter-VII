@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using System.IO;
 
-namespace Slorpus
+using Slorpus.Utils;
+using Slorpus.Objects;
+using Slorpus.Statics;
+using Slorpus.Interfaces.Base;
+
+namespace Slorpus.Managers
 {
     //Jackson Majewski
     class Level: IDraw

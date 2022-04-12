@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework;
 
-namespace Slorpus
+namespace Slorpus.Interfaces
 {
     /* Identical to IPointPhysics but with a Rectangle instead of a Point (added width and height information)
      */

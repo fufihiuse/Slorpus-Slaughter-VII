@@ -1,12 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
 
-namespace Slorpus
+using Slorpus.Managers;
+using Slorpus.Interfaces;
+using Slorpus.Interfaces.Base;
+using Slorpus.Statics;
+
+namespace Slorpus.Objects
 {
     class Player : PhysicsObject, IUpdate, IDraw, IMouseClick, IKeyPress, ILoad, IDestroyable
     {
@@ -82,7 +85,10 @@ namespace Slorpus
             MouseState ms = Mouse.GetState();
             if (bullets > 0 && ms.LeftButton == ButtonState.Pressed && previous.LeftButton == ButtonState.Released)
             {
-                Point pos = new Point(Position.X, Position.Y);
+                Point pos = new Point(
+                    Position.Center.X - (Constants.BULLET_SIZE/2),
+                    Position.Center.Y - (Constants.BULLET_SIZE/2)
+                    );
 
                 // get distance from player to mouse
                 Vector2 vel = new Vector2(

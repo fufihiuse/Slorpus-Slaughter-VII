@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Slorpus
+﻿
+namespace Slorpus.Statics
 {
     class LevelInfo
     {

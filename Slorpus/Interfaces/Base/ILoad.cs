@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework.Content;
 
-namespace Slorpus
+namespace Slorpus.Interfaces.Base
 {
     /// <summary>
     /// Designates an object that has assets 

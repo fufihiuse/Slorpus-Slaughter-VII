@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace Slorpus
+using Slorpus.Objects;
+using Slorpus.Interfaces.Base;
+
+namespace Slorpus.Managers
 {
     // have to use System.Collections.IEnumberable in order to specify non-generic :(
     class Layers: System.Collections.IEnumerable

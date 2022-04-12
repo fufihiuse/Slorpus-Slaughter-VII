@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
-namespace Slorpus
+namespace Slorpus.Utils
 {
     /// <summary>
     /// Struct to use for generic entity creation, holds a char and position
