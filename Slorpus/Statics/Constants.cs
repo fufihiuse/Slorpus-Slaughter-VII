@@ -15,6 +15,11 @@ namespace Slorpus.Statics
         public const float MIN_FOLLOW_DISTANCE = 250f;
         public const float MIN_DETECTION_DISTANCE = 400;
 
+        // public const int SCREEN_WIDTH = 480;
+        // public const int SCREEN_HEIGHT = 270;
+        public const int SCREEN_WIDTH = 800;
+        public const int SCREEN_HEIGHT = 480;
+
         //Array of levels to load
         public static readonly string[] LEVELS = { 
             "ItBegins", //1

@@ -76,12 +76,7 @@ namespace Slorpus
             prevMS = Mouse.GetState();
             prevKB = Keyboard.GetState();
 
-            screen = new Screen(
-                new Point(
-                _graphics.PreferredBackBufferWidth,
-                _graphics.PreferredBackBufferHeight
-                )
-            );
+            screen = new Screen(_graphics);
             screen.Use();
             
             soundEffects = new SoundEffects();
@@ -94,9 +89,10 @@ namespace Slorpus
         {
 
             Window.AllowUserResizing = true;
+            _graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 
             // subscribe OnResize method to resizing event
-            Window.ClientSizeChanged += OnResize;
+            Window.ClientSizeChanged += screen.OnResize;
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             shaderBatch = new ShaderBatch(GraphicsDevice);
@@ -222,22 +218,6 @@ namespace Slorpus
             // clean up objects that need to be destroyed
             Cleanup();
         }
-        public void OnResize(Object sender, EventArgs e)
-        {
-            if ((_graphics.PreferredBackBufferWidth != _graphics.GraphicsDevice.Viewport.Width) ||
-                (_graphics.PreferredBackBufferHeight != _graphics.GraphicsDevice.Viewport.Height))
-            {
-                _graphics.PreferredBackBufferWidth = _graphics.GraphicsDevice.Viewport.Width;
-                _graphics.PreferredBackBufferHeight = _graphics.GraphicsDevice.Viewport.Height;
-                _graphics.ApplyChanges();
-            }
-
-            // update screen variable
-            screen.SetTrueScreenSize(new Point(
-                _graphics.PreferredBackBufferWidth,
-                _graphics.PreferredBackBufferHeight));
-        }
-
 
         /// <summary>
         /// Removes references to all objects in the Game1 destroy queue.
@@ -328,16 +308,13 @@ namespace Slorpus
 
             // _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, effect: fullScreenShader);
             _spriteBatch.Begin();
-            
+
             // draw the small render target to the whole screen
             _spriteBatch.Draw(
                 finalTarget,
-                new Rectangle(
-                    0, 0,
-                    _graphics.PreferredBackBufferWidth,
-                    _graphics.PreferredBackBufferHeight
-                    ),
-                Color.White);
+                Screen.Target,
+                Color.White
+                );
 
             _spriteBatch.End();
         }
@@ -357,13 +334,6 @@ namespace Slorpus
                         d.Draw(_spriteBatch);
                     }
                 }
-                
-                _spriteBatch.DrawString(
-                    testingFont, 
-                    "Width: " + _graphics.PreferredBackBufferWidth + " Height" + _graphics.PreferredBackBufferHeight, 
-                    new Vector2(0,0), 
-                    Color.White
-                    );
             }
             else
             {

@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 namespace Slorpus.Statics
 {
@@ -8,38 +10,93 @@ namespace Slorpus.Statics
      */
     class Screen
     {
-        Point localSize;
-        static private Point size;
-        static private Point trueSize;
-        static public Point Size { get { return size; } }
+        static Screen current;
+        GraphicsDeviceManager graphics;
 
-        static public Point TrueSize { get { return trueSize; } }
+        public Point targetSize;
+        public Point trueSize;
+        
+        static public Point Size { get { return current.targetSize; } }
 
-        static public Vector2 Scale { get { return trueSize.ToVector2() / size.ToVector2(); } }
-
-        public void SetScreenSize(Point size)
+        static public Point TrueSize { get { return current.trueSize; } }
+        
+        /// <summary>
+        /// The rectangle encompassing where the target size screen should be scaled
+        /// and drawn to.
+        /// </summary>
+        static public Rectangle Target
         {
-            Screen.size = size;
+            get
+            {
+                return new Rectangle(
+                    0, 0,
+                    TrueSize.X,
+                    TrueSize.Y
+                    );
+            }
         }
-        public void SetTrueScreenSize(Point size)
-        {
-            Screen.trueSize = size;
-        }
+        
+        /// <summary>
+        /// The ratio of the actual screen size to the target screen size.
+        /// Less than 1 if the screen is bigger than default,
+        /// Greater than 1 if the screen is smaller.
+        /// </summary>
+        static public Vector2 Scale { get { return TrueSize.ToVector2() / Size.ToVector2(); } }
+
         /// <summary>
         /// Creates a new screen.
         /// </summary>
         /// <param name="size">The size of the screen in pixels.</param>
-        public Screen(Point size)
+        public Screen(GraphicsDeviceManager graphics, bool use=true)
         {
-            localSize = size;
+            this.graphics = graphics;
+            targetSize = new Point(
+                Constants.SCREEN_WIDTH,
+                Constants.SCREEN_HEIGHT
+                );
+            trueSize = targetSize;
+            // set graphics size to the correct constants
+            this.graphics.PreferredBackBufferWidth = targetSize.X;
+            this.graphics.PreferredBackBufferHeight = targetSize.Y;
+            this.graphics.ApplyChanges();
+            
+            if (use)
+                Use();
         }
         
         /// <summary>
-        /// Sets the global values for screen size equal to this screen's size.
+        /// Selects this instance of the Screen to have its variables as the static values.
         /// </summary>
         public void Use()
         {
-            size = localSize;
+            current = this;
+        }
+        
+        public void OnResize(Object sender, EventArgs e)
+        {
+            if ((graphics.PreferredBackBufferWidth != graphics.GraphicsDevice.Viewport.Width) ||
+                (graphics.PreferredBackBufferHeight != graphics.GraphicsDevice.Viewport.Height))
+            {
+                graphics.PreferredBackBufferWidth = graphics.GraphicsDevice.Viewport.Width;
+                graphics.PreferredBackBufferHeight = graphics.GraphicsDevice.Viewport.Height;
+                graphics.ApplyChanges();
+            }
+
+            // update screen variable
+            trueSize = new Point(
+                graphics.PreferredBackBufferWidth,
+                graphics.PreferredBackBufferHeight
+                );
+        }
+        
+        /// <summary>
+        /// Get the mouse position on the screen.
+        /// </summary>
+        /// <returns>The true position scaled downwards into the actual size.</returns>
+        public Point GetMousePosition()
+        {
+            MouseState ms = Mouse.GetState();
+            return new Vector2(ms.X * Scale.X, ms.Y * Scale.Y).ToPoint();
         }
     }
 }
