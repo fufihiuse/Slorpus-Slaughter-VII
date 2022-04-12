@@ -49,16 +49,14 @@ namespace Slorpus.Objects
         /// Updates the ButtonState
         /// </summary>
         /// <param name="ms"></param>
-        public bool Update(MouseState ms)
+        public bool Update(MouseState ms, Point msLoc)
         {
-            Vector2 scaledPos = new Vector2(ms.X, ms.Y);
-
-            if (position.Contains(scaledPos.ToPoint()) && ms.LeftButton == ButtonState.Pressed)
+            if (position.Contains(msLoc) && ms.LeftButton == ButtonState.Pressed)
             {
                 bc = ButtonCondition.Active;
                 return true;
             }
-            else if (position.Contains(scaledPos.ToPoint()))
+            else if (position.Contains(msLoc))
             {
                 bc = ButtonCondition.Hover;
             }

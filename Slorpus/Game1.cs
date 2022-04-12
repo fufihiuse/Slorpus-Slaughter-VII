@@ -338,7 +338,6 @@ namespace Slorpus
             else
             {
                 uiManager.Draw(_spriteBatch);
-                
             }
 
             base.Draw(gameTime);

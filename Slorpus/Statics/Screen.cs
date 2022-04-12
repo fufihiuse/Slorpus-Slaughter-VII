@@ -41,7 +41,7 @@ namespace Slorpus.Statics
         /// Less than 1 if the screen is bigger than default,
         /// Greater than 1 if the screen is smaller.
         /// </summary>
-        static public Vector2 Scale { get { return TrueSize.ToVector2() / Size.ToVector2(); } }
+        static public Vector2 Scale { get { return Size.ToVector2() / TrueSize.ToVector2(); } }
 
         /// <summary>
         /// Creates a new screen.
@@ -93,9 +93,18 @@ namespace Slorpus.Statics
         /// Get the mouse position on the screen.
         /// </summary>
         /// <returns>The true position scaled downwards into the actual size.</returns>
-        public Point GetMousePosition()
+        public static Point GetMousePosition()
         {
             MouseState ms = Mouse.GetState();
+            return new Vector2(ms.X * Scale.X, ms.Y * Scale.Y).ToPoint();
+        }
+        /// <summary>
+        /// Get the mouse position on the screen.
+        /// </summary>
+        /// <param name="ms">Mouse State, unscaled to the actual screen size.</param>
+        /// <returns>The true position scaled downwards into the actual size.</returns>
+        public static Point GetMousePosition(MouseState ms)
+        {
             return new Vector2(ms.X * Scale.X, ms.Y * Scale.Y).ToPoint();
         }
     }
