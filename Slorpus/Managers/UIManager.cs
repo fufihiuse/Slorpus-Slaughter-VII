@@ -15,6 +15,7 @@ namespace Slorpus.Managers
         Menu,
         Game,
         Settings,
+        CustomLevel,
         Pause,
         GameOver
     }
@@ -49,6 +50,7 @@ namespace Slorpus.Managers
         List<Button> gameOverButtons;
         List<Button> pauseButtons;
         List<Button> settingsButtons;
+        List<Button> customLevelButtons;
 
         //buttons
         //menu
@@ -58,6 +60,7 @@ namespace Slorpus.Managers
         //settings
         Button godMode;
         Button back;
+        Button customLvl;
         //pause
         Button resume;
         Button pauseSettings;
@@ -65,6 +68,8 @@ namespace Slorpus.Managers
         //gameover
         Button retry;
         Button gameOverMenu;
+        //custom level loader
+        Button loadLevel;
 
         //properties
         public GameState CurrentGameState
@@ -105,6 +110,7 @@ namespace Slorpus.Managers
             gameOverButtons = new List<Button>();
             pauseButtons = new List<Button>();
             settingsButtons = new List<Button>();
+            customLevelButtons = new List<Button>();
 
             //make buttons
             //menu
@@ -116,6 +122,8 @@ namespace Slorpus.Managers
                 standard, hover, active);
             //settings
             godMode = new Button(new Rectangle(300, 295, 200, 50),
+                standard, hover, active);
+            customLvl = new Button(new Rectangle(300, 225, 200, 50),
                 standard, hover, active);
             back = new Button(new Rectangle(300, 365, 200, 50),
                 standard, hover, active);
@@ -131,6 +139,9 @@ namespace Slorpus.Managers
                 standard, hover, active);
             gameOverMenu = new Button(new Rectangle(300, 365, 200, 50),
                 standard, hover, active);
+            //custom level loader
+            loadLevel = new Button(new Rectangle(300, 225, 200, 50),
+                standard, hover, active);
 
             //add buttons to lists
             //menu
@@ -139,6 +150,7 @@ namespace Slorpus.Managers
             menuButtons.Add(menuExit);
             //settings
             settingsButtons.Add(godMode);
+            settingsButtons.Add(customLvl);
             settingsButtons.Add(back);
             //pause
             pauseButtons.Add(resume);
@@ -147,6 +159,10 @@ namespace Slorpus.Managers
             //gameover
             gameOverButtons.Add(retry);
             gameOverButtons.Add(gameOverMenu);
+            //custom level loader
+            customLevelButtons.Add(loadLevel);
+            customLevelButtons.Add(back);
+            
         }
         /// <summary>
         /// updates the ui gamestate depending on which button is pressed
@@ -184,9 +200,30 @@ namespace Slorpus.Managers
                     {
                         isGodModeOn = !isGodModeOn;
                     }
+                    if (customLvl.Update(ms))
+                    {
+                        currentGameState = GameState.CustomLevel;
+                        prevGameState = GameState.Settings;
+                    }
                     if (back.Update(ms))
                     {
                         currentGameState = prevGameState;
+                    }
+                    break;
+
+                case GameState.CustomLevel:
+                    if (godMode.Update(ms))
+                    {
+                        isGodModeOn = !isGodModeOn;
+                    }
+                    if (customLvl.Update(ms))
+                    {
+                        currentGameState = GameState.CustomLevel;
+                    }
+                    if (back.Update(ms))
+                    {
+                        currentGameState = prevGameState;
+                        prevGameState = GameState.Pause; //Fix this so works with main method?
                     }
                     break;
 
@@ -267,6 +304,23 @@ namespace Slorpus.Managers
                     }
                     // godmode debug
                     sb.DrawString(Game1.TestingFont, $"GODMODE: {isGodModeOn}", new Vector2(0, 0), Color.Red);
+                    break;
+
+                case GameState.CustomLevel:
+                    //draw background
+                    sb.Draw(
+                        settingsBackground,
+                        new Rectangle(0, 0, 800, 480),
+                        Color.White
+                        );
+
+                    //draw all settingsButtons
+                    foreach (Button button in customLevelButtons)
+                    {
+                        button.Draw(sb);
+                    }
+                    // godmode debug
+                    //sb.DrawString(Game1.TestingFont, $"GODMODE: {isGodModeOn}", new Vector2(0, 0), Color.Red);
                     break;
 
                 case GameState.Pause:
