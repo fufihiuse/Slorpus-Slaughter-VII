@@ -8,16 +8,22 @@
 #define PS_SHADERMODEL ps_4_0
 #endif
 
+static const float SCREEN_HEIGHT = 480;
+static const float REFRESHLINE_DISTANCE = 30;
+static const float REFRESHLINE_SPEED = 20;
+float time;
+float4x4 view_projection;
+sampler TextureSampler : register(s0);
 
-
-Texture2D shaderTexture;
-SamplerState samplerState;
-
-cbuffer PixelShaderSettings {
-	float  Time;
-	float  Scale;
-	float2 Resolution;
-	float4 Background;
+struct VertexInput {
+	float4 Position : POSITION0;
+	float4 Color : COLOR0;
+	float4 TexCoord : TEXCOORD0;
+};
+struct PixelInput {
+	float4 Position : SV_Position0;
+	float4 Color : COLOR0;
+	float4 TexCoord : TEXCOORD0;
 };
 
 // Settings
@@ -76,16 +82,15 @@ float4 mainImage(float2 tex) : TARGET
 	if(xy.x > 0.999f  || xy.y > 0.999f)  return float4(0.0f, 0.0f, 0.0f, 0.0f);
 	#endif
 	
-	float4 color = shaderTexture.Sample(samplerState, xy);
+	float4 color = tex2D(TextureSampler, xy);
 
 	#if DEBUG
 	if(xy.x < 0.5f) return color;
 	#endif
 
 	#if ENABLE_REFRESHLINE
-	float timeOver = fmod(Time / 5, 1);
-	float refreshLineColorTint = timeOver - xy.y;
-	if(xy.y > timeOver && xy.y - 0.03f < timeOver ) color.rgb += (refreshLineColorTint * 2.0f);
+    if ((xy.y + (time % REFRESHLINE_SPEED)) % REFRESHLINE_DISTANCE == 0)
+        color.rgb *= 2;
 	#endif
 
 	#if ENABLE_SCANLINES
@@ -114,7 +119,22 @@ float4 mainImage(float2 tex) : TARGET
 	return color;
 }
 
-float4 main(float4 pos : SV_POSITION, float2 tex : TEXCOORD) : SV_TARGET
-{
-	return mainImage(tex);
+PixelInput SpriteVertexShader(VertexInput v) {
+	PixelInput output;
+
+	output.Position = mul(v.Position, view_projection);
+	output.Color = v.Color;
+	output.TexCoord = v.TexCoord;
+	return output;
+}
+float4 SpritePixelShader(PixelInput p) : COLOR0{
+	float4 diffuse = mainImage(p.TexCoord.xy);
+	return diffuse * p.Color;
+}
+
+technique SpriteBatch {
+	pass {
+		VertexShader = compile VS_SHADERMODEL SpriteVertexShader();
+		PixelShader = compile PS_SHADERMODEL SpritePixelShader();
+	}
 }

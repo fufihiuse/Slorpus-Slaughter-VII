@@ -33,6 +33,7 @@ namespace Slorpus
         LevelInfo _levelInfo;
         Dereferencer _dereferencer;
         Layers layers;
+        Effect CRTFilter;
 
         // input
         MouseState prevMS;
@@ -63,6 +64,7 @@ namespace Slorpus
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
+            _graphics.GraphicsProfile = GraphicsProfile.HiDef;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
@@ -92,7 +94,7 @@ namespace Slorpus
 
         protected override void LoadContent()
         {
-
+            CRTFilter = Content.Load<Effect>("shaders/crt");
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             shaderBatch = new ShaderBatch(GraphicsDevice);
@@ -306,15 +308,22 @@ namespace Slorpus
             _spriteBatch.Begin();
         }
 
-        private void PostDraw()
+        private void PostDraw(GameTime gameTime)
         {
             _spriteBatch.End();
 
             // null will cause it to draw to the screen
             GraphicsDevice.SetRenderTarget(null);
 
+            // set up shader effect(s)
+            Matrix view = Matrix.Identity;
+            Matrix projection = Matrix.CreateOrthographicOffCenter(0, Screen.TrueSize.X, Screen.TrueSize.Y, 0, 0, 1);
+
+            CRTFilter.Parameters["view_projection"].SetValue(view * projection);
+            CRTFilter.Parameters["time"].SetValue(gameTime.ElapsedGameTime.Ticks);
+
             // _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, effect: fullScreenShader);
-            _spriteBatch.Begin();
+            _spriteBatch.Begin(effect: CRTFilter);
 
             // draw the small render target to the whole screen
             _spriteBatch.Draw(
@@ -349,7 +358,7 @@ namespace Slorpus
 
             base.Draw(gameTime);
 
-            PostDraw();
+            PostDraw(gameTime);
         }
 
         /// <summary>
