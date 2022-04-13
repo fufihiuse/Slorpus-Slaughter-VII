@@ -56,6 +56,9 @@ namespace Slorpus
         List<IUpdate> updateList;
         List<IMouseClick> mouseClickList;
         List<IKeyPress> keyPressList;
+        // things that should be recieving input events all the time
+        List<IKeyPress> constantKeyPressList;
+        List<IMouseClick> constantMouseClickList;
 
         public Game1()
         {
@@ -75,9 +78,11 @@ namespace Slorpus
 
             prevMS = Mouse.GetState();
             prevKB = Keyboard.GetState();
+            constantKeyPressList = new List<IKeyPress>();
+            constantMouseClickList = new List<IMouseClick>();
 
-            screen = new Screen(_graphics);
-            screen.Use();
+            screen = new Screen(_graphics, Window);
+            constantKeyPressList.Add(screen);
             
             soundEffects = new SoundEffects();
             uiManager = new UIManager();
@@ -88,11 +93,6 @@ namespace Slorpus
         protected override void LoadContent()
         {
 
-            Window.AllowUserResizing = true;
-            _graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
-
-            // subscribe OnResize method to resizing event
-            Window.ClientSizeChanged += screen.OnResize;
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             shaderBatch = new ShaderBatch(GraphicsDevice);
@@ -164,11 +164,11 @@ namespace Slorpus
             {
                 layers.Add(d);
             }
-
+            
+            // misc additions to the lists
             // also add the bullets and level to be drawn
             layers.Add(bulletManager);
             layers.Add(level);
-
             // add camera and physics to be updated
             updateList.Add(camera);
             updateList.Add(physicsManager);
@@ -187,7 +187,19 @@ namespace Slorpus
                 }
                 uiManager.Update(ms, kb);
             }
-            prevMS = ms;
+            
+            if (Keyboard.GetState() != prevKB)
+            {
+                OnKeyPress(prevKB, constantKeyPressList);
+            }
+            if (Mouse.GetState() != prevMS)
+            {
+                OnMouseClick(prevMS, constantMouseClickList);
+            }
+            
+            // update previous keyboard state
+            prevKB = Keyboard.GetState();
+            prevMS = Mouse.GetState();
         }
 
         protected void GameUpdate(GameTime gameTime)
@@ -201,19 +213,14 @@ namespace Slorpus
             // check for changes in input
             if (Keyboard.GetState() != prevKB)
             {
-                OnKeyPress(prevKB);
+                OnKeyPress(prevKB, keyPressList);
             }
             if (Mouse.GetState() != prevMS)
             {
-                OnMouseClick(prevMS);
+                OnMouseClick(prevMS, mouseClickList);
             }
             
-            
             base.Update(gameTime);
-
-            // update previous keyboard state
-            prevKB = Keyboard.GetState();
-            prevMS = Mouse.GetState();
 
             // clean up objects that need to be destroyed
             Cleanup();
@@ -269,9 +276,9 @@ namespace Slorpus
         /// Called whenever mouse input state changes.
         /// </summary>
         /// <param name="ms">PREVIOUS state of the mouse.</param>
-        public void OnMouseClick(MouseState ms)
+        private void OnMouseClick(MouseState ms, List<IMouseClick> targets)
         {
-            foreach(IMouseClick mc in mouseClickList)
+            foreach(IMouseClick mc in targets)
             {
                 mc.OnMouseClick(ms);
             }
@@ -281,9 +288,9 @@ namespace Slorpus
         /// Called whenever keyboard input changes.
         /// </summary>
         /// <param name="kb">PREVIOUS state of the keyboard.</param>
-        public void OnKeyPress(KeyboardState kb)
+        private void OnKeyPress(KeyboardState kb, List<IKeyPress> targets)
         { 
-            foreach(IKeyPress kp in keyPressList)
+            foreach(IKeyPress kp in targets)
             {
                 kp.OnKeyPress(kb);
             }
