@@ -1,10 +1,14 @@
-﻿#if OPENGL
+﻿// taken from: https://github.com/Hammster/windows-terminal-shaders/blob/main/crt.hlsl
+
+#if OPENGL
 #define VS_SHADERMODEL vs_3_0
 #define PS_SHADERMODEL ps_3_0
 #else
 #define VS_SHADERMODEL vs_4_0
 #define PS_SHADERMODEL ps_4_0
 #endif
+
+
 
 Texture2D shaderTexture;
 SamplerState samplerState;
