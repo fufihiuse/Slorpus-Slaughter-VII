@@ -33,7 +33,9 @@ namespace Slorpus
         LevelInfo _levelInfo;
         Dereferencer _dereferencer;
         Layers layers;
+
         Effect CRTFilter;
+        int DEBUGTIMER = 0;
 
         // input
         MouseState prevMS;
@@ -320,7 +322,8 @@ namespace Slorpus
             Matrix projection = Matrix.CreateOrthographicOffCenter(0, Screen.TrueSize.X, Screen.TrueSize.Y, 0, 0, 1);
 
             CRTFilter.Parameters["view_projection"].SetValue(view * projection);
-            CRTFilter.Parameters["time"].SetValue(gameTime.ElapsedGameTime.Ticks);
+            DEBUGTIMER++;
+            CRTFilter.Parameters["refreshline_pos"].SetValue(((float)DEBUGTIMER % 60)/60);
 
             // _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, effect: fullScreenShader);
             _spriteBatch.Begin(effect: CRTFilter);

@@ -8,10 +8,9 @@
 #define PS_SHADERMODEL ps_4_0
 #endif
 
-static const float SCREEN_HEIGHT = 480;
 static const float REFRESHLINE_DISTANCE = 30;
-static const float REFRESHLINE_SPEED = 20;
-float time;
+
+float refreshline_pos;
 float4x4 view_projection;
 sampler TextureSampler : register(s0);
 
@@ -89,8 +88,7 @@ float4 mainImage(float2 tex) : TARGET
 	#endif
 
 	#if ENABLE_REFRESHLINE
-    if ((xy.y + (time % REFRESHLINE_SPEED)) % REFRESHLINE_DISTANCE == 0)
-        color.rgb *= 2;
+	color.rgb += pow(refreshline_pos - xy.y, 2);
 	#endif
 
 	#if ENABLE_SCANLINES
