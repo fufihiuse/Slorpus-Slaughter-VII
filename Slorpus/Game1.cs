@@ -54,6 +54,10 @@ namespace Slorpus
         List<IMouseClick> mouseClickList;
         List<IKeyPress> keyPressList;
 
+        // needed for making that big ol sprite sheet
+        static RenderTarget2D sheet;
+        static Dictionary<string, Rectangle> sheetLoc;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -93,6 +97,9 @@ namespace Slorpus
 
             squareTexture = Content.Load<Texture2D>("square");
             testingFont = Content.Load<SpriteFont>("Arial12");
+
+            //initialize RenderTarget2D
+            //sheet = new RenderTarget2D(graphicsDevice, )
             
             // load UI
             uiManager.LoadUI(Content);
@@ -352,6 +359,35 @@ namespace Slorpus
             physicsList = new List<IPhysics>();
             wallList = new List<Wall>();
             bulletList = new EnemyBullet[100];
+        }
+
+        /// <summary>
+        /// Creates one sprite sheet containing all Texture2Ds that need to be loaded 
+        /// </summary>
+        public void CreateSheet(Dictionary<string, Texture2D> valuePairs)
+        {
+            GraphicsDevice.SetRenderTarget(sheet);
+            _spriteBatch.Begin();
+
+            int x = 0;
+            int y = 0;
+
+            //TODO: uhhh are x and y values right
+            Rectangle textureRect = new Rectangle(x, y, valuePairs.GetValueOrDefault<string, Texture2D>(valuePairs.Keys.ToString()).Width,
+                valuePairs.GetValueOrDefault<string, Texture2D>(valuePairs.Keys.ToString()).Height);
+
+            foreach(KeyValuePair<string, Texture2D> entry in valuePairs)
+            {
+                _spriteBatch.Draw(
+                entry.Value,
+                textureRect,
+                Color.White);
+
+                sheetLoc.Add(entry.Key.ToString(), textureRect);
+            }
+
+            _spriteBatch.End();
+            GraphicsDevice.SetRenderTarget(null);
         }
     }
 }
