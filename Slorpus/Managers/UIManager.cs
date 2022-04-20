@@ -230,7 +230,7 @@ namespace Slorpus.Managers
                         //Attempt to load custom level
                         try 
                         { 
-                            LevelInfo.LoadCustomLevel("mundo"); //TODO: add custom input, look for pre-written library please oh god
+                            LevelInfo.LoadCustomLevel("mundo"); //TODO: add custom input, look for pre-written library please oh god https://github.com/UnterrainerInformatik/Monogame-Textbox
                             LevelInfo.ReloadLevel();
                             loadedCustom = true;
                         }
