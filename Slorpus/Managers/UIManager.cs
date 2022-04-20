@@ -38,12 +38,16 @@ namespace Slorpus.Managers
         GameState currentGameState;
         GameState prevGameState;
 
+        //Bool to control checkbox draw
+        private bool loadedCustom = false;
+
         //backgrounds
         Texture2D menuBackground;
         Texture2D settingsBackground;
         Texture2D pauseBackground;
         Texture2D gameOverBackground;
         Texture2D customLevelBackground;
+        Texture2D check;
 
         //button lists
         List<Button> menuButtons;
@@ -99,6 +103,9 @@ namespace Slorpus.Managers
             pauseBackground = content.Load<Texture2D>("pauseBackground");
             gameOverBackground = content.Load<Texture2D>("gameOverBackground");
             customLevelBackground = content.Load<Texture2D>("customLevelBackground");
+
+            //check texture
+            check = content.Load<Texture2D>("check");
 
 
             //testing button textures
@@ -225,8 +232,9 @@ namespace Slorpus.Managers
                         { 
                             LevelInfo.LoadCustomLevel("mundo"); //TODO: add custom input
                             LevelInfo.ReloadLevel();
+                            loadedCustom = true;
                         }
-                        catch (Exception) { Console.WriteLine("FAIL!"); } //TODO: change to draw on screen
+                        catch (Exception) { Console.WriteLine("FAIL!"); loadedCustom = false; } //TODO: change to draw on screen
                     }
                     if (back.Update(ms))
                     {
@@ -327,6 +335,22 @@ namespace Slorpus.Managers
                     foreach (Button button in customLevelButtons)
                     {
                         button.Draw(sb);
+                    }
+
+                    //Draw check box
+                    sb.Draw(
+                        check,
+                        new Rectangle(522, 295, 48, 48),
+                        Color.White
+                        );
+
+                    if (loadedCustom) //TODO: add text if loading works
+                    {
+                        sb.DrawString(Game1.TestingFont, "Level loaded successfully!", new Vector2(0, 0), Color.Red);
+                    }
+                    else
+                    {
+                        sb.DrawString(Game1.TestingFont, "No custom level loaded", new Vector2(0, 0), Color.Red);
                     }
                     // godmode debug
                     //sb.DrawString(Game1.TestingFont, $"GODMODE: {isGodModeOn}", new Vector2(0, 0), Color.Red);
