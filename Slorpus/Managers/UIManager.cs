@@ -220,12 +220,13 @@ namespace Slorpus.Managers
                     }
                     if (loadLevel.Update(ms))
                     {
+                        //Attempt to load custom level
                         try 
                         { 
-                            LevelInfo.LoadCustomLevel("mundo");
+                            LevelInfo.LoadCustomLevel("mundo"); //TODO: add custom input
                             LevelInfo.ReloadLevel();
                         }
-                        catch (Exception e) { Console.WriteLine("FAIL!"); }
+                        catch (Exception) { Console.WriteLine("FAIL!"); } //TODO: change to draw on screen
                     }
                     if (back.Update(ms))
                     {

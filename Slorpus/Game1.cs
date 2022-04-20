@@ -104,6 +104,10 @@ namespace Slorpus
             LoadLevel(Constants.LEVELS[0]); 
         }
 
+        /// <summary>
+        /// Load a standard level in game
+        /// </summary>
+        /// <param name="levelname">The name of the level</param>
         public void LoadLevel(string levelname)
         {
             ResetLists();
@@ -161,6 +165,11 @@ namespace Slorpus
             updateList.Add(physicsManager);
         }
 
+        /// <summary>
+        /// Load custom level
+        /// </summary>
+        /// <param name="levelName">The name of the level</param>
+        /// <param name="customPath">The path of the custom level</param>
         public void LoadLevel(string levelName, string customPath)
         {
             ResetLists();

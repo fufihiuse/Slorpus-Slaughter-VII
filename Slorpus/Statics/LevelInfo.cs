@@ -42,7 +42,7 @@ namespace Slorpus.Statics
                 }
                 isCustom = true;
             }
-            catch(Exception e)
+            catch(Exception)
             {
                 throw new Exception("Error: file not found");
             }
