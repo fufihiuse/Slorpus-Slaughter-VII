@@ -1,4 +1,6 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 namespace Slorpus.Statics
 {
     class LevelInfo
@@ -6,21 +8,61 @@ namespace Slorpus.Statics
         private static Game1 game;
         public static int CurrentLevel { get { return currentLevel; } }
         private static int currentLevel;
+        private static List<string> levels;
+        private static bool isCustom = false;
+        private static string customPath;
+
+        public List<string> Levels { get { return levels;} }
 
         public LevelInfo(Game1 game)
         {
             currentLevel = 0;
             LevelInfo.game = game;
+            levels = new List<string>();
+            foreach(string s in Constants.LEVELS)
+            {
+                levels.Add(s);
+            }
+        }
+
+        public static void LoadCustomLevel(string filepath)
+        {
+            customPath = filepath;
+            filepath = $"..\\..\\..\\customlevels\\{filepath}\\info.wal"; //UPDATE FOR BUILD
+            StreamReader input = new StreamReader(filepath);
+            string line;
+            try
+            {
+                line = input.ReadLine();
+                string[] tempLevels = line.Split(',');
+                levels.Clear();
+                foreach(string s in tempLevels)
+                {
+                    levels.Add(s);
+                }
+                isCustom = true;
+            }
+            catch(Exception e)
+            {
+                throw new Exception("Error: file not found");
+            }
         }
 
         public static void IncrementLevel()
         {
             currentLevel += 1;
-            currentLevel %= Constants.LEVELS.Length;
+            currentLevel %= levels.Count;
         }
         public static void ReloadLevel()
         {
-            game.LoadLevel(Constants.LEVELS[CurrentLevel]);
+            if (!isCustom)
+            {
+                game.LoadLevel(levels[CurrentLevel]);
+            }
+            else
+            {
+                game.LoadLevel(levels[CurrentLevel], customPath);
+            }
         }
         
         /// <summary>
@@ -29,7 +71,7 @@ namespace Slorpus.Statics
         public static void LoadNextLevel()
         {
             IncrementLevel();
-            game.LoadLevel(Constants.LEVELS[CurrentLevel]);
+            game.LoadLevel(levels[CurrentLevel]);
         }
     }
 }

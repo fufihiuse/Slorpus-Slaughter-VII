@@ -43,6 +43,7 @@ namespace Slorpus.Managers
         Texture2D settingsBackground;
         Texture2D pauseBackground;
         Texture2D gameOverBackground;
+        Texture2D customLevelBackground;
 
         //button lists
         List<Button> menuButtons;
@@ -97,6 +98,7 @@ namespace Slorpus.Managers
             settingsBackground = content.Load<Texture2D>("settingsBackground");
             pauseBackground = content.Load<Texture2D>("pauseBackground");
             gameOverBackground = content.Load<Texture2D>("gameOverBackground");
+            customLevelBackground = content.Load<Texture2D>("customLevelBackground");
 
 
             //testing button textures
@@ -140,7 +142,7 @@ namespace Slorpus.Managers
             gameOverMenu = new Button(new Rectangle(300, 365, 200, 50),
                 standard, hover, active);
             //custom level loader
-            loadLevel = new Button(new Rectangle(300, 225, 200, 50),
+            loadLevel = new Button(new Rectangle(521, 295, 50, 50),
                 standard, hover, active);
 
             //add buttons to lists
@@ -216,14 +218,19 @@ namespace Slorpus.Managers
                     {
                         isGodModeOn = !isGodModeOn;
                     }
-                    if (customLvl.Update(ms))
+                    if (loadLevel.Update(ms))
                     {
-                        currentGameState = GameState.CustomLevel;
+                        try 
+                        { 
+                            LevelInfo.LoadCustomLevel("mundo");
+                            LevelInfo.ReloadLevel();
+                        }
+                        catch (Exception e) { Console.WriteLine("FAIL!"); }
                     }
                     if (back.Update(ms))
                     {
                         currentGameState = prevGameState;
-                        prevGameState = GameState.Pause; //Fix this so works with main method?
+                        prevGameState = GameState.Menu;
                     }
                     break;
 
@@ -304,12 +311,13 @@ namespace Slorpus.Managers
                     }
                     // godmode debug
                     sb.DrawString(Game1.TestingFont, $"GODMODE: {isGodModeOn}", new Vector2(0, 0), Color.Red);
+                    sb.DrawString(Game1.TestingFont, $"GODMODE: {isGodModeOn}", new Vector2(0, 0), Color.Red);
                     break;
 
                 case GameState.CustomLevel:
                     //draw background
                     sb.Draw(
-                        settingsBackground,
+                        customLevelBackground,
                         new Rectangle(0, 0, 800, 480),
                         Color.White
                         );
