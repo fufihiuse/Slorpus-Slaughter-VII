@@ -230,7 +230,7 @@ namespace Slorpus.Managers
                         //Attempt to load custom level
                         try 
                         { 
-                            LevelInfo.LoadCustomLevel("mundo"); //TODO: add custom input
+                            LevelInfo.LoadCustomLevel("mundo"); //TODO: add custom input, look for pre-written library please oh god
                             LevelInfo.ReloadLevel();
                             loadedCustom = true;
                         }
@@ -344,7 +344,7 @@ namespace Slorpus.Managers
                         Color.White
                         );
 
-                    if (loadedCustom) //TODO: add text if loading works
+                    if (loadedCustom) 
                     {
                         sb.DrawString(Game1.TestingFont, "Level loaded successfully!", new Vector2(0, 0), Color.Red);
                     }
@@ -352,8 +352,6 @@ namespace Slorpus.Managers
                     {
                         sb.DrawString(Game1.TestingFont, "No custom level loaded", new Vector2(0, 0), Color.Red);
                     }
-                    // godmode debug
-                    //sb.DrawString(Game1.TestingFont, $"GODMODE: {isGodModeOn}", new Vector2(0, 0), Color.Red);
                     break;
 
                 case GameState.Pause:
