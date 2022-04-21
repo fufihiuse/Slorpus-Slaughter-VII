@@ -37,10 +37,8 @@ struct PixelInput {
 #define CURVE_INTENSITY 0.7
 #define ENABLE_SCANLINES 1
 #define ENABLE_REFRESHLINE 1
-#define TINT_COLOR float4(1, 0.7f, 0, 0)
-
-static const float4 tint = TINT_COLOR;
-static const float4 scanlineTint = float4(0.6f, 0.6f, 0.6f, 0.0f);
+#define REFRESHLINE_TINT float3(0.2, 0.2, 0.2)
+#define SCANLINE_TINT float4(0.2f, 0.2f, 0.2f, 0.0f)
 
 // actual shader ----------------------------------
 
@@ -71,14 +69,14 @@ float4 mainImage(float2 tex) : TARGET
 	float4 color = tex2D(TextureSampler, xy);
 
 	#if ENABLE_REFRESHLINE
-	if (abs(xy.y - gameTime) < REFRESHLINE_DISTANCE) {
-		color.rgb += float3(0.5, 0.2, 0.2);
+	if (abs(xy.y - gameTime*2) < REFRESHLINE_DISTANCE) {
+		color.rgb += REFRESHLINE_TINT;
 	}
 	#endif
 
 	#if ENABLE_SCANLINES
 	// TODO: fixing the precision issue so that scanlines are always 1px
-	if (floor(xy.y * 1000) % 4) color *= scanlineTint;
+	if (floor(xy.y * 1000) % 4) color -= SCANLINE_TINT;
 	#endif
 
 	return color;

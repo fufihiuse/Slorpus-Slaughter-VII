@@ -332,8 +332,9 @@ namespace Slorpus
             CRTFilter.Parameters["view_projection"].SetValue(mul);
             CRTFilterFullres.Parameters["view_projection"].SetValue(mul);
             
-            float seconds = (float)(gameTime.TotalGameTime.TotalSeconds % 2)/2;
+            float seconds = (float)(gameTime.TotalGameTime.TotalSeconds % 3)/3;
             CRTFilter.Parameters["gameTime"].SetValue(seconds);
+            CRTFilterFullres.Parameters["gameTime"].SetValue(seconds);
 
             GraphicsDevice.SetRenderTarget(finalTarget);
             _spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, effect: CRTFilter);

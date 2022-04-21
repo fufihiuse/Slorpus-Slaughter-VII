@@ -30,6 +30,8 @@ struct PixelInput {
 #define ENABLE_TINT 0
 #define DEBUG 0
 
+static const float4 tint = float4(1, 0.7f, 0, 0);
+
 // Grain Lookup Table
 #define a0  0.151015505647689
 #define a1 -0.5303572634357367
