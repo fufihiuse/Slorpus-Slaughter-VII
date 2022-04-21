@@ -82,7 +82,7 @@ namespace Slorpus
             screen.Use();
             
             soundEffects = new SoundEffects();
-            uiManager = new UIManager();
+            uiManager = new UIManager(GraphicsDevice, this);
 
             base.Initialize();
         }

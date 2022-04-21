@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame_Textbox;
 
 using Slorpus.Objects;
 using Slorpus.Statics;
@@ -37,6 +38,8 @@ namespace Slorpus.Managers
         //fields  
         GameState currentGameState;
         GameState prevGameState;
+        GraphicsDevice GraphicsDevice;
+        Game1 Game1;
 
         //Bool to control checkbox draw
         private bool loadedCustom = false;
@@ -47,7 +50,13 @@ namespace Slorpus.Managers
         Texture2D pauseBackground;
         Texture2D gameOverBackground;
         Texture2D customLevelBackground;
+
+        //Check Texture
         Texture2D check;
+
+        //TextBox
+        TextBox textBox;
+        string inputtedText;
 
         //button lists
         List<Button> menuButtons;
@@ -86,8 +95,10 @@ namespace Slorpus.Managers
         }
 
         //constructor
-        public UIManager()
+        public UIManager(GraphicsDevice GraphicsDevice, Game1 Game1)
         {
+            this.Game1 = Game1;
+            this.GraphicsDevice = GraphicsDevice;
             currentGameState = GameState.Menu;
         }
 
@@ -104,7 +115,19 @@ namespace Slorpus.Managers
             gameOverBackground = content.Load<Texture2D>("gameOverBackground");
             customLevelBackground = content.Load<Texture2D>("customLevelBackground");
 
-            //check texture
+            //Text Input
+            textBox = new TextBox(
+                new Rectangle(300, 295, 200, 50),
+                50,
+                String.Empty,
+                GraphicsDevice,
+                Game1.TestingFont,
+                Color.Black,
+                Color.Red,
+                60);
+            textBox.Active = true;
+            KeyboardInput.Initialize(Game1, 100f, 60);
+            //textBox.Area = new Rectangle(300, 295, 200, 50);
             check = content.Load<Texture2D>("check");
 
 
@@ -221,16 +244,18 @@ namespace Slorpus.Managers
                     break;
 
                 case GameState.CustomLevel:
+                    textBox.Update();
                     if (godMode.Update(ms))
                     {
                         isGodModeOn = !isGodModeOn;
                     }
                     if (loadLevel.Update(ms))
                     {
+                        inputtedText = textBox.Text.String;
                         //Attempt to load custom level
                         try 
                         { 
-                            LevelInfo.LoadCustomLevel("mundo"); //TODO: add custom input, look for pre-written library please oh god https://github.com/UnterrainerInformatik/Monogame-Textbox
+                            LevelInfo.LoadCustomLevel(inputtedText); //TODO: add custom input, look for pre-written library please oh god https://github.com/UnterrainerInformatik/Monogame-Textbox
                             LevelInfo.ReloadLevel();
                             loadedCustom = true;
                         }
@@ -240,6 +265,7 @@ namespace Slorpus.Managers
                     {
                         currentGameState = prevGameState;
                         prevGameState = GameState.Menu;
+                        textBox.Clear();
                     }
                     break;
 
@@ -336,6 +362,9 @@ namespace Slorpus.Managers
                     {
                         button.Draw(sb);
                     }
+
+                    //Draw text box
+                    textBox.Draw(sb);
 
                     //Draw check box
                     sb.Draw(
