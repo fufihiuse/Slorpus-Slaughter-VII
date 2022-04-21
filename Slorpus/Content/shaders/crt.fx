@@ -8,7 +8,7 @@
 #define PS_SHADERMODEL ps_4_0
 #endif
 
-static const float REFRESHLINE_DISTANCE = 30;
+static const float REFRESHLINE_DISTANCE = 0.005;
 
 float gameTime;
 float4x4 view_projection;
@@ -104,7 +104,9 @@ float4 mainImage(float2 tex) : TARGET
 	#endif
 
 	#if ENABLE_REFRESHLINE
-    if (xy.y == gameTime) color.rgb = 1;
+    if (abs(xy.y - gameTime) < REFRESHLINE_DISTANCE) {
+		color.rgb += float3(0.5, 0.2, 0.2);
+	} 
 	#endif
 
 	#if ENABLE_SCANLINES

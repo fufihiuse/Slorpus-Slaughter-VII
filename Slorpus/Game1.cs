@@ -328,7 +328,7 @@ namespace Slorpus
             Matrix projection = Matrix.CreateOrthographicOffCenter(0, Screen.Size.X, Screen.Size.Y, 0, 0, 1);
             CRTFilter.Parameters["view_projection"].SetValue(view * projection);
             
-            float seconds = (float)(gameTime.TotalGameTime.TotalSeconds % 60)/60;
+            float seconds = (float)(gameTime.TotalGameTime.TotalSeconds % 2)/2;
             CRTFilter.Parameters["gameTime"].SetValue(seconds);
 
             GraphicsDevice.SetRenderTarget(finalTarget);
