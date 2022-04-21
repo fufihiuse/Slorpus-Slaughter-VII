@@ -108,7 +108,6 @@ namespace Slorpus.Statics
             
             // window settings
             window.AllowUserResizing = true;
-            graphics.GraphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;
 
             // subscribe OnResize method to resizing event
             window.ClientSizeChanged += OnResize;

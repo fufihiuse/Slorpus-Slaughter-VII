@@ -97,6 +97,7 @@ namespace Slorpus
         protected override void LoadContent()
         {
             CRTFilter = Content.Load<Effect>("shaders/crt");
+            GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             shaderBatch = new ShaderBatch(GraphicsDevice);
@@ -314,7 +315,7 @@ namespace Slorpus
             // draw to small render target
             GraphicsDevice.SetRenderTarget(effectsTarget);
 
-            _spriteBatch.Begin();
+            _spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp);
         }
 
         private void PostDraw(GameTime gameTime)
@@ -331,7 +332,7 @@ namespace Slorpus
             CRTFilter.Parameters["gameTime"].SetValue(seconds);
 
             GraphicsDevice.SetRenderTarget(finalTarget);
-            _spriteBatch.Begin(effect: CRTFilter);
+            _spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, effect: CRTFilter);
 
             // draw the render target to final target with effects
             _spriteBatch.Draw(
@@ -344,12 +345,14 @@ namespace Slorpus
 
             // finally draw to screen
             GraphicsDevice.SetRenderTarget(null);
-            _spriteBatch.Begin();
-            _spriteBatch.Draw(
-                finalTarget,
-                Screen.Target,
-                Color.White
-                );
+            
+            _spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp);
+            _spriteBatch.Draw(finalTarget, Screen.Target, Color.White);
+            
+            // version where shaders scale with true screen/pixel size
+            // _spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, effect:CRTFilter);
+            // _spriteBatch.Draw(effectsTarget, effectsTarget.Bounds, Color.White);
+
             _spriteBatch.End();
         }
 
