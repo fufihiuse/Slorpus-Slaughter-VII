@@ -10,7 +10,7 @@
 
 static const float REFRESHLINE_DISTANCE = 30;
 
-float refreshline_pos;
+float gameTime;
 float4x4 view_projection;
 sampler TextureSampler : register(s0);
 
@@ -27,11 +27,13 @@ struct PixelInput {
 
 // Settings
 #define GRAIN_INTENSITY 0.02
+#define ENABLE_GRAIN 1
 #define TINT_COLOR float4(1, 0.7f, 0, 0)
 #define ENABLE_SCANLINES 1
 #define ENABLE_REFRESHLINE 1
 #define ENABLE_NOISE 1
 #define ENABLE_CURVE 1
+#define CURVE_INTENSITY 0.7
 #define ENABLE_TINT 0
 #define DEBUG 0
 
@@ -64,13 +66,13 @@ float4 mainImage(float2 tex) : TARGET
 	#if ENABLE_CURVE
 	// TODO: add control variable for transform intensity
 	xy -= 0.5f;				// offcenter screen
-	float r = xy.x * xy.x + xy.y * xy.y; 	// get ratio
-	xy *= 4.2f + r;				// apply ratio
-	xy *= 0.25f;				// zoom
+	float r = xy.x * xy.x + xy.y * xy.y; // get ratio, x^2 + y^2
+	xy *= (4.2f / CURVE_INTENSITY) + r; // apply ratio (curves the screen)
+	xy *= 0.245f * CURVE_INTENSITY;				// zoom
 	xy += 0.5f;				// move back to center
 
 	// TODO: add monitor visuals and make colors static consts
-	// Outter Box
+	// Outer Box
 	if(xy.x < -0.025f || xy.y < -0.025f) return float4(0, 0, 0, 0); 
 	if(xy.x > 1.025f  || xy.y > 1.025f)  return float4(0, 0, 0, 0); 
 	// Bazel
@@ -88,12 +90,12 @@ float4 mainImage(float2 tex) : TARGET
 	#endif
 
 	#if ENABLE_REFRESHLINE
-	color.rgb += pow(refreshline_pos - xy.y, 2);
+    if (xy.y == gameTime) color.rgb = 1;
 	#endif
 
 	#if ENABLE_SCANLINES
 	// TODO: fixing the precision issue so that scanlines are always 1px
-	if(floor(xy.y * 1000) % 2) color *= scanlineTint;
+	if(floor(xy.y * 1000) % 4) color *= scanlineTint;
 	#endif	
 
 	#if ENABLE_TINT
@@ -103,7 +105,7 @@ float4 mainImage(float2 tex) : TARGET
 	#endif
 
 	#if ENABLE_GRAIN
-	float3 m = float3(tex, Time % 5 / 5) + 1.;
+	float3 m = float3(tex, gameTime % 5 / 5) + 1.;
 	float state = permute(permute(m.x) + m.y) + m.z;
 
 	float p = 0.95 * rand(state) + 0.025;

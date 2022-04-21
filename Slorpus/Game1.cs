@@ -19,6 +19,7 @@ namespace Slorpus
         private SpriteBatch _spriteBatch;
         // no more underscore, I know what I'm doing >:)
         private SpriteBatch shaderBatch;
+        private RenderTarget2D effectsTarget;
         private RenderTarget2D finalTarget;
 
         // debug assets for use everywhere
@@ -35,7 +36,6 @@ namespace Slorpus
         Layers layers;
 
         Effect CRTFilter;
-        int DEBUGTIMER = 0;
 
         // input
         MouseState prevMS;
@@ -101,6 +101,13 @@ namespace Slorpus
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             shaderBatch = new ShaderBatch(GraphicsDevice);
             finalTarget = new RenderTarget2D(
+                GraphicsDevice,
+                Screen.Size.X, Screen.Size.Y,
+                false,
+                GraphicsDevice.PresentationParameters.BackBufferFormat,
+                DepthFormat.Depth24
+                );
+            effectsTarget = new RenderTarget2D(
                 GraphicsDevice,
                 Screen.Size.X, Screen.Size.Y,
                 false,
@@ -305,7 +312,7 @@ namespace Slorpus
             GraphicsDevice.Clear(Color.Black);
 
             // draw to small render target
-            GraphicsDevice.SetRenderTarget(finalTarget);
+            GraphicsDevice.SetRenderTarget(effectsTarget);
 
             _spriteBatch.Begin();
         }
@@ -313,28 +320,36 @@ namespace Slorpus
         private void PostDraw(GameTime gameTime)
         {
             _spriteBatch.End();
-
-            // null will cause it to draw to the screen
-            GraphicsDevice.SetRenderTarget(null);
+            // draw the render target to itself so effects get applied at scale
 
             // set up shader effect(s)
             Matrix view = Matrix.Identity;
-            Matrix projection = Matrix.CreateOrthographicOffCenter(0, Screen.TrueSize.X, Screen.TrueSize.Y, 0, 0, 1);
-
+            Matrix projection = Matrix.CreateOrthographicOffCenter(0, Screen.Size.X, Screen.Size.Y, 0, 0, 1);
             CRTFilter.Parameters["view_projection"].SetValue(view * projection);
-            DEBUGTIMER++;
-            CRTFilter.Parameters["refreshline_pos"].SetValue(((float)DEBUGTIMER % 60)/60);
+            
+            float seconds = (float)(gameTime.TotalGameTime.TotalSeconds % 60)/60;
+            CRTFilter.Parameters["gameTime"].SetValue(seconds);
 
-            // _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, effect: fullScreenShader);
+            GraphicsDevice.SetRenderTarget(finalTarget);
             _spriteBatch.Begin(effect: CRTFilter);
 
-            // draw the small render target to the whole screen
+            // draw the render target to final target with effects
+            _spriteBatch.Draw(
+                effectsTarget,
+                finalTarget.Bounds,
+                Color.White
+                );
+
+            _spriteBatch.End();
+
+            // finally draw to screen
+            GraphicsDevice.SetRenderTarget(null);
+            _spriteBatch.Begin();
             _spriteBatch.Draw(
                 finalTarget,
                 Screen.Target,
                 Color.White
                 );
-
             _spriteBatch.End();
         }
 
