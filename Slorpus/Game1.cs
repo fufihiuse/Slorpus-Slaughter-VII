@@ -36,6 +36,7 @@ namespace Slorpus
         Layers layers;
 
         Effect CRTFilter;
+        Effect CRTFilterFullres;
 
         // input
         MouseState prevMS;
@@ -97,6 +98,7 @@ namespace Slorpus
         protected override void LoadContent()
         {
             CRTFilter = Content.Load<Effect>("shaders/crt");
+            CRTFilterFullres = Content.Load<Effect>("shaders/crt-fullres");
             GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -326,7 +328,9 @@ namespace Slorpus
             // set up shader effect(s)
             Matrix view = Matrix.Identity;
             Matrix projection = Matrix.CreateOrthographicOffCenter(0, Screen.Size.X, Screen.Size.Y, 0, 0, 1);
-            CRTFilter.Parameters["view_projection"].SetValue(view * projection);
+            Matrix mul = view * projection;
+            CRTFilter.Parameters["view_projection"].SetValue(mul);
+            CRTFilterFullres.Parameters["view_projection"].SetValue(mul);
             
             float seconds = (float)(gameTime.TotalGameTime.TotalSeconds % 2)/2;
             CRTFilter.Parameters["gameTime"].SetValue(seconds);
@@ -345,13 +349,9 @@ namespace Slorpus
 
             // finally draw to screen
             GraphicsDevice.SetRenderTarget(null);
+            _spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, effect: CRTFilterFullres);
+            _spriteBatch.Draw(finalTarget, finalTarget.Bounds, Color.White);
             
-            _spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp);
-            _spriteBatch.Draw(finalTarget, Screen.Target, Color.White);
-            
-            // version where shaders scale with true screen/pixel size
-            // _spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, effect:CRTFilter);
-            // _spriteBatch.Draw(effectsTarget, effectsTarget.Bounds, Color.White);
 
             _spriteBatch.End();
         }
