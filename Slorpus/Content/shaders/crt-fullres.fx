@@ -37,7 +37,8 @@ struct PixelInput {
 #define CURVE_INTENSITY 0.7
 #define ENABLE_SCANLINES 1
 #define ENABLE_REFRESHLINE 1
-#define REFRESHLINE_TINT float3(0.2, 0.2, 0.2)
+#define REFRESHLINE_TINT float3(0.05, 0.05, 0.05)
+#define REFRESHLINE_OFFSET 0.005
 #define SCANLINE_TINT float4(0.2f, 0.2f, 0.2f, 0.0f)
 
 // actual shader ----------------------------------
@@ -70,6 +71,8 @@ float4 mainImage(float2 tex) : TARGET
 
 	#if ENABLE_REFRESHLINE
 	if (abs(xy.y - gameTime*2) < REFRESHLINE_DISTANCE) {
+		xy.x += REFRESHLINE_OFFSET;
+		color = tex2D(TextureSampler, xy);
 		color.rgb += REFRESHLINE_TINT;
 	}
 	#endif
