@@ -25,7 +25,7 @@ struct PixelInput {
 //Needed for pixel offset
 float2 InverseResolution;
 //The threshold of pixels that are brighter than that.
-float Threshold = 0.8f;
+float Threshold = 0.1f;
 //MODIFIED DURING RUNTIME, CHANGING HERE MAKES NO DIFFERENCE;
 float Radius;
 float Strength;

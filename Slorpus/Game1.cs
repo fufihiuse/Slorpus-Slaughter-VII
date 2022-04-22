@@ -10,6 +10,7 @@ using Slorpus.Objects;
 using Slorpus.Statics;
 using Slorpus.Interfaces;
 using Slorpus.Interfaces.Base;
+using Slorpus.Effects;
 
 namespace Slorpus
 {
@@ -17,8 +18,9 @@ namespace Slorpus
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        // no more underscore, I know what I'm doing >:)
-        private SpriteBatch shaderBatch;
+
+        // render pipeline
+        private RenderTarget2D rawTarget;
         private RenderTarget2D effectsTarget;
         private RenderTarget2D finalTarget;
 
@@ -37,6 +39,7 @@ namespace Slorpus
 
         Effect CRTFilter;
         Effect CRTFilterFullres;
+        BloomFilter _bloomFilter;
 
         // input
         MouseState prevMS;
@@ -97,12 +100,23 @@ namespace Slorpus
 
         protected override void LoadContent()
         {
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            
+            // CRT TV filter(s)
             CRTFilter = Content.Load<Effect>("shaders/crt");
             CRTFilterFullres = Content.Load<Effect>("shaders/crt-fullres");
             GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-            shaderBatch = new ShaderBatch(GraphicsDevice);
+            //Load our Bloomfilter!
+            _bloomFilter = new BloomFilter();
+            _bloomFilter.Load(GraphicsDevice, Content, Screen.Size.X, Screen.Size.Y);
+
+            _bloomFilter.BloomPreset = BloomFilter.BloomPresets.SuperWide;
+            _bloomFilter.BloomThreshold = 0.1f;
+            _bloomFilter.BloomStrengthMultiplier = 0.5f;
+            _bloomFilter.BloomUseLuminance = true;
+
+            // render targets
             finalTarget = new RenderTarget2D(
                 GraphicsDevice,
                 Screen.Size.X, Screen.Size.Y,
@@ -111,6 +125,13 @@ namespace Slorpus
                 DepthFormat.Depth24
                 );
             effectsTarget = new RenderTarget2D(
+                GraphicsDevice,
+                Screen.Size.X, Screen.Size.Y,
+                false,
+                GraphicsDevice.PresentationParameters.BackBufferFormat,
+                DepthFormat.Depth24
+                );
+            rawTarget = new RenderTarget2D(
                 GraphicsDevice,
                 Screen.Size.X, Screen.Size.Y,
                 false,
@@ -315,7 +336,7 @@ namespace Slorpus
             GraphicsDevice.Clear(Color.Black);
 
             // draw to small render target
-            GraphicsDevice.SetRenderTarget(effectsTarget);
+            GraphicsDevice.SetRenderTarget(rawTarget);
 
             _spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp);
         }
@@ -323,7 +344,6 @@ namespace Slorpus
         private void PostDraw(GameTime gameTime)
         {
             _spriteBatch.End();
-            // draw the render target to itself so effects get applied at scale
 
             // set up shader effect(s)
             Matrix view = Matrix.Identity;
@@ -336,27 +356,29 @@ namespace Slorpus
             CRTFilter.Parameters["gameTime"].SetValue(seconds);
             CRTFilterFullres.Parameters["gameTime"].SetValue(seconds);
 
-            GraphicsDevice.SetRenderTarget(finalTarget);
+            GraphicsDevice.SetRenderTarget(effectsTarget);
+            // draw the raw render target to effects target
             _spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, effect: CRTFilter);
-
-            // draw the render target to final target with effects
-            _spriteBatch.Draw(
-                effectsTarget,
-                finalTarget.Bounds,
-                Color.White
-                );
-
+            _spriteBatch.Draw(rawTarget, rawTarget.Bounds, Color.White);
             _spriteBatch.End();
-
-            // finally draw to screen
-            GraphicsDevice.SetRenderTarget(null);
-            _spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, effect: CRTFilterFullres);
-            _spriteBatch.Draw(finalTarget, finalTarget.Bounds, Color.White);
             
+            GraphicsDevice.SetRenderTarget(finalTarget);
+            
+            // draw fullscreen effects with warping
+            _spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, effect: CRTFilterFullres);
+            _spriteBatch.Draw(effectsTarget, Screen.Target, Color.White);
+            _spriteBatch.End();
+            
+            // create bloom texture
+            Texture2D bloom = _bloomFilter.Draw(finalTarget, Screen.TrueSize.X, Screen.TrueSize.Y);
 
+            // draw both to screen
+            GraphicsDevice.SetRenderTarget(null);
+            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp);
+            _spriteBatch.Draw(finalTarget, Screen.Target, Color.White);
+            _spriteBatch.Draw(bloom, Screen.Target, Color.White);
             _spriteBatch.End();
         }
-
         protected override void Draw(GameTime gameTime)
         {
             PreDraw();
@@ -424,6 +446,15 @@ namespace Slorpus
             physicsList = new List<IPhysics>();
             wallList = new List<Wall>();
             bulletList = new EnemyBullet[100];
+        }
+
+        /// <summary>
+        /// UnloadContent will be called once per game and is the place to unload
+        /// game-specific content.
+        /// </summary>
+        protected override void UnloadContent()
+        {
+            _bloomFilter.Dispose();
         }
     }
 }

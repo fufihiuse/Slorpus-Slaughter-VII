@@ -24,7 +24,7 @@ struct PixelInput {
 };
 
 // Settings
-#define GRAIN_INTENSITY 0.02
+#define GRAIN_INTENSITY 0.1
 #define ENABLE_GRAIN 1
 #define ENABLE_NOISE 1
 #define ENABLE_TINT 0
