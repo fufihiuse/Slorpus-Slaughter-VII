@@ -269,6 +269,7 @@ namespace Slorpus.Managers
                         currentGameState = prevGameState;
                         prevGameState = GameState.Menu;
                         textBox.Active = false;
+                        loadedCustom = false;
                         textBox.Clear();
                     }
                     break;
