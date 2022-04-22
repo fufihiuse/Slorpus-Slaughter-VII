@@ -10,7 +10,6 @@ using Slorpus.Objects;
 using Slorpus.Statics;
 using Slorpus.Interfaces;
 using Slorpus.Interfaces.Base;
-using Slorpus.Effects;
 
 namespace Slorpus
 {
@@ -358,25 +357,25 @@ namespace Slorpus
 
             GraphicsDevice.SetRenderTarget(effectsTarget);
             // draw the raw render target to effects target
-            _spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, effect: CRTFilter);
-            _spriteBatch.Draw(rawTarget, rawTarget.Bounds, Color.White);
+            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp, effect: CRTFilter);
+            _spriteBatch.Draw(rawTarget, Vector2.Zero, Color.White);
             _spriteBatch.End();
             
             GraphicsDevice.SetRenderTarget(finalTarget);
             
             // draw fullscreen effects with warping
-            _spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, effect: CRTFilterFullres);
-            _spriteBatch.Draw(effectsTarget, Screen.Target, Color.White);
+            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp, effect: CRTFilterFullres);
+            _spriteBatch.Draw(effectsTarget, Vector2.Zero, Color.White);
             _spriteBatch.End();
             
             // create bloom texture
-            Texture2D bloom = _bloomFilter.Draw(finalTarget, Screen.TrueSize.X, Screen.TrueSize.Y);
+            Texture2D bloom = _bloomFilter.Draw(finalTarget, Screen.Target.Width, Screen.Target.Height);
 
             // draw both to screen
             GraphicsDevice.SetRenderTarget(null);
             _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp);
             _spriteBatch.Draw(finalTarget, Screen.Target, Color.White);
-            _spriteBatch.Draw(bloom, Screen.Target, Color.White);
+            _spriteBatch.Draw(bloom, Vector2.Zero, Color.White);
             _spriteBatch.End();
         }
         protected override void Draw(GameTime gameTime)

@@ -4,9 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-using Slorpus.Utils;
-
-namespace Slorpus.Effects
+namespace Slorpus.Utils
 {
     /// <summary>
     /// 

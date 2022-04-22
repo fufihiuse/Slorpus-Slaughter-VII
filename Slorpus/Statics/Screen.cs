@@ -86,12 +86,15 @@ namespace Slorpus.Statics
             {
                 SetFullscreen();
             }
+            trueSize = new Point(
+                graphics.PreferredBackBufferWidth,
+                graphics.PreferredBackBufferHeight
+                );
         }
 
         /// <summary>
         /// Creates a new screen.
         /// </summary>
-        /// <param name="size">The size of the screen in pixels.</param>
         public Screen(GraphicsDeviceManager graphics, GameWindow window, bool use=true)
         {
             this.graphics = graphics;
