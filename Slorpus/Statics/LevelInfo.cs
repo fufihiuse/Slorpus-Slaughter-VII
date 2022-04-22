@@ -71,7 +71,14 @@ namespace Slorpus.Statics
         public static void LoadNextLevel()
         {
             IncrementLevel();
-            game.LoadLevel(levels[CurrentLevel]);
+            if (!isCustom)
+            {
+                game.LoadLevel(levels[CurrentLevel]);
+            }
+            else
+            {
+                game.LoadLevel(levels[CurrentLevel], customPath);
+            }
         }
     }
 }

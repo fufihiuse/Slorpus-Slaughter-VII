@@ -256,13 +256,13 @@ namespace Slorpus.Managers
                     {
                         inputtedText = textBox.Text.String;
                         //Attempt to load custom level
-                        try 
-                        { 
+                        try
+                        {
                             LevelInfo.LoadCustomLevel(inputtedText); //TODO: add custom input, look for pre-written library please oh god https://github.com/UnterrainerInformatik/Monogame-Textbox
                             LevelInfo.ReloadLevel();
                             loadedCustom = true;
                         }
-                        catch (Exception) { Console.WriteLine("FAIL!"); loadedCustom = false; } //TODO: change to draw on screen
+                        catch (Exception) { }
                         textBox.Clear();
                     }
                     if (back.Update(ms))
