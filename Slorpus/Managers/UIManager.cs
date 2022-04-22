@@ -125,6 +125,7 @@ namespace Slorpus.Managers
                 Color.Black,
                 Color.Red,
                 60);
+            textBox.Renderer.Color = new Color(0.63529411764f, 0.09411764705f, 0.09411764705f);
             textBox.Active = false;
             KeyboardInput.Initialize(Game1, 100f, 60);
             //textBox.Area = new Rectangle(300, 295, 200, 50);
@@ -324,8 +325,6 @@ namespace Slorpus.Managers
                         button.Draw(sb);
                     }
 
-                    // draw godmode debug message
-                    sb.DrawString(Game1.TestingFont, $"GODMODE: {isGodModeOn}", new Vector2(0, 0), Color.Red);
                     break;
 
                 case GameState.Game:
@@ -349,9 +348,10 @@ namespace Slorpus.Managers
                     {
                         button.Draw(sb);
                     }
-                    // godmode debug
-                    sb.DrawString(Game1.TestingFont, $"GODMODE: {isGodModeOn}", new Vector2(0, 0), Color.Red);
-                    sb.DrawString(Game1.TestingFont, $"GODMODE: {isGodModeOn}", new Vector2(0, 0), Color.Red);
+                    if (isGodModeOn)
+                    {
+                        sb.DrawString(Game1.TestingFont, "GODMODE ENABLED", new Vector2(5, 0), Color.Red);
+                    }
                     break;
 
                 case GameState.CustomLevel:
@@ -380,11 +380,11 @@ namespace Slorpus.Managers
 
                     if (loadedCustom) 
                     {
-                        sb.DrawString(Game1.TestingFont, "Level loaded successfully!", new Vector2(0, 0), Color.Red);
+                        sb.DrawString(Game1.TestingFont, "Level loaded successfully!", new Vector2(5, 0), Color.Red);
                     }
                     else
                     {
-                        sb.DrawString(Game1.TestingFont, "No custom level loaded", new Vector2(0, 0), Color.Red);
+                        sb.DrawString(Game1.TestingFont, "No custom level loaded", new Vector2(5, 0), Color.Red);
                     }
                     break;
 
