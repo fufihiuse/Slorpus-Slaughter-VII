@@ -125,7 +125,7 @@ namespace Slorpus.Managers
                 Color.Black,
                 Color.Red,
                 60);
-            textBox.Active = true;
+            textBox.Active = false;
             KeyboardInput.Initialize(Game1, 100f, 60);
             //textBox.Area = new Rectangle(300, 295, 200, 50);
             check = content.Load<Texture2D>("check");
@@ -236,6 +236,7 @@ namespace Slorpus.Managers
                     {
                         currentGameState = GameState.CustomLevel;
                         prevGameState = GameState.Settings;
+                        textBox.Active = true;
                     }
                     if (back.Update(ms))
                     {
@@ -244,6 +245,7 @@ namespace Slorpus.Managers
                     break;
 
                 case GameState.CustomLevel:
+                    KeyboardInput.Update();
                     textBox.Update();
                     if (godMode.Update(ms))
                     {
@@ -260,11 +262,13 @@ namespace Slorpus.Managers
                             loadedCustom = true;
                         }
                         catch (Exception) { Console.WriteLine("FAIL!"); loadedCustom = false; } //TODO: change to draw on screen
+                        textBox.Clear();
                     }
                     if (back.Update(ms))
                     {
                         currentGameState = prevGameState;
                         prevGameState = GameState.Menu;
+                        textBox.Active = false;
                         textBox.Clear();
                     }
                     break;
