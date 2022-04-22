@@ -164,6 +164,13 @@
 /processorParam:TextureFormat=Color
 /build:menuBackground.png
 
+#begin NotoSans30.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:NotoSans30.spritefont
+
 #begin pauseBackground.png
 /importer:TextureImporter
 /processor:TextureProcessor

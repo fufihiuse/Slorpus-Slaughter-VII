@@ -118,10 +118,10 @@ namespace Slorpus.Managers
             //Text Input
             textBox = new TextBox(
                 new Rectangle(300, 295, 200, 50),
-                50,
+                11,
                 String.Empty,
                 GraphicsDevice,
-                Game1.TestingFont,
+                Game1.NotoSans,
                 Color.Black,
                 Color.Red,
                 60);

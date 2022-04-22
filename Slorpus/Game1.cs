@@ -22,7 +22,9 @@ namespace Slorpus
         private static Texture2D squareTexture;
         public static Texture2D SquareTexture { get { return squareTexture; } }
         private static SpriteFont testingFont;
+        private static SpriteFont notoSans;
         public static SpriteFont TestingFont { get { return testingFont; } }
+        public static SpriteFont NotoSans { get { return notoSans; } }
 
         // important misc objects
         Camera camera;
@@ -93,6 +95,7 @@ namespace Slorpus
 
             squareTexture = Content.Load<Texture2D>("square");
             testingFont = Content.Load<SpriteFont>("Arial12");
+            notoSans = Content.Load<SpriteFont>("NotoSans30");
             
             // load UI
             uiManager.LoadUI(Content);
