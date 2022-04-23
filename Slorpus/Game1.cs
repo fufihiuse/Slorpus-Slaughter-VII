@@ -38,7 +38,7 @@ namespace Slorpus
 
         Effect CRTFilter;
         Effect CRTFilterFullres;
-        BloomFilter _bloomFilter;
+        SimpleBloom Bloom;
 
         // input
         MouseState prevMS;
@@ -104,16 +104,8 @@ namespace Slorpus
             // CRT TV filter(s)
             CRTFilter = Content.Load<Effect>("shaders/crt");
             CRTFilterFullres = Content.Load<Effect>("shaders/crt-fullres");
+            Bloom = new SimpleBloom(Content, GraphicsDevice, Screen.Size, 3);
             GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
-
-            //Load our Bloomfilter!
-            _bloomFilter = new BloomFilter();
-            _bloomFilter.Load(GraphicsDevice, Content, Screen.Size.X, Screen.Size.Y);
-
-            _bloomFilter.BloomPreset = BloomFilter.BloomPresets.SuperWide;
-            _bloomFilter.BloomThreshold = 0.1f;
-            _bloomFilter.BloomStrengthMultiplier = 0.5f;
-            _bloomFilter.BloomUseLuminance = true;
 
             // render targets
             finalTarget = new RenderTarget2D(
@@ -367,15 +359,14 @@ namespace Slorpus
             _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp, effect: CRTFilterFullres);
             _spriteBatch.Draw(effectsTarget, Vector2.Zero, Color.White);
             _spriteBatch.End();
-            
-            // create bloom texture
-            Texture2D bloom = _bloomFilter.Draw(finalTarget, Screen.Target.Width, Screen.Target.Height);
+
+            Bloom.Apply(_spriteBatch, finalTarget, ref rawTarget);
 
             // draw both to screen
             GraphicsDevice.SetRenderTarget(null);
             _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp);
             _spriteBatch.Draw(finalTarget, Screen.Target, Color.White);
-            _spriteBatch.Draw(bloom, Vector2.Zero, Color.White);
+            _spriteBatch.Draw(rawTarget, Screen.Target, Color.White);
             _spriteBatch.End();
         }
         protected override void Draw(GameTime gameTime)
@@ -445,15 +436,6 @@ namespace Slorpus
             physicsList = new List<IPhysics>();
             wallList = new List<Wall>();
             bulletList = new EnemyBullet[100];
-        }
-
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// game-specific content.
-        /// </summary>
-        protected override void UnloadContent()
-        {
-            _bloomFilter.Dispose();
         }
     }
 }

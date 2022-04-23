@@ -75,7 +75,6 @@ namespace Slorpus.Utils
         private EffectPass _bloomPassUpsample;
         private EffectPass _bloomPassUpsampleLuminance;
 
-        private EffectParameter _bloomParameterScreenTexture;
         private EffectParameter _bloomInverseResolutionParameter;
         private EffectParameter _bloomRadiusParameter;
         private EffectParameter _bloomStrengthParameter;
@@ -135,7 +134,6 @@ namespace Slorpus.Utils
         private BloomPresets _bloomPreset;
 
 
-        private Texture2D BloomScreenTexture { set { _bloomParameterScreenTexture.SetValue(value); } }
         private Vector2 BloomInverseResolution
         {
             get { return _bloomInverseResolutionField; }
@@ -243,16 +241,6 @@ namespace Slorpus.Utils
             _bloomStrengthParameter = _bloomEffect.Parameters["Strength"];
             _bloomStreakLengthParameter = _bloomEffect.Parameters["StreakLength"];
             _bloomThresholdParameter = _bloomEffect.Parameters["Threshold"];
-
-            //For DirectX / Windows
-            _bloomParameterScreenTexture = _bloomEffect.Parameters["TextureSampler"];
-
-            //If we are on OpenGL it's different, load the other one then!
-            if (_bloomParameterScreenTexture == null)
-            {
-                //for OpenGL / CrossPlatform
-                _bloomParameterScreenTexture = _bloomEffect.Parameters["LinearSampler+ScreenTexture"];
-            }
 
             _bloomPassExtract = _bloomEffect.Techniques["Extract"].Passes[0];
             _bloomPassExtractLuminance = _bloomEffect.Techniques["ExtractLuminance"].Passes[0];
@@ -411,7 +399,6 @@ namespace Slorpus.Utils
             //We extract the bright values which are above the Threshold and save them to Mip0
             _graphicsDevice.SetRenderTarget(_bloomRenderTarget2DMip0);
 
-            BloomScreenTexture = inputTexture;
             BloomInverseResolution = new Vector2(1.0f / _width, 1.0f / _height);
             
             if (BloomUseLuminance) _bloomPassExtractLuminance.Apply(); 
@@ -424,7 +411,6 @@ namespace Slorpus.Utils
                 //DOWNSAMPLE TO MIP1
                 _graphicsDevice.SetRenderTarget(_bloomRenderTarget2DMip1);
 
-                BloomScreenTexture = _bloomRenderTarget2DMip0;
                 //Pass
                 _bloomPassDownsample.Apply();
                 _quadRenderer.RenderQuad(_graphicsDevice, Vector2.One * -1, Vector2.One);
@@ -437,7 +423,6 @@ namespace Slorpus.Utils
                     //DOWNSAMPLE TO MIP2
                     _graphicsDevice.SetRenderTarget(_bloomRenderTarget2DMip2);
 
-                    BloomScreenTexture = _bloomRenderTarget2DMip1;
                     //Pass
                     _bloomPassDownsample.Apply();
                     _quadRenderer.RenderQuad(_graphicsDevice, Vector2.One * -1, Vector2.One);
@@ -449,7 +434,6 @@ namespace Slorpus.Utils
                         //DOWNSAMPLE TO MIP3
                         _graphicsDevice.SetRenderTarget(_bloomRenderTarget2DMip3);
 
-                        BloomScreenTexture = _bloomRenderTarget2DMip2;
                         //Pass
                         _bloomPassDownsample.Apply();
                         _quadRenderer.RenderQuad(_graphicsDevice, Vector2.One * -1, Vector2.One);
@@ -461,7 +445,6 @@ namespace Slorpus.Utils
                             //DOWNSAMPLE TO MIP4
                             _graphicsDevice.SetRenderTarget(_bloomRenderTarget2DMip4);
 
-                            BloomScreenTexture = _bloomRenderTarget2DMip3;
                             //Pass
                             _bloomPassDownsample.Apply();
                             _quadRenderer.RenderQuad(_graphicsDevice, Vector2.One * -1, Vector2.One);
@@ -473,7 +456,6 @@ namespace Slorpus.Utils
                                 //DOWNSAMPLE TO MIP5
                                 _graphicsDevice.SetRenderTarget(_bloomRenderTarget2DMip5);
 
-                                BloomScreenTexture = _bloomRenderTarget2DMip4;
                                 //Pass
                                 _bloomPassDownsample.Apply();
                                 _quadRenderer.RenderQuad(_graphicsDevice, Vector2.One * -1, Vector2.One);
@@ -482,7 +464,6 @@ namespace Slorpus.Utils
                                 
                                 //UPSAMPLE TO MIP4
                                 _graphicsDevice.SetRenderTarget(_bloomRenderTarget2DMip4);
-                                BloomScreenTexture = _bloomRenderTarget2DMip5;
 
                                 BloomStrength = _bloomStrength5;
                                 BloomRadius = _bloomRadius5;
@@ -497,7 +478,6 @@ namespace Slorpus.Utils
 
                             //UPSAMPLE TO MIP3
                             _graphicsDevice.SetRenderTarget(_bloomRenderTarget2DMip3);
-                            BloomScreenTexture = _bloomRenderTarget2DMip4;
 
                             BloomStrength = _bloomStrength4;
                             BloomRadius = _bloomRadius4;
@@ -513,7 +493,6 @@ namespace Slorpus.Utils
 
                         //UPSAMPLE TO MIP2
                         _graphicsDevice.SetRenderTarget(_bloomRenderTarget2DMip2);
-                        BloomScreenTexture = _bloomRenderTarget2DMip3;
 
                         BloomStrength = _bloomStrength3;
                         BloomRadius = _bloomRadius3;
@@ -529,7 +508,6 @@ namespace Slorpus.Utils
 
                     //UPSAMPLE TO MIP1
                     _graphicsDevice.SetRenderTarget(_bloomRenderTarget2DMip1);
-                    BloomScreenTexture = _bloomRenderTarget2DMip2;
 
                     BloomStrength = _bloomStrength2;
                     BloomRadius = _bloomRadius2;
@@ -544,7 +522,6 @@ namespace Slorpus.Utils
 
                 //UPSAMPLE TO MIP0
                 _graphicsDevice.SetRenderTarget(_bloomRenderTarget2DMip0);
-                BloomScreenTexture = _bloomRenderTarget2DMip1;
 
                 BloomStrength = _bloomStrength1;
                 BloomRadius = _bloomRadius1;

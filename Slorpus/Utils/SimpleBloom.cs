@@ -27,6 +27,7 @@ namespace Slorpus.Utils
         EffectParameter StreakLength;
         EffectParameter Threshold;
 
+        RenderTarget2D extracted;
         RenderTarget2D[] Mips;
 
         GraphicsDevice GraphicsDevice;
@@ -57,14 +58,61 @@ namespace Slorpus.Utils
             Point targetSize = size;
             for (int i = 0; i < passes; i++)
             {
-                Mips[i] = new RenderTarget2D(GraphicsDevice, targetSize.X, targetSize.Y);
-                size /= new Point(2,2);
+                Mips[i] = new RenderTarget2D(
+                    GraphicsDevice,
+                    targetSize.X, targetSize.Y,
+                    false,
+                    GraphicsDevice.PresentationParameters.BackBufferFormat,
+                    DepthFormat.Depth24
+                    );
+                targetSize /= new Point(2,2);
             }
+
+            extracted = new RenderTarget2D(
+                GraphicsDevice,
+                size.X, size.Y,
+                false,
+                GraphicsDevice.PresentationParameters.BackBufferFormat,
+                DepthFormat.Depth24
+                );
         }
 
-        public void Apply(RenderTarget2D input, ref RenderTarget2D output)
+        public void Apply(SpriteBatch sb, RenderTarget2D input, ref RenderTarget2D output)
         {
-            GraphicsDevice.SetRenderTarget(output);
+            sb.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp);
+            
+            // draw extracted colors
+            GraphicsDevice.SetRenderTarget(extracted);
+            Extract.Apply();
+            sb.Draw(input, extracted.Bounds, Color.White);
+
+            // now draw all the mips with downsampling
+            // target which changes with iteration
+            RenderTarget2D pong = extracted;
+            foreach (RenderTarget2D mip in Mips)
+            {
+                GraphicsDevice.SetRenderTarget(mip);
+                Downsample.Apply();
+                sb.Draw(pong, mip.Bounds, Color.White);
+                // draw this mip to the next one
+                pong = mip;
+            }
+
+            // compose mips back together into final texture (with linear sampling)
+            sb.End();
+            sb.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap);
+
+            for (int i = Mips.Length-1; i >= 0; i--)
+            {
+                pong = (i >= 1) ? Mips[i - 1] : output;
+
+                GraphicsDevice.SetRenderTarget(pong);
+
+                Upsample.Apply();
+                sb.Draw(Mips[i], pong.Bounds, Color.White);
+            }
+
+            sb.End();
         }
     }
 }

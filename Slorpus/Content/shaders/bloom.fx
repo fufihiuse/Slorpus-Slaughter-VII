@@ -9,8 +9,19 @@
 #endif
 
 float4x4 view_projection;
-sampler TextureSampler : register(s0);
+// sampler TextureSampler : register(s0);
 
+texture LinearSampler;
+sampler TextureSampler : register(s0); /* = sampler_state
+{
+    Texture = <SourceTex>;
+    AddressU = WRAP;
+    AddressV = WRAP;
+    MagFilter = LINEAR;
+    MinFilter = LINEAR;
+    Mipfilter = LINEAR;
+};
+*/
 struct VertexInput {
 	float4 Position : POSITION0;
 	float4 Color : COLOR0;
