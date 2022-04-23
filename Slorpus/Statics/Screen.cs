@@ -151,7 +151,7 @@ namespace Slorpus.Statics
         public static Point GetMousePosition()
         {
             MouseState ms = Mouse.GetState();
-            return new Vector2(ms.X * Scale.X, ms.Y * Scale.Y).ToPoint();
+            return GetMousePosition(ms);
         }
         /// <summary>
         /// Get the mouse position on the screen.
@@ -160,7 +160,27 @@ namespace Slorpus.Statics
         /// <returns>The true position scaled downwards into the actual size.</returns>
         public static Point GetMousePosition(MouseState ms)
         {
-            return new Vector2(ms.X * Scale.X, ms.Y * Scale.Y).ToPoint();
+            /*
+             * SHADER CODE IN crt-fullres.fx
+            xy -= 0.5f;				// offcenter screen
+            float r = xy.x * xy.x + xy.y * xy.y; // get ratio, x^2 + y^2
+            xy *= (4.2f / CURVE_INTENSITY) + r; // apply ratio (curves the screen)
+            xy *= 0.245f * CURVE_INTENSITY;				// zoom
+            xy += 0.5f;				// move back to center
+            */
+            Vector2 pos = new Vector2(ms.X, ms.Y);
+            // convert pos to propotion of the screen
+            pos = Vector2.Divide(pos, TrueSize.ToVector2());
+            pos -= new Vector2(0.5f, 0.5f);
+            // dot product with itself
+            float r = (pos.X * pos.X) + (pos.Y + pos.Y);
+            // 0.13 is a hardcoded value that best makes the mouse feel good
+            pos = Vector2.Multiply(pos, (4.2f / 0.13f) + r);
+            pos = Vector2.Multiply(pos, 0.245f * 0.13f);
+            
+            pos += new Vector2(0.5f, 0.5f);
+            pos = Vector2.Multiply(pos, TrueSize.ToVector2());
+            return (pos * Scale).ToPoint();
         }
         
         // keypress handler for setting full screen

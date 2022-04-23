@@ -34,7 +34,7 @@ struct PixelInput {
 
 #define REFRESHLINE_DISTANCE 0.005
 #define ENABLE_CURVE 1
-#define CURVE_INTENSITY 0.7
+#define CURVE_INTENSITY 0.7 // if you change this: also change it in Screen.cs :(
 #define ENABLE_SCANLINES 1
 #define ENABLE_REFRESHLINE 1
 #define REFRESHLINE_TINT float3(0.05, 0.05, 0.05)
