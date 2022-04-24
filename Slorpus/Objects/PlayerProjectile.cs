@@ -11,7 +11,9 @@ namespace Slorpus.Objects
     class PlayerProjectile : PhysicsObject, IUpdate, IDraw, IDestroyable, ILoad
     {
         Texture2D asset;
-        
+
+        int timesBounced = 0;
+
         public PlayerProjectile(Rectangle pos, Vector2 vel, ContentManager content): base(pos, vel)
         {
             LoadContent(content);
@@ -21,8 +23,6 @@ namespace Slorpus.Objects
 
         void IUpdate.Update(GameTime gameTime)
         {
-            // perform per-frame game logic
-            
         }
 
         void IDraw.Draw(SpriteBatch sb)
@@ -55,7 +55,8 @@ namespace Slorpus.Objects
                 Wall tempWall = (Wall)(object)other;
                 if (tempWall.IsMirror)
                 {
-                    SoundEffects.PlayEffect(2); // Plays firing off mirror sound effect
+                    timesBounced++;
+                    SoundEffects.PlayEffect("reflect", Math.Min(-0.1f + timesBounced*0.1f, 1)); // Plays firing off mirror sound effect
                     // get if the normal is primarily X or Y
                     if(Math.Abs(Position.X - wantedPosition.X) > Math.Abs(Position.Y - wantedPosition.Y))
                     {
@@ -84,7 +85,11 @@ namespace Slorpus.Objects
             }
             else if (other is Enemy)
             {
-                SoundEffects.PlayEffect(3);
+                float shiftedPitch = Constants.ENEMY_VOLUME.MAX-Constants.ENEMY_VOLUME.MIN;
+                float pitch =  shiftedPitch * ((float)Enemy.Count-1) / ((float)LevelInfo.InitialEnemyCount);
+                // pitch = shiftedPitch - pitch; // inverts the pitch change
+                pitch += Constants.ENEMY_VOLUME.MIN;
+                SoundEffects.PlayEffect("enemy_death", pitch, 0.0f);
                 Enemy tempEnemy = (Enemy)(object)other;
                 tempEnemy.Destroy();
             }

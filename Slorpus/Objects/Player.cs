@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -20,6 +21,8 @@ namespace Slorpus.Objects
         // player texture
         Texture2D asset;
         int health;
+
+        Queue<Step> steps;
         
         // publicly expose players position
         private static Player current;
@@ -47,6 +50,10 @@ namespace Slorpus.Objects
             this.createBullet = bulletCreationFunc;
             bullets = 1;
 
+            steps = new Queue<Step>();
+            // pre-queue the first step
+            steps.Enqueue(new Step(Constants.PLAYER.STEP_SPEED, "walk1"));
+
             // select most recently instatiated player as the current player
             current = this;
 
@@ -55,8 +62,24 @@ namespace Slorpus.Objects
 
         void IUpdate.Update(GameTime gameTime)
         {
-            // per-frame logic
-            UpdatePlayerPosition();
+            KeyboardState kb = Keyboard.GetState();
+            UpdatePlayerPosition(kb);
+            
+            if (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.S) ||
+                kb.IsKeyDown(Keys.D) || kb.IsKeyDown(Keys.A))
+            {
+                Step current = steps.Peek();
+                current.Decrement();
+                if (current.Played)
+                {
+                    steps.Dequeue();
+                    steps.Enqueue(
+                        new Step(
+                            Constants.PLAYER.STEP_SPEED,
+                            current.NextSound)
+                        );
+                }
+            }
         }
 
         void IDraw.Draw(SpriteBatch sb)
@@ -74,19 +97,6 @@ namespace Slorpus.Objects
         void IKeyPress.OnKeyPress(KeyboardState kb)
         {
             // key pressed logic
-            if (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.A) || kb.IsKeyDown(Keys.S) || kb.IsKeyDown(Keys.D))
-            {
-                SoundEffects.PlayEffect(5);
-                for (int i = 0; i < 60; i++)
-                {
-
-                }
-                SoundEffects.PlayEffect(6);
-                for (int i = 0; i < 60; i++)
-                {
-
-                }
-            }
         }
 
 
@@ -112,7 +122,7 @@ namespace Slorpus.Objects
                 // normalize it
                 vel = Vector2.Normalize(vel);
                 //multiply by speed
-                vel = Vector2.Multiply(vel, Constants.PLAYER_BULLET_SPEED);
+                vel = Vector2.Multiply(vel, Constants.PLAYER.BULLET_SPEED);
 
                 createBullet(pos, vel);
 
@@ -123,7 +133,7 @@ namespace Slorpus.Objects
                     bullets--;
                 }
 
-                SoundEffects.PlayEffect(0); // Plays firing sound effect
+                SoundEffects.PlayEffect("bullet"); // Plays firing sound effect
             }
         }
 
@@ -131,9 +141,8 @@ namespace Slorpus.Objects
         /// Updates the player position by detecting the keys pressed by the player
         /// </summary>
         /// <param name="kb"></param>
-        public void UpdatePlayerPosition()
+        public void UpdatePlayerPosition(KeyboardState kb)
         {
-            KeyboardState kb = Keyboard.GetState();
             float speed = 0.5f;
             float xin = 0;
             float yin = 0;
@@ -194,6 +203,46 @@ namespace Slorpus.Objects
                 current = null;
             }
             Dereferencer.Destroy(this);
+        }
+    }
+    /// <summary>
+    /// One entry in a queue of steps, used for playing a series of sounds.
+    /// </summary>
+    class Step
+    {
+        private string nextSound;
+        private bool played = false;
+
+        public string NextSound { get { return nextSound; } }
+        public bool Played { get { return played; } }
+        private int timer;
+        Action play;
+
+        public Step(int length, string soundEffect)
+        {
+            play = () => { SoundEffects.PlayEffect(soundEffect); };
+            timer = length;
+            
+            switch (soundEffect)
+            {
+                case "walk1":
+                    nextSound = "walk2";
+                    break;
+                case "walk2":
+                    nextSound = "walk1";
+                    break;
+                default:
+                    throw new Exception($"sound {soundEffect} not accounted for in this switch.");
+            }
+        }
+        public void Decrement()
+        {
+            timer--;
+            if (timer == 0)
+            {
+                play();
+                played = true;
+            }
         }
     }
 }

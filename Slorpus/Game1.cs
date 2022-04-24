@@ -147,9 +147,15 @@ namespace Slorpus
             // handle different draw layers
             List<IDraw> drawables = levelParser.Drawables;
             // sort all the drawables into their respective layers
+            _levelInfo.initialEnemyCount = 0;
             foreach (IDraw d in drawables)
             {
                 layers.Add(d);
+                // also get enemy count since we're iterating anyway
+                if (d is Enemy)
+                {
+                    _levelInfo.initialEnemyCount += 1;
+                }
             }
 
             // also add the bullets and level to be drawn
@@ -294,6 +300,8 @@ namespace Slorpus
                         d.Draw(_spriteBatch);
                     }
                 }
+                _spriteBatch.DrawString(testingFont, $"{Enemy.Count}", new Vector2(50, 50), Color.White);
+                _spriteBatch.DrawString(testingFont, $"{LevelInfo.InitialEnemyCount}", new Vector2(50, 60), Color.White);
             }
             else
             {
@@ -320,8 +328,8 @@ namespace Slorpus
         {
             Rectangle pRect = new Rectangle(location,
                 new Point(
-                    Constants.PLAYER_BULLET_SIZE,
-                    Constants.PLAYER_BULLET_SIZE
+                    Constants.PLAYER.BULLET_SIZE,
+                    Constants.PLAYER.BULLET_SIZE
                     )
                 );
 

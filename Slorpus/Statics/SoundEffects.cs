@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Content;
 
 namespace Slorpus.Statics
 {
@@ -26,29 +28,48 @@ namespace Slorpus.Statics
         /// Adds each of the sounds needed in the game
         /// </summary>
         /// <param name="content"></param>
-        public static void AddSounds(Microsoft.Xna.Framework.Content.ContentManager content)
+        public static void AddSounds(ContentManager content)
         {
-            soundEffectsBank.Add(content.Load<SoundEffect>("Bullet Noise"));
-            soundEffectsBank.Add(content.Load<SoundEffect>("Enemy Bullet Noise"));
-            soundEffectsBank.Add(content.Load<SoundEffect>("Bullet bounces off wall"));
-            soundEffectsBank.Add(content.Load<SoundEffect>("Enemy Death"));
-            soundEffectsBank.Add(content.Load<SoundEffect>("Title screen click"));
-            soundEffectsBank.Add(content.Load<SoundEffect>("Walk 1"));
-            soundEffectsBank.Add(content.Load<SoundEffect>("Walk 2"));                                        
+            Action<string> Add = (string name) =>
+            {
+                string path = $"sound/{name}";
+                soundEffectsBank.Add(name, content.Load<SoundEffect>(path));
+            };
+
+            Add("bullet");
+            Add("click");
+            Add("enemy_bullet");
+            Add("enemy_death");
+            Add("reflect");
+            Add("walk1");
+            Add("walk2");
         }
 
         private static void Add(string name)
         {
-            //
         }
 
         /// <summary>
-        /// Plays a specific sound in the list decided by the parameter
+        /// Play a sound by name.
         /// </summary>
-        /// <param name="index"></param>
-        public static void PlayEffect(int index)
+        /// <param name="name">Name of the sound in the dictionary.</param>
+        public static void PlayEffect(string name)
         {
-            soundEffectsBank[index].Play();
+            soundEffectsBank[name].Play();
+        }
+        
+        /// <summary>
+        /// Play an effect with a specified pitch.
+        /// </summary>
+        /// <param name="name">Name of the effect</param>
+        /// <param name="pitch">Pitch of the effect, between 0.0 and 1.0</param>
+        public static void PlayEffect(string name, float pitch, float pan=0.0f)
+        {
+            soundEffectsBank[name].Play(1.0f, pitch, pan);
+        }
+        public static void PlayEffectVolume(string name, float volume, float pitch=0.0f, float pan=0.0f)
+        {
+            soundEffectsBank[name].Play(volume, pitch, pan);
         }
     }
 }

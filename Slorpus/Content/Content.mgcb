@@ -20,17 +20,17 @@
 /processorParam:TextureFormat=Compressed
 /build:Arial12.spritefont
 
-#begin Bullet bounces off wall.wav
+#begin sound/reflect.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:Bullet bounces off wall.wav
+/build:sound/reflect.wav
 
-#begin Bullet Noise.wav
+#begin sound/bullet.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:Bullet Noise.wav
+/build:sound/bullet.wav
 
 #begin buttonPlaceholder.png
 /importer:TextureImporter
@@ -80,17 +80,17 @@
 /processorParam:TextureFormat=Color
 /build:circle.png
 
-#begin Enemy Bullet Noise.wav
+#begin sound/enemy_bullet.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:Enemy Bullet Noise.wav
+/build:sound/enemy_bullet.wav
 
-#begin Enemy Death.wav
+#begin sound/enemy_death.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:Enemy Death.wav
+/build:sound/enemy_death.wav
 
 #begin enemy.png
 /importer:TextureImporter
@@ -224,21 +224,21 @@
 /processorParam:TextureFormat=Color
 /build:tile/Yellow Dungeon Tileset.png
 
-#begin Title screen click.wav
+#begin sound/click.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:Title screen click.wav
+/build:sound/click.wav
 
-#begin Walk 1.wav
+#begin sound/walk1.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:Walk 1.wav
+/build:sound/walk1.wav
 
-#begin Walk 2.wav
+#begin sound/walk2.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:Walk 2.wav
+/build:sound/walk2.wav
 
