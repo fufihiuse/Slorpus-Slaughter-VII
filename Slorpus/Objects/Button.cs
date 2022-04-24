@@ -49,15 +49,15 @@ namespace Slorpus.Objects
         /// Updates the ButtonState
         /// </summary>
         /// <param name="ms"></param>
-        public bool Update(MouseState ms)
+        public bool Update(MouseState ms, Point msLoc)
         {
-            if (position.Contains(ms.Position) && ms.LeftButton == ButtonState.Pressed)
+            if (position.Contains(msLoc) && ms.LeftButton == ButtonState.Pressed)
             {
                 SoundEffects.PlayEffect("click");
                 bc = ButtonCondition.Active;
                 return true;
             }
-            else if (position.Contains(ms.Position))
+            else if (position.Contains(msLoc))
             {
                 bc = ButtonCondition.Hover;
             }

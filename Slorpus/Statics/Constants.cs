@@ -24,6 +24,11 @@ namespace Slorpus.Statics
             public const int BULLET_SIZE = 10;
             public const float BULLET_SPEED = 6f;
         }
+      
+        // public const int SCREEN_WIDTH = 480;
+        // public const int SCREEN_HEIGHT = 270;
+        public const int SCREEN_WIDTH = 800;
+        public const int SCREEN_HEIGHT = 480;
 
         //Array of levels to load
         public static readonly string[] LEVELS = { 

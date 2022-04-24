@@ -176,6 +176,24 @@
 /processorParam:TextureFormat=Color
 /build:settingsBackground.png
 
+#begin shaders/crt.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:shaders/crt.fx
+
+#begin shaders/white.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:shaders/white.fx
+
+#begin shaders/crt-fullres.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:shaders/crt-fullres.fx
+
 #begin square.png
 /importer:TextureImporter
 /processor:TextureProcessor
