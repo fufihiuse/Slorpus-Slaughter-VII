@@ -56,6 +56,8 @@ namespace Slorpus.Objects
                 if (tempWall.IsMirror)
                 {
                     SoundEffects.PlayEffect(2); // Plays firing off mirror sound effect
+                    LevelInfo.Pause(3);
+                    Camera.Shake(3, 5);
                     // get if the normal is primarily X or Y
                     if(Math.Abs(Position.X - wantedPosition.X) > Math.Abs(Position.Y - wantedPosition.Y))
                     {
