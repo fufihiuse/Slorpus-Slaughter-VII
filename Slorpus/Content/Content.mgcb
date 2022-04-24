@@ -80,6 +80,18 @@
 /processorParam:TextureFormat=Color
 /build:circle.png
 
+#begin cursor.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:cursor.png
+
 #begin Enemy Bullet Noise.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -182,17 +194,17 @@
 /processorParam:DebugMode=Auto
 /build:shaders/crt.fx
 
-#begin shaders/white.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:shaders/white.fx
-
 #begin shaders/crt-fullres.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
 /build:shaders/crt-fullres.fx
+
+#begin shaders/white.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:shaders/white.fx
 
 #begin square.png
 /importer:TextureImporter

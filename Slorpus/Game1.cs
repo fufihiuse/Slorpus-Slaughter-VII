@@ -69,13 +69,14 @@ namespace Slorpus
         // things that should be recieving input events all the time
         List<IKeyPress> constantKeyPressList;
         List<IMouseClick> constantMouseClickList;
+        Layers constantLayers;
 
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             _graphics.GraphicsProfile = GraphicsProfile.HiDef;
             Content.RootDirectory = "Content";
-            IsMouseVisible = true;
+            IsMouseVisible = false;
         }
 
         protected override void Initialize()
@@ -97,6 +98,8 @@ namespace Slorpus
             
             soundEffects = new SoundEffects();
             uiManager = new UIManager();
+
+            constantLayers = new Layers();
 
             base.Initialize();
         }
@@ -208,7 +211,7 @@ namespace Slorpus
             updateList.Add(physicsManager);
 
             // add cursor to draw
-            layers.Add(cursor);
+            constantLayers.Add(cursor);
         }
 
         protected override void Update(GameTime gameTime)
@@ -391,6 +394,14 @@ namespace Slorpus
             else
             {
                 uiManager.Draw(_spriteBatch);
+            }
+
+            foreach (List<IDraw> drawList in constantLayers)
+            {
+                foreach (IDraw d in drawList)
+                {
+                    d.Draw(_spriteBatch);
+                }
             }
 
             base.Draw(gameTime);
