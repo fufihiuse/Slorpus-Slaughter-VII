@@ -10,7 +10,7 @@ namespace Slorpus.Statics
     {
         // Field
         //Microsoft.Xna.Framework.Content.ContentManager content;
-        static List<SoundEffect> soundEffectsBank;
+        static Dictionary<string, SoundEffect> soundEffectsBank;
 
         // Constructor
         /// <summary>
@@ -18,7 +18,7 @@ namespace Slorpus.Statics
         /// </summary>
         public SoundEffects()
         {
-            soundEffectsBank = new List<SoundEffect>();
+            soundEffectsBank = new Dictionary<string, SoundEffect>(); 
         }
 
         // Methods
@@ -35,6 +35,11 @@ namespace Slorpus.Statics
             soundEffectsBank.Add(content.Load<SoundEffect>("Title screen click"));
             soundEffectsBank.Add(content.Load<SoundEffect>("Walk 1"));
             soundEffectsBank.Add(content.Load<SoundEffect>("Walk 2"));                                        
+        }
+
+        private static void Add(string name)
+        {
+            //
         }
 
         /// <summary>

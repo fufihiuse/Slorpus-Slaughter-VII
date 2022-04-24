@@ -73,6 +73,7 @@ namespace Slorpus.Objects
 
         void IKeyPress.OnKeyPress(KeyboardState kb)
         {
+            // key pressed logic
             if (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.A) || kb.IsKeyDown(Keys.S) || kb.IsKeyDown(Keys.D))
             {
                 SoundEffects.PlayEffect(5);
@@ -86,7 +87,6 @@ namespace Slorpus.Objects
 
                 }
             }
-            // key pressed logic
         }
 
 
