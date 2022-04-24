@@ -35,6 +35,7 @@ namespace Slorpus
         LevelInfo _levelInfo;
         Dereferencer _dereferencer;
         Layers layers;
+        Cursor cursor;
 
         static Effect _CRTFilter;
         static Effect _CRTFilterFullres;
@@ -136,6 +137,9 @@ namespace Slorpus
 
             squareTexture = Content.Load<Texture2D>("square");
             testingFont = Content.Load<SpriteFont>("Arial12");
+
+            cursor = new Cursor();
+            cursor.LoadContent(Content);
             
             // load UI
             uiManager.LoadUI(Content);
@@ -202,6 +206,9 @@ namespace Slorpus
             // add camera and physics to be updated
             updateList.Add(camera);
             updateList.Add(physicsManager);
+
+            // add cursor to draw
+            layers.Add(cursor);
         }
 
         protected override void Update(GameTime gameTime)

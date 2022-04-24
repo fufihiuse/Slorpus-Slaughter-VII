@@ -87,6 +87,11 @@ namespace Slorpus.Objects
                 Enemy tempEnemy = (Enemy)(object)other;
                 tempEnemy.Destroy();
             }
+            else if (other is Player)
+            {
+                // KILL YOURSELF
+                LevelInfo.ReloadLevel();
+            }
             return false;
         }
     }
