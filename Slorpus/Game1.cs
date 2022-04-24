@@ -36,9 +36,12 @@ namespace Slorpus
         Dereferencer _dereferencer;
         Layers layers;
 
-        Effect CRTFilter;
-        Effect CRTFilterFullres;
-        SimpleBloom Bloom;
+        static Effect _CRTFilter;
+        static Effect _CRTFilterFullres;
+        static Effect whiteFlash;
+        public static Effect WhiteFlash { get { return whiteFlash; } }
+        public static Effect CRTFilter { get { return _CRTFilter; } set { _CRTFilter = value; } }
+        public static Effect CRTFilterFullres { get { return _CRTFilterFullres; } set { _CRTFilterFullres = value; } }
 
         // input
         MouseState prevMS;
@@ -104,8 +107,9 @@ namespace Slorpus
             // CRT TV filter(s)
             CRTFilter = Content.Load<Effect>("shaders/crt");
             CRTFilterFullres = Content.Load<Effect>("shaders/crt-fullres");
-            Bloom = new SimpleBloom(Content, GraphicsDevice, Screen.Size, 3);
-            GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
+            whiteFlash = Content.Load<Effect>("shaders/white");
+
+            screen.HandleShaderViewProjection();
 
             // render targets
             finalTarget = new RenderTarget2D(
@@ -337,11 +341,6 @@ namespace Slorpus
             _spriteBatch.End();
 
             // set up shader effect(s)
-            Matrix view = Matrix.Identity;
-            Matrix projection = Matrix.CreateOrthographicOffCenter(0, Screen.Size.X, Screen.Size.Y, 0, 0, 1);
-            Matrix mul = view * projection;
-            CRTFilter.Parameters["view_projection"].SetValue(mul);
-            CRTFilterFullres.Parameters["view_projection"].SetValue(mul);
             
             float seconds = (float)(gameTime.TotalGameTime.TotalSeconds % 3)/3;
             CRTFilter.Parameters["gameTime"].SetValue(seconds);
@@ -360,13 +359,10 @@ namespace Slorpus
             _spriteBatch.Draw(effectsTarget, Vector2.Zero, Color.White);
             _spriteBatch.End();
 
-            Bloom.Apply(_spriteBatch, finalTarget, ref rawTarget);
-
             // draw both to screen
             GraphicsDevice.SetRenderTarget(null);
             _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp);
             _spriteBatch.Draw(finalTarget, Screen.Target, Color.White);
-            _spriteBatch.Draw(rawTarget, Screen.Target, Color.White);
             _spriteBatch.End();
         }
         protected override void Draw(GameTime gameTime)

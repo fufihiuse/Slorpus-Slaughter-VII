@@ -142,6 +142,20 @@ namespace Slorpus.Statics
                 graphics.PreferredBackBufferWidth,
                 graphics.PreferredBackBufferHeight
                 );
+            HandleShaderViewProjection();
+        }
+        
+        /// <summary>
+        /// Sets view projection of shader effects to match screen size.
+        /// </summary>
+        public void HandleShaderViewProjection()
+        {
+            Matrix view = Matrix.Identity;
+            Matrix projection = Matrix.CreateOrthographicOffCenter(0, Screen.Size.X, Screen.Size.Y, 0, 0, 1);
+            Matrix mul = view * projection;
+            Game1.CRTFilter.Parameters["view_projection"].SetValue(mul);
+            Game1.CRTFilterFullres.Parameters["view_projection"].SetValue(mul);
+            Game1.WhiteFlash.Parameters["view_projection"].SetValue(mul);
         }
         
         /// <summary>

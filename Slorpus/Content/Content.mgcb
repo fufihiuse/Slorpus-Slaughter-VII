@@ -176,17 +176,17 @@
 /processorParam:TextureFormat=Color
 /build:settingsBackground.png
 
-#begin shaders/bloom.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:shaders/bloom.fx
-
 #begin shaders/crt.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
 /build:shaders/crt.fx
+
+#begin shaders/white.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:shaders/white.fx
 
 #begin shaders/crt-fullres.fx
 /importer:EffectImporter
