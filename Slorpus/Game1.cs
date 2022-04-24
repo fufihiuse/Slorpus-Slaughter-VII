@@ -386,8 +386,6 @@ namespace Slorpus
                         d.Draw(_spriteBatch);
                     }
                 }
-                _spriteBatch.DrawString(testingFont, $"{Enemy.Count}", new Vector2(50, 50), Color.White);
-                _spriteBatch.DrawString(testingFont, $"{LevelInfo.InitialEnemyCount}", new Vector2(50, 60), Color.White);
             }
             else
             {
