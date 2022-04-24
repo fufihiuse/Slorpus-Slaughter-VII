@@ -32,6 +32,9 @@ namespace Slorpus.Statics
             soundEffectsBank.Add(content.Load<SoundEffect>("Enemy Bullet Noise"));
             soundEffectsBank.Add(content.Load<SoundEffect>("Bullet bounces off wall"));
             soundEffectsBank.Add(content.Load<SoundEffect>("Enemy Death"));
+            soundEffectsBank.Add(content.Load<SoundEffect>("Title screen click"));
+            soundEffectsBank.Add(content.Load<SoundEffect>("Walk 1"));
+            soundEffectsBank.Add(content.Load<SoundEffect>("Walk 2"));                                        
         }
 
         /// <summary>

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Audio;
 
 using Slorpus.Managers;
 using Slorpus.Interfaces;
@@ -72,6 +73,15 @@ namespace Slorpus.Objects
 
         void IKeyPress.OnKeyPress(KeyboardState kb)
         {
+            if (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.A) || kb.IsKeyDown(Keys.S) || kb.IsKeyDown(Keys.D))
+            {
+                SoundEffects.PlayEffect(5);
+                for (int i = 0; i < 60; i++)
+                {
+
+                }
+                SoundEffects.PlayEffect(6);
+            }
             // key pressed logic
         }
 

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 using Slorpus.Managers;
+using Slorpus.Statics;
 
 namespace Slorpus.Objects
 {
@@ -52,6 +53,7 @@ namespace Slorpus.Objects
         {
             if (position.Contains(ms.Position) && ms.LeftButton == ButtonState.Pressed)
             {
+                SoundEffects.PlayEffect(4);
                 bc = ButtonCondition.Active;
                 return true;
             }

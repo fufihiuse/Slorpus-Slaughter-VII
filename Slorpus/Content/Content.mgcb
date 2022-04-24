@@ -224,3 +224,21 @@
 /processorParam:TextureFormat=Color
 /build:tile/Yellow Dungeon Tileset.png
 
+#begin Title screen click.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Title screen click.wav
+
+#begin Walk 1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Walk 1.wav
+
+#begin Walk 2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Walk 2.wav
+
