@@ -182,6 +182,14 @@ namespace Slorpus.Objects
             float yTemp = 0;
 
             //update direction
+            if(Screen.GetMousePosition().X > current.pos.X)
+            {
+                left = false;
+            }
+            else
+            {
+                left = true;
+            }
 
             //bool for walking animation
             walking = false;
