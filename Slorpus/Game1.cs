@@ -307,9 +307,12 @@ namespace Slorpus
                     }
                     else if (physics_target is Enemy)
                     {
+                        LevelInfo.Pause(5);
+                        Camera.Shake(5, 10);
                         if (Enemy.Count <= 0)
                         {
                             // WIN CONDITION
+                            LevelInfo.Pause(5);
                             LevelInfo.LevelCompleted();
                         }
                     }
