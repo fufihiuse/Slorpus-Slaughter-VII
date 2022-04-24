@@ -153,20 +153,21 @@ namespace Slorpus.Managers
         /// </summary>
         public void Update(MouseState ms, KeyboardState ks)
         {
+            Point msLoc = Screen.GetMousePosition(ms);
             switch (currentGameState)
             {
                 case GameState.Menu:
                     //update buttons
-                    if (menuStart.Update(ms))
+                    if (menuStart.Update(ms, msLoc))
                     {
                         currentGameState = GameState.Game;
                     }
-                    if (menuSettings.Update(ms))
+                    if (menuSettings.Update(ms, msLoc))
                     {
                         currentGameState = GameState.Settings;
                         prevGameState = GameState.Menu;
                     }
-                    if (menuExit.Update(ms))
+                    if (menuExit.Update(ms, msLoc))
                     {
                         Environment.Exit(0);
                     }
@@ -180,27 +181,27 @@ namespace Slorpus.Managers
                     break;
 
                 case GameState.Settings:
-                    if (godMode.Update(ms))
+                    if (godMode.Update(ms, msLoc))
                     {
                         isGodModeOn = !isGodModeOn;
                     }
-                    if (back.Update(ms))
+                    if (back.Update(ms, msLoc))
                     {
                         currentGameState = prevGameState;
                     }
                     break;
 
                 case GameState.Pause:
-                    if (resume.Update(ms))
+                    if (resume.Update(ms, msLoc))
                     {
                         currentGameState = GameState.Game;
                     }
-                    if (pauseSettings.Update(ms))
+                    if (pauseSettings.Update(ms, msLoc))
                     {
                         currentGameState = GameState.Settings;
                         prevGameState = GameState.Menu;
                     }
-                    if (pauseExit.Update(ms))
+                    if (pauseExit.Update(ms, msLoc))
                     {
                         currentGameState = GameState.Menu;
                         LevelInfo.ReloadLevel();
@@ -208,11 +209,11 @@ namespace Slorpus.Managers
                     break;
 
                 case GameState.GameOver:
-                    if (retry.Update(ms))
+                    if (retry.Update(ms, msLoc))
                     {
                         currentGameState = GameState.Game;
                     }
-                    if (gameOverMenu.Update(ms))
+                    if (gameOverMenu.Update(ms, msLoc))
                     {
                         currentGameState = GameState.Menu;
                     }

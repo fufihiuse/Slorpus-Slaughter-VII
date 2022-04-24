@@ -18,6 +18,11 @@ namespace Slorpus
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+        // render pipeline
+        private RenderTarget2D rawTarget;
+        private RenderTarget2D effectsTarget;
+        private RenderTarget2D finalTarget;
+
         // debug assets for use everywhere
         private static Texture2D squareTexture;
         public static Texture2D SquareTexture { get { return squareTexture; } }
@@ -30,6 +35,13 @@ namespace Slorpus
         LevelInfo _levelInfo;
         Dereferencer _dereferencer;
         Layers layers;
+
+        static Effect _CRTFilter;
+        static Effect _CRTFilterFullres;
+        static Effect whiteFlash;
+        public static Effect WhiteFlash { get { return whiteFlash; } }
+        public static Effect CRTFilter { get { return _CRTFilter; } set { _CRTFilter = value; } }
+        public static Effect CRTFilterFullres { get { return _CRTFilterFullres; } set { _CRTFilterFullres = value; } }
 
         // input
         MouseState prevMS;
@@ -53,10 +65,14 @@ namespace Slorpus
         List<IUpdate> updateList;
         List<IMouseClick> mouseClickList;
         List<IKeyPress> keyPressList;
+        // things that should be recieving input events all the time
+        List<IKeyPress> constantKeyPressList;
+        List<IMouseClick> constantMouseClickList;
 
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
+            _graphics.GraphicsProfile = GraphicsProfile.HiDef;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
@@ -72,14 +88,11 @@ namespace Slorpus
 
             prevMS = Mouse.GetState();
             prevKB = Keyboard.GetState();
+            constantKeyPressList = new List<IKeyPress>();
+            constantMouseClickList = new List<IMouseClick>();
 
-            screen = new Screen(
-                new Point(
-                _graphics.PreferredBackBufferWidth,
-                _graphics.PreferredBackBufferHeight
-                )
-            );
-            screen.Use();
+            screen = new Screen(_graphics, Window);
+            constantKeyPressList.Add(screen);
             
             soundEffects = new SoundEffects();
             uiManager = new UIManager();
@@ -90,6 +103,36 @@ namespace Slorpus
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            
+            // CRT TV filter(s)
+            CRTFilter = Content.Load<Effect>("shaders/crt");
+            CRTFilterFullres = Content.Load<Effect>("shaders/crt-fullres");
+            whiteFlash = Content.Load<Effect>("shaders/white");
+
+            screen.HandleShaderViewProjection();
+
+            // render targets
+            finalTarget = new RenderTarget2D(
+                GraphicsDevice,
+                Screen.Size.X, Screen.Size.Y,
+                false,
+                GraphicsDevice.PresentationParameters.BackBufferFormat,
+                DepthFormat.Depth24
+                );
+            effectsTarget = new RenderTarget2D(
+                GraphicsDevice,
+                Screen.Size.X, Screen.Size.Y,
+                false,
+                GraphicsDevice.PresentationParameters.BackBufferFormat,
+                DepthFormat.Depth24
+                );
+            rawTarget = new RenderTarget2D(
+                GraphicsDevice,
+                Screen.Size.X, Screen.Size.Y,
+                false,
+                GraphicsDevice.PresentationParameters.BackBufferFormat,
+                DepthFormat.Depth24
+                );
 
             squareTexture = Content.Load<Texture2D>("square");
             testingFont = Content.Load<SpriteFont>("Arial12");
@@ -151,11 +194,11 @@ namespace Slorpus
             {
                 layers.Add(d);
             }
-
+            
+            // misc additions to the lists
             // also add the bullets and level to be drawn
             layers.Add(bulletManager);
             layers.Add(level);
-
             // add camera and physics to be updated
             updateList.Add(camera);
             updateList.Add(physicsManager);
@@ -174,7 +217,19 @@ namespace Slorpus
                 }
                 uiManager.Update(ms, kb);
             }
-            prevMS = ms;
+            
+            if (Keyboard.GetState() != prevKB)
+            {
+                OnKeyPress(prevKB, constantKeyPressList);
+            }
+            if (Mouse.GetState() != prevMS)
+            {
+                OnMouseClick(prevMS, constantMouseClickList);
+            }
+            
+            // update previous keyboard state
+            prevKB = Keyboard.GetState();
+            prevMS = Mouse.GetState();
         }
 
         protected void GameUpdate(GameTime gameTime)
@@ -188,24 +243,19 @@ namespace Slorpus
             // check for changes in input
             if (Keyboard.GetState() != prevKB)
             {
-                OnKeyPress(prevKB);
+                OnKeyPress(prevKB, keyPressList);
             }
             if (Mouse.GetState() != prevMS)
             {
-                OnMouseClick(prevMS);
+                OnMouseClick(prevMS, mouseClickList);
             }
             
-            
             base.Update(gameTime);
-
-            // update previous keyboard state
-            prevKB = Keyboard.GetState();
-            prevMS = Mouse.GetState();
 
             // clean up objects that need to be destroyed
             Cleanup();
         }
-        
+
         /// <summary>
         /// Removes references to all objects in the Game1 destroy queue.
         /// </summary>
@@ -256,9 +306,9 @@ namespace Slorpus
         /// Called whenever mouse input state changes.
         /// </summary>
         /// <param name="ms">PREVIOUS state of the mouse.</param>
-        public void OnMouseClick(MouseState ms)
+        private void OnMouseClick(MouseState ms, List<IMouseClick> targets)
         {
-            foreach(IMouseClick mc in mouseClickList)
+            foreach(IMouseClick mc in targets)
             {
                 mc.OnMouseClick(ms);
             }
@@ -268,20 +318,56 @@ namespace Slorpus
         /// Called whenever keyboard input changes.
         /// </summary>
         /// <param name="kb">PREVIOUS state of the keyboard.</param>
-        public void OnKeyPress(KeyboardState kb)
+        private void OnKeyPress(KeyboardState kb, List<IKeyPress> targets)
         { 
-            foreach(IKeyPress kp in keyPressList)
+            foreach(IKeyPress kp in targets)
             {
                 kp.OnKeyPress(kb);
             }
         }
 
-        protected override void Draw(GameTime gameTime)
+        private void PreDraw()
         {
             GraphicsDevice.Clear(Color.Black);
 
-            // TODO: Add your drawing code here
-            _spriteBatch.Begin();
+            // draw to small render target
+            GraphicsDevice.SetRenderTarget(rawTarget);
+
+            _spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp);
+        }
+
+        private void PostDraw(GameTime gameTime)
+        {
+            _spriteBatch.End();
+
+            // set up shader effect(s)
+            
+            float seconds = (float)(gameTime.TotalGameTime.TotalSeconds % 3)/3;
+            CRTFilter.Parameters["gameTime"].SetValue(seconds);
+            CRTFilterFullres.Parameters["gameTime"].SetValue(seconds);
+
+            GraphicsDevice.SetRenderTarget(effectsTarget);
+            // draw the raw render target to effects target
+            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp, effect: CRTFilter);
+            _spriteBatch.Draw(rawTarget, Vector2.Zero, Color.White);
+            _spriteBatch.End();
+            
+            GraphicsDevice.SetRenderTarget(finalTarget);
+            
+            // draw fullscreen effects with warping
+            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp, effect: CRTFilterFullres);
+            _spriteBatch.Draw(effectsTarget, Vector2.Zero, Color.White);
+            _spriteBatch.End();
+
+            // draw both to screen
+            GraphicsDevice.SetRenderTarget(null);
+            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp);
+            _spriteBatch.Draw(finalTarget, Screen.Target, Color.White);
+            _spriteBatch.End();
+        }
+        protected override void Draw(GameTime gameTime)
+        {
+            PreDraw();
 
             //draw ui or game
             if(uiManager.CurrentGameState == GameState.Game)
@@ -298,17 +384,11 @@ namespace Slorpus
             else
             {
                 uiManager.Draw(_spriteBatch);
-                /*
-                _spriteBatch.DrawString(
-                    testingFont, 
-                    "Width: " + _graphics.PreferredBackBufferWidth + " Height" + _graphics.PreferredBackBufferHeight, 
-                    new Vector2(0,0), 
-                    Color.Black
-                    );*/
             }
 
             base.Draw(gameTime);
-            _spriteBatch.End();
+
+            PostDraw(gameTime);
         }
 
         /// <summary>

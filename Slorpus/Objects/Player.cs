@@ -137,6 +137,7 @@ namespace Slorpus.Objects
         void IMouseClick.OnMouseClick(MouseState previous)
         {
             MouseState ms = Mouse.GetState();
+            Point msLoc = Screen.GetMousePosition(ms);
             if (bullets > 0 && ms.LeftButton == ButtonState.Pressed && previous.LeftButton == ButtonState.Released)
             {
                 Point pos = new Point(
@@ -146,8 +147,8 @@ namespace Slorpus.Objects
 
                 // get distance from player to mouse
                 Vector2 vel = new Vector2(
-                    ((int)ms.X / Constants.WALL_SIZE * Constants.WALL_SIZE + Camera.Position.X) - Position.X,
-                    ((int)ms.Y / Constants.WALL_SIZE * Constants.WALL_SIZE + Camera.Position.Y) - Position.Y
+                    ((int)msLoc.X / Constants.WALL_SIZE * Constants.WALL_SIZE + Camera.Position.X) - Position.X,
+                    ((int)msLoc.Y / Constants.WALL_SIZE * Constants.WALL_SIZE + Camera.Position.Y) - Position.Y
                     );
                 // normalize it
                 vel = Vector2.Normalize(vel);
