@@ -273,7 +273,7 @@ namespace Slorpus.Objects
             {
                 return walkingAnimation[currentFrame];
             }
-            return idleAnimation[currentFrame];
+            return idleAnimation[0];
         }
 
         private void UpdateFrame(GameTime gameTime)
