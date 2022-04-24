@@ -20,6 +20,8 @@ namespace Slorpus.Statics
         public const int SCREEN_WIDTH = 800;
         public const int SCREEN_HEIGHT = 480;
 
+        public const int LEVEL_COMPLETE_SPLASH_SCREEN_LENGTH = 3;
+
         //Array of levels to load
         public static readonly string[] LEVELS = { 
             "ItBegins", //1
