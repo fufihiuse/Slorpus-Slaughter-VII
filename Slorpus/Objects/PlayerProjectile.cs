@@ -84,6 +84,7 @@ namespace Slorpus.Objects
             }
             else if (other is Enemy)
             {
+                SoundEffects.PlayEffect(3);
                 Enemy tempEnemy = (Enemy)(object)other;
                 tempEnemy.Destroy();
             }
