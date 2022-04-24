@@ -112,23 +112,22 @@ namespace Slorpus.Objects
         /// <param name="sb"></param>
         public void Draw(SpriteBatch sb)
         {
-            Rectangle target = Position;
-            target.Location -= Camera.Offset;
+            Texture2D targetTex = Game1.SquareTexture;
             switch (shootingPattern)
             {
                 case ShootingPattern.Ensconcing:
-                    sb.Draw(
-                        patternIdleAnimation[currentFrame], 
-                        target, 
-                        Color.White);
+                    targetTex = patternIdleAnimation[currentFrame];
                     break;
                 case ShootingPattern.HomingAttack:
-                    sb.Draw(
-                        trackingIdleAnimation[currentFrame],
-                        target,
-                        Color.White);
+                    targetTex = trackingIdleAnimation[currentFrame];
                     break;
             }
+            Point size = new Point(targetTex.Width, targetTex.Height);
+            Rectangle target = new Rectangle(pos.Center, size);
+            target.Location -= size / new Point(2,2);
+            target.Location -= Camera.Offset;
+
+            sb.Draw(targetTex, target, Color.White);
         }
 
         /// <summary>

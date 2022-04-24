@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Slorpus.Objects
 {
@@ -6,22 +7,22 @@ namespace Slorpus.Objects
     {
         //fields
         private Rectangle position;
+        private Rectangle subTex;
         private bool isBulletCollider;
         private bool isMirror;
 
-        private int WallSprite;
-
         public Rectangle Position { get { return position; } }
+        public Rectangle SubTex { get { return subTex; } }
         public bool IsMirror { get { return isMirror; } }
         public bool IsBulletCollider { get { return isBulletCollider; } }
 
         //constuctor
-        public Wall(Rectangle position, bool bullet_collider = true, bool isMirror = false)
+        public Wall(Rectangle position, Rectangle subTex, bool bullet_collider = true, bool isMirror = false)
         {
             this.position = position;
             isBulletCollider = bullet_collider;
             this.isMirror = isMirror;
-            WallSprite = 0;
+            this.subTex = subTex;
         }
 
         /// <summary>
