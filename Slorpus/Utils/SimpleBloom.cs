@@ -27,6 +27,16 @@ namespace Slorpus.Utils
         EffectParameter StreakLength;
         EffectParameter Threshold;
 
+        Vector2 _IRVector;
+        Vector2 IRVector
+        {
+            get { return _IRVector; }
+            set { 
+                _IRVector = value;
+                InverseResolution.SetValue(value);
+            }
+        }
+
         RenderTarget2D extracted;
         RenderTarget2D[] Mips;
 
@@ -52,6 +62,14 @@ namespace Slorpus.Utils
             Strength = Shader.Parameters["Strength"];
             StreakLength = Shader.Parameters["StreakLength"];
             Threshold = Shader.Parameters["Threshold"];
+
+            // set parameters
+            IRVector = Vector2.Divide(Vector2.One, size.ToVector2());
+            InverseResolution.SetValue(IRVector); // one over size
+            Radius.SetValue(4.0f);
+            Strength.SetValue(10.0f);
+            StreakLength.SetValue(5.0f);
+            Threshold.SetValue(1.0f);
 
             // generate rendertargets for mipmaps
             Mips = new RenderTarget2D[passes];
@@ -96,6 +114,7 @@ namespace Slorpus.Utils
                 sb.Draw(pong, mip.Bounds, Color.White);
                 // draw this mip to the next one
                 pong = mip;
+                IRVector *= 2;
             }
 
             // compose mips back together into final texture (with linear sampling)
@@ -110,6 +129,7 @@ namespace Slorpus.Utils
 
                 Upsample.Apply();
                 sb.Draw(Mips[i], pong.Bounds, Color.White);
+                IRVector /= 2;
             }
 
             sb.End();
