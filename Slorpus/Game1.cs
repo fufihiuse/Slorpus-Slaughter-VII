@@ -25,7 +25,9 @@ namespace Slorpus
 
         // debug assets for use everywhere
         private static Texture2D squareTexture;
+        private static Texture2D levelCompleteSplash;
         public static Texture2D SquareTexture { get { return squareTexture; } }
+        public static Texture2D LevelCompleteSplash { get { return levelCompleteSplash; } }
         private static SpriteFont testingFont;
         public static SpriteFont TestingFont { get { return testingFont; } }
 
@@ -139,6 +141,7 @@ namespace Slorpus
                 );
 
             squareTexture = Content.Load<Texture2D>("square");
+            levelCompleteSplash = Content.Load<Texture2D>("splash/levelcomplete");
             testingFont = Content.Load<SpriteFont>("Arial12");
 
             cursor = new Cursor();
@@ -221,7 +224,7 @@ namespace Slorpus
             if (prevMS.LeftButton != ButtonState.Pressed || uiManager.CurrentGameState == GameState.Game)
             {
                 //only update the game if the gamestate is game
-                if (uiManager.CurrentGameState == GameState.Game)
+                if (uiManager.CurrentGameState == GameState.Game && !LevelInfo.Paused)
                 {
                     GameUpdate(gameTime);
                 }
@@ -240,6 +243,8 @@ namespace Slorpus
             // update previous keyboard state
             prevKB = Keyboard.GetState();
             prevMS = Mouse.GetState();
+
+            LevelInfo.Update(gameTime);
         }
 
         protected void GameUpdate(GameTime gameTime)
@@ -304,7 +309,8 @@ namespace Slorpus
                     {
                         if (Enemy.Count <= 0)
                         {
-                            LevelInfo.LoadNextLevel();
+                            // WIN CONDITION
+                            LevelInfo.LevelCompleted();
                         }
                     }
                 }
@@ -390,6 +396,8 @@ namespace Slorpus
                         d.Draw(_spriteBatch);
                     }
                 }
+
+                LevelInfo.Draw(_spriteBatch);
             }
             else
             {
