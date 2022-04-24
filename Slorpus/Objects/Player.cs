@@ -22,7 +22,6 @@ namespace Slorpus.Objects
         //animation fields
         bool left;
         bool walking;
-        KeyboardState pkb;
         List<Texture2D> walkingAnimation;
         List<Texture2D> idleAnimation;
         int currentFrame;
@@ -61,7 +60,6 @@ namespace Slorpus.Objects
             //start up animation vars
             left = false;
             walking = false;
-            pkb = Keyboard.GetState();
             currentFrame = 0;
             timer = 0;
             frameLength = 0.1;
@@ -250,7 +248,6 @@ namespace Slorpus.Objects
             yin += yTemp;
 
             Velocity = new Vector2((Velocity.X + (xin * speed)) * 0.9f, (Velocity.Y + (yin * speed)) * 0.9f);
-            pkb = kb;
         }
 
         public void Destroy()
