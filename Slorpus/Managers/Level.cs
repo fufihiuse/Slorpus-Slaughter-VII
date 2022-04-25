@@ -37,9 +37,9 @@ namespace Slorpus.Managers
             wallAsset = Game1.SquareTexture; // content.Load<Texture2D>("square");
             mirrorAsset = Game1.SquareTexture; //  content.Load<Texture2D>("square");
             invisWallAsset = Game1.SquareTexture; // content.Load<Texture2D>("square");
-            wallTileset = content.Load<Texture2D>("test-tileset");
-            floorTileset = content.Load<Texture2D>("test-tileset-alt");
-            gridAsset = content.Load<Texture2D>("grid");;
+            wallTileset = content.Load<Texture2D>("tile/floor-tilemap");
+            floorTileset = content.Load<Texture2D>("tile/wall-tilemap");
+            gridAsset = content.Load<Texture2D>("grid");
         }
 
         //Methods 
