@@ -7,14 +7,24 @@ namespace Slorpus.Statics
         // true constants
         public const int WALL_SIZE = 16;
         public const int ENEMY_SIZE = 16;
-        public const int PLAYER_SIZE = 16;
         public const int BULLET_SIZE = 5;
-        public const int PLAYER_BULLET_SIZE = 10;
-        public const float PLAYER_BULLET_SPEED = 6f;
         public const float CAMERA_SPEED = 0.05f;
         public const float MIN_FOLLOW_DISTANCE = 250f;
         public const float MIN_DETECTION_DISTANCE = 400;
 
+        public struct ENEMY_VOLUME {
+            public const float MAX = 1.0f;
+            public const float MIN = -0.5f;
+        }
+
+        public struct PLAYER
+        {
+            public const int STEP_SPEED = 20;
+            public const int SIZE = 16;
+            public const int BULLET_SIZE = 10;
+            public const float BULLET_SPEED = 6f;
+        }
+      
         // public const int SCREEN_WIDTH = 480;
         // public const int SCREEN_HEIGHT = 270;
         public const int SCREEN_WIDTH = 800;

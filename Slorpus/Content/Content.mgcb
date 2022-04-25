@@ -20,18 +20,6 @@
 /processorParam:TextureFormat=Compressed
 /build:Arial12.spritefont
 
-#begin Bullet bounces off wall.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Bullet bounces off wall.wav
-
-#begin Bullet Noise.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Bullet Noise.wav
-
 #begin buttonPlaceholder.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -91,18 +79,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:cursor.png
-
-#begin Enemy Bullet Noise.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Enemy Bullet Noise.wav
-
-#begin Enemy Death.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Enemy Death.wav
 
 #begin enemy.png
 /importer:TextureImporter
@@ -205,6 +181,72 @@
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
 /build:shaders/white.fx
+
+#begin sound/bullet.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sound/bullet.wav
+
+#begin sound/click.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sound/click.wav
+
+#begin sound/enemy_bullet.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sound/enemy_bullet.wav
+
+#begin sound/enemy_death.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sound/enemy_death.wav
+
+#begin sound/levelcomplete.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sound/levelcomplete.wav
+
+#begin sound/levelcomplete-alt.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sound/levelcomplete-alt.wav
+
+#begin sound/reflect.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sound/reflect.wav
+
+#begin sound/startbutton.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sound/startbutton.wav
+
+#begin sound/title-card.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sound/title-card.wav
+
+#begin sound/walk1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sound/walk1.wav
+
+#begin sound/walk2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sound/walk2.wav
 
 #begin splash/levelcomplete.png
 /importer:TextureImporter

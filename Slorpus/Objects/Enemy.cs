@@ -107,7 +107,6 @@ namespace Slorpus.Objects
 
 
             shoot += (float)gameTime.ElapsedGameTime.TotalSeconds;
-            wantedBullets = new EnemyBullet[1];         //clears array, loads in new bullet
             Vector2 toTarget =
                 new Vector2(Player.Position.Location.X, Player.Position.Location.Y) - new Vector2(Position.Location.X, Position.Location.Y);  //gets distance of enemy from player
 
@@ -116,6 +115,7 @@ namespace Slorpus.Objects
                 case ShootingPattern.Ensconcing:
                     if(shoot >= escShotInterval && toTarget.Length() <= Constants.MIN_DETECTION_DISTANCE)   //if enough time has passed and player is in range, shoots
                     {
+                        wantedBullets = new EnemyBullet[1];         //clears array, loads in new bullet
                         wantedBullets[0] = new EnemyBullet(
                                 new Point(Position.Location.X + Constants.ENEMY_SIZE / 2, (Position.Location.Y + Constants.ENEMY_SIZE / 2) - 2),
                                 UpdateBulletDirection());
@@ -126,6 +126,7 @@ namespace Slorpus.Objects
                 case ShootingPattern.HomingAttack:
                     if(shoot >= homeShotInterval && toTarget.Length() <= Constants.MIN_FOLLOW_DISTANCE)    // diff constant, homing should have greater range
                     {
+                        wantedBullets = new EnemyBullet[1];         //clears array, loads in new bullet
                         wantedBullets[0] = new EnemyBullet(
                             new Point((Position.Location.X + Constants.ENEMY_SIZE/2), (Position.Location.Y + Constants.ENEMY_SIZE/2)-2),
                             TargetPlayer());

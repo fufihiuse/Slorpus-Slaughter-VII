@@ -7,7 +7,12 @@ namespace Slorpus.Statics
 {
     class LevelInfo
     {
-        private static Game1 game;
+        private Game1 game;
+        private static LevelInfo current;
+        public int initialEnemyCount;
+
+        public static int InitialEnemyCount { get { return current.initialEnemyCount; } }
+        public static Game1 Game { get { return current.game; } }
         public static int CurrentLevel { get { return currentLevel; } }
         private static int currentLevel;
 
@@ -24,7 +29,9 @@ namespace Slorpus.Statics
         public LevelInfo(Game1 game)
         {
             currentLevel = 0;
-            LevelInfo.game = game;
+            initialEnemyCount = 0;
+            this.game = game;
+            current = this;
 
             pauseTimer = length;
 
@@ -38,7 +45,7 @@ namespace Slorpus.Statics
         }
         public static void ReloadLevel()
         {
-            game.LoadLevel(Constants.LEVELS[CurrentLevel]);
+            Game.LoadLevel(Constants.LEVELS[CurrentLevel]);
         }
         
         /// <summary>
@@ -47,7 +54,16 @@ namespace Slorpus.Statics
         public static void LoadNextLevel()
         {
             IncrementLevel();
-            game.LoadLevel(Constants.LEVELS[CurrentLevel]);
+            Game.LoadLevel(Constants.LEVELS[CurrentLevel]);
+        }
+
+        public static void LevelCompleted()
+        {
+            SoundEffects.PlayEffect("levelcomplete");
+            pauseTimer = length;
+            InLevelSplash = true;
+            _paused = true;
+            draw = DrawLevelComplete;
         }
 
         public static void Update(GameTime gameTime)
@@ -69,14 +85,6 @@ namespace Slorpus.Statics
         {
             pauseTimer = frames;
             _paused = true;
-        }
-
-        public static void LevelCompleted()
-        {
-            pauseTimer = length;
-            InLevelSplash = true;
-            _paused = true;
-            draw = DrawLevelComplete;
         }
 
         static void DisableLevelSplash()

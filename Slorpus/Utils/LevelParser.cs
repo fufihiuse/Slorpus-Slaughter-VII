@@ -161,7 +161,7 @@ namespace Slorpus.Utils
                         Player player = new Player(
                             new Rectangle(
                                 ge.Position,
-                                new Point(Constants.PLAYER_SIZE, Constants.PLAYER_SIZE)
+                                new Point(Constants.PLAYER.SIZE, Constants.PLAYER.SIZE)
                                 ),
                             content,
                             bulletCreationFunc

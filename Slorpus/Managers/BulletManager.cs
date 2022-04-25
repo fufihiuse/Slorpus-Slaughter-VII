@@ -89,6 +89,9 @@ namespace Slorpus.Managers
             bullets = new EnemyBullet[bullets.Length + new_bullets.Length];
             original.CopyTo(bullets, 0);
             new_bullets.CopyTo(bullets, original.Length);
+            
+            //if (new_bullets.Length > 0)
+            //    SoundEffects.PlayEffectVolume("enemy_bullet", 0.1f);
         }
         
         /// <summary>

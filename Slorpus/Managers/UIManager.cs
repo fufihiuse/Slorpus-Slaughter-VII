@@ -34,7 +34,7 @@ namespace Slorpus.Managers
         public static bool IsGodModeOn { get { return isGodModeOn; } }
         private static bool isGodModeOn = false;
 
-        //fields  
+        //fields
         GameState currentGameState;
         GameState prevGameState;
 
@@ -161,6 +161,7 @@ namespace Slorpus.Managers
                     if (menuStart.Update(ms, msLoc))
                     {
                         currentGameState = GameState.Game;
+                        SoundEffects.PlayEffect("startbutton");
                     }
                     if (menuSettings.Update(ms, msLoc))
                     {
