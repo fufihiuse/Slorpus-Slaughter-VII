@@ -1,7 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Slorpus.Interfaces.Base;
-using System;
 
 namespace Slorpus.Statics
 {
@@ -15,6 +17,9 @@ namespace Slorpus.Statics
         public static Game1 Game { get { return current.game; } }
         public static int CurrentLevel { get { return currentLevel; } }
         private static int currentLevel;
+        private static List<string> levels;
+        private static bool isCustom = false;
+        private static string customPath;
 
         private static bool _paused = false;
         public static bool Paused { get { return _paused; } }
@@ -26,6 +31,8 @@ namespace Slorpus.Statics
 
         static bool InLevelSplash = false;
 
+        public List<string> Levels { get { return levels;} }
+
         public LevelInfo(Game1 game)
         {
             currentLevel = 0;
@@ -36,16 +43,52 @@ namespace Slorpus.Statics
             pauseTimer = length;
 
             draw = DrawNone;
+            
+            levels = new List<string>();
+            foreach(string s in Constants.LEVELS)
+            {
+                levels.Add(s);
+            }
+        }
+
+        public static void LoadCustomLevel(string filepath)
+        {
+            customPath = filepath;
+            filepath = $"..\\..\\..\\customlevels\\{filepath}\\info.wal"; //UPDATE FOR BUILD
+            StreamReader input = new StreamReader(filepath);
+            string line;
+            try
+            {
+                line = input.ReadLine();
+                string[] tempLevels = line.Split(',');
+                levels.Clear();
+                foreach(string s in tempLevels)
+                {
+                    levels.Add(s);
+                }
+                isCustom = true;
+            }
+            catch(Exception)
+            {
+                throw new Exception("Error: file not found");
+            }
         }
 
         public static void IncrementLevel()
         {
             currentLevel += 1;
-            currentLevel %= Constants.LEVELS.Length;
+            currentLevel %= levels.Count;
         }
         public static void ReloadLevel()
         {
-            Game.LoadLevel(Constants.LEVELS[CurrentLevel]);
+            if (!isCustom)
+            {
+                Game.LoadLevel(levels[CurrentLevel]);
+            }
+            else
+            {
+                Game.LoadLevel(levels[CurrentLevel], customPath);
+            }
         }
         
         /// <summary>
@@ -54,6 +97,14 @@ namespace Slorpus.Statics
         public static void LoadNextLevel()
         {
             IncrementLevel();
+            if (!isCustom)
+            {
+                Game.LoadLevel(levels[CurrentLevel]);
+            }
+            else
+            {
+                Game.LoadLevel(levels[CurrentLevel], customPath);
+            }
             Game.LoadLevel(Constants.LEVELS[CurrentLevel]);
         }
 

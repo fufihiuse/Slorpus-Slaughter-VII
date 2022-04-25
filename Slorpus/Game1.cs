@@ -29,7 +29,9 @@ namespace Slorpus
         public static Texture2D SquareTexture { get { return squareTexture; } }
         public static Texture2D LevelCompleteSplash { get { return levelCompleteSplash; } }
         private static SpriteFont testingFont;
+        private static SpriteFont notoSans;
         public static SpriteFont TestingFont { get { return testingFont; } }
+        public static SpriteFont NotoSans { get { return notoSans; } }
 
         // important misc objects
         Camera camera;
@@ -102,7 +104,7 @@ namespace Slorpus
             constantKeyPressList.Add(screen);
             
             soundEffects = new SoundEffects();
-            uiManager = new UIManager();
+            uiManager = new UIManager(GraphicsDevice, this);
 
             constantLayers = new Layers();
 
@@ -146,6 +148,8 @@ namespace Slorpus
             squareTexture = Content.Load<Texture2D>("square");
             levelCompleteSplash = Content.Load<Texture2D>("splash/levelcomplete");
             testingFont = Content.Load<SpriteFont>("Arial12");
+            notoSans = Content.Load<SpriteFont>("NotoSans30");
+            
 
             cursor = new Cursor();
             cursor.LoadContent(Content);
@@ -164,6 +168,10 @@ namespace Slorpus
             LoadLevel(Constants.LEVELS[0]); 
         }
 
+        /// <summary>
+        /// Load a standard level in game
+        /// </summary>
+        /// <param name="levelname">The name of the level</param>
         public void LoadLevel(string levelname)
         {
             ResetLists();
@@ -171,7 +179,7 @@ namespace Slorpus
             
             // read the level out of a file
             level = new Level(wallList, Content);
-            List<GenericEntity> levelList = level.LoadFromFile($"..\\..\\..\\levels\\{levelname}.sslvl");
+            List<GenericEntity> levelList = level.LoadFromFile($"..\\..\\..\\levels\\{levelname}.sslvl"); //UPDATE FOR BUILD
             
             // create managers and utils
             bulletManager = new BulletManager(bulletList, squareTexture);
@@ -228,6 +236,68 @@ namespace Slorpus
 
             // add cursor to draw
             constantLayers.Add(cursor);
+        }
+
+        /// <summary>
+        /// Load custom level
+        /// </summary>
+        /// <param name="levelName">The name of the level</param>
+        /// <param name="customPath">The path of the custom level</param>
+        public void LoadLevel(string levelName, string customPath)
+        {
+            ResetLists();
+            layers = new Layers();
+
+            // read the level out of a file
+            level = new Level(wallList, Content);
+            List<GenericEntity> levelList = level.LoadFromFile($"..\\..\\..\\customlevels\\{customPath}\\{levelName}.sslvl"); //UPDATE FOR BUILD
+
+            // create managers and utils
+            bulletManager = new BulletManager(bulletList, squareTexture);
+            physicsManager = new PhysicsManager(physicsList, wallList, bulletManager);
+            LevelParser levelParser = new LevelParser(Content);
+
+            // bullet creation function
+            Action<Point, Vector2> createbullet = (Point loc, Vector2 vel) => CreateBullet(loc, vel);
+
+            // parse data read from level (player requires the bullet creation func)
+            levelParser.GetWalls(wallList, levelList);
+            levelParser.GetPhysicsObjects(physicsList, levelList, createbullet);
+
+            // instantiate camera
+            if (Player.Position != null)
+            {
+                // function to retrieve the camera's target coordinates
+                Func<Rectangle> getFollowTarget = () => { return Player.Position; };
+                // create camera
+                camera = new Camera(getFollowTarget, Constants.CAMERA_SPEED);
+            }
+            else
+            {
+                throw new Exception("A player is needed to instantiate the player camera, " +
+                    "but no player was created on this level.");
+            }
+
+            // miscellaneous, "special" items which dont have a manager
+            updateList = levelParser.Updatables;
+            mouseClickList = levelParser.MouseClickables;
+            keyPressList = levelParser.KeyPressables;
+
+            // handle different draw layers
+            List<IDraw> drawables = levelParser.Drawables;
+            // sort all the drawables into their respective layers
+            foreach (IDraw d in drawables)
+            {
+                layers.Add(d);
+            }
+
+            // also add the bullets and level to be drawn
+            layers.Add(bulletManager);
+            layers.Add(level);
+
+            // add camera and physics to be updated
+            updateList.Add(camera);
+            updateList.Add(physicsManager);
         }
 
         protected override void Update(GameTime gameTime)
