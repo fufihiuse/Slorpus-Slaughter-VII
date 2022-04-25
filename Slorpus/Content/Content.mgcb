@@ -20,18 +20,6 @@
 /processorParam:TextureFormat=Compressed
 /build:Arial12.spritefont
 
-#begin sound/reflect.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:sound/reflect.wav
-
-#begin sound/bullet.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:sound/bullet.wav
-
 #begin buttonPlaceholder.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -79,18 +67,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:circle.png
-
-#begin sound/enemy_bullet.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:sound/enemy_bullet.wav
-
-#begin sound/enemy_death.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:sound/enemy_death.wav
 
 #begin enemy.png
 /importer:TextureImporter
@@ -182,17 +158,83 @@
 /processorParam:DebugMode=Auto
 /build:shaders/crt.fx
 
+#begin shaders/crt-fullres.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:shaders/crt-fullres.fx
+
 #begin shaders/white.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
 /build:shaders/white.fx
 
-#begin shaders/crt-fullres.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:shaders/crt-fullres.fx
+#begin sound/bullet.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sound/bullet.wav
+
+#begin sound/click.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sound/click.wav
+
+#begin sound/enemy_bullet.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sound/enemy_bullet.wav
+
+#begin sound/enemy_death.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sound/enemy_death.wav
+
+#begin sound/levelcomplete.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sound/levelcomplete.wav
+
+#begin sound/levelcomplete-alt.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sound/levelcomplete-alt.wav
+
+#begin sound/reflect.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sound/reflect.wav
+
+#begin sound/startbutton.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sound/startbutton.wav
+
+#begin sound/title-card.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sound/title-card.wav
+
+#begin sound/walk1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sound/walk1.wav
+
+#begin sound/walk2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sound/walk2.wav
 
 #begin square.png
 /importer:TextureImporter
@@ -241,22 +283,4 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:tile/Yellow Dungeon Tileset.png
-
-#begin sound/click.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:sound/click.wav
-
-#begin sound/walk1.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:sound/walk1.wav
-
-#begin sound/walk2.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:sound/walk2.wav
 

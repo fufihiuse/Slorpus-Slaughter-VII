@@ -43,10 +43,10 @@ namespace Slorpus.Statics
             Add("reflect");
             Add("walk1");
             Add("walk2");
-        }
-
-        private static void Add(string name)
-        {
+            Add("levelcomplete");
+            Add("levelcomplete-alt");
+            Add("title-card");
+            Add("startbutton");
         }
 
         /// <summary>

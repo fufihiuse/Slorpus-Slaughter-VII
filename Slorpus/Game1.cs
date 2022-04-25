@@ -69,6 +69,8 @@ namespace Slorpus
         List<IKeyPress> constantKeyPressList;
         List<IMouseClick> constantMouseClickList;
 
+        private bool StartupSoundPlayed = false;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -142,6 +144,10 @@ namespace Slorpus
             
             // load sound effects
             SoundEffects.AddSounds(Content);
+            
+            if (!StartupSoundPlayed)
+                SoundEffects.PlayEffect("title-card");
+            StartupSoundPlayed = true;
             
             // load first level
             LoadLevel(Constants.LEVELS[0]); 
