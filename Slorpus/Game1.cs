@@ -58,6 +58,7 @@ namespace Slorpus
         List<IPhysics> physicsList;
         EnemyBullet[] bulletList;
         List<Wall> wallList;
+        List<Wall> floorList;
         SoundEffects soundEffects;
         Queue<IDestroyable> destroy_queue;
         
@@ -153,7 +154,7 @@ namespace Slorpus
             layers = new Layers();
             
             // read the level out of a file
-            level = new Level(wallList, Content);
+            level = new Level(wallList, floorList, Content);
             List<GenericEntity> levelList = level.LoadFromFile($"..\\..\\..\\levels\\{levelname}.sslvl");
             
             // create managers and utils
@@ -165,7 +166,7 @@ namespace Slorpus
             Action<Point, Vector2> createbullet = (Point loc, Vector2 vel) => CreateBullet(loc, vel);
             
             // parse data read from level (player requires the bullet creation func)
-            levelParser.GetWalls(wallList, levelList);
+            levelParser.GetWalls(wallList, floorList, levelList);
             levelParser.GetPhysicsObjects(physicsList, levelList, createbullet);
             
             // instantiate camera
@@ -431,6 +432,7 @@ namespace Slorpus
             }
             physicsList = new List<IPhysics>();
             wallList = new List<Wall>();
+            floorList = new List<Wall>();
             bulletList = new EnemyBullet[100];
         }
     }

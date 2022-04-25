@@ -17,24 +17,28 @@ namespace Slorpus.Managers
     {
         //Fields
         private static char[,] level;
+        private List<Wall> floors;
         private List<Wall> walls;
         private Texture2D wallAsset;
         private Texture2D mirrorAsset;
         private Texture2D invisWallAsset;
         private Texture2D gridAsset;
         private Texture2D wallTileset;
+        private Texture2D floorTileset;
 
         public static Point Size { get { return new Point(level.Length/level.GetLength(0), level.GetLength(0)); } }
         public static char[,] Map { get { return level; } }
 
         //Constructor
-        public Level(List<Wall> walls, ContentManager content)
+        public Level(List<Wall> walls, List<Wall> floors, ContentManager content)
         {
             this.walls = walls;
+            this.floors = floors;
             wallAsset = Game1.SquareTexture; // content.Load<Texture2D>("square");
             mirrorAsset = Game1.SquareTexture; //  content.Load<Texture2D>("square");
             invisWallAsset = Game1.SquareTexture; // content.Load<Texture2D>("square");
             wallTileset = content.Load<Texture2D>("test-tileset");
+            floorTileset = content.Load<Texture2D>("test-tileset-alt");
             gridAsset = content.Load<Texture2D>("grid");;
         }
 
@@ -110,6 +114,14 @@ namespace Slorpus.Managers
                 {
                     sb.Draw(wallTileset, target, w.SubTex, Color.White);
                 }
+            }
+            
+            // draw floors
+            foreach (Wall f in floors)
+            {
+                target = f.Position;
+                target.Location -= Camera.Offset;
+                sb.Draw(floorTileset, target, f.SubTex, Color.White);
             }
 
             //TODO: TOGGLE FALSE BEFORE BUILD

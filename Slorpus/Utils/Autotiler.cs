@@ -146,6 +146,132 @@ namespace Slorpus.Utils
                 case 0b010111010:
                     return finalize(8, 4);
 
+                // SOLID SHAPES ----------------------------
+                case 0b000111111:
+                    // top edge
+                    return finalize(1, 0);
+                case 0b011011011:
+                    // left edge
+                    return finalize(0, 1);
+                case 0b110110110:
+                    // right edge
+                    return finalize(2, 1);
+                case 0b111111000:
+                    // bottom edge
+                    return finalize(1, 2);
+
+                // convex corners
+                case 0b000110110:
+                    // top right corner
+                    return finalize(2, 0);
+                case 0b000011011:
+                    // top left corner
+                    return finalize(0, 0);
+                case 0b110110000:
+                    // bottom right corner
+                    return finalize(2, 2);
+                case 0b011011000:
+                    // bottom left corner
+                    return finalize(0, 2);
+
+                // indentation
+                case 0b110111111:
+                    // top right indent
+                    return finalize(5, 2);
+                case 0b011111111:
+                    // top left indent
+                    return finalize(6, 2);
+                case 0b111111011:
+                    // bottom left indent
+                    return finalize(6, 1);
+                case 0b111111110:
+                    // bottom right indent
+                    return finalize(5, 1);
+                case 0b101111111:
+                    // top indent
+                    return finalize(1, 0);
+                case 0b111111101:
+                    // bottom indent
+                    return finalize(1, 2);
+                case 0b111011111:
+                    // left indent
+                    return finalize(0, 1);
+                case 0b111110111:
+                    // right indent
+                    return finalize(2, 1);
+
+                // DOUBLE INDENTATION
+                case 0b001111111:
+                    // top left and top indent
+                    return finalize(1, 0);
+                case 0b011011111:
+                    // top left and left indent
+                    return finalize(0, 1);
+                case 0b111011011:
+                    // left and bottom left indent
+                    return finalize(0, 1);
+                case 0b111111001:
+                    // bottom left and bottom indent
+                    return finalize(1, 2);
+                case 0b111111100:
+                    // bottom right and bottom indent
+                    return finalize(1, 2);
+                case 0b111110110:
+                    // bottom right and right indent
+                    return finalize(2, 1);
+                case 0b110110111:
+                    // top right and right indent
+                    return finalize(2, 1);
+                case 0b100111111:
+                    // top and top right indent
+                    return finalize(1, 0);
+
+                // 4-indent
+                case 0b110110010:
+                    // bottom left corner and right side gone
+                    return finalize(7, 1);
+                case 0b110010110:
+                    // middle left and right side gone
+                    return finalize(3, 1);
+                case 0b010110110:
+                    // top left and right side gone
+                    return finalize(7, 2);
+                case 0b000011111:
+                    // top side and left middle gone
+                    return finalize(0, 0);
+                case 0b000110111:
+                    // top side and right middle gone
+                    return finalize(2, 0);
+                case 0b000111011:
+                    // top side and bottom left gone
+                    return finalize(6, 0);
+                case 0b011011010:
+                    // left side and bottom right gone
+                    return finalize(4, 1);
+                case 0b011010011:
+                    // left side and right middle gone
+                    return finalize(3, 1);
+                case 0b010011011:
+                    // left side and top right gone
+                    return finalize(4, 2);
+                case 0b111011000:
+                    // bottom side and left middle gone
+                    return finalize(0, 1);
+                case 0b111110000:
+                    // bottom side and right middle gone
+                    return finalize(2, 2);
+                case 0b011111000:
+                    // bottom side and top left gone
+                    return finalize(6, 3);
+
+                // 2 opposite-corner indents
+                case 0b101111110:
+                    return finalize(5, 0);
+
+                // 3-indent
+                case 0b011111100:
+                    return finalize(6, 3);
+
                 // fallback
                 default:
                     return finalize(3, 3);

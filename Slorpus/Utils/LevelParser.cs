@@ -86,11 +86,27 @@ namespace Slorpus.Utils
         /// <param name="walls">The wall list class who needs to have the newly loaded walls added to it.</param>
         /// <param name="entityList">Information about all the game objects that need to be created.</param>
         /// <returns>A list of all the walls in the level.</returns>
-        public void GetWalls(List<Wall> walls, List<GenericEntity> entityList)
+        public void GetWalls(List<Wall> walls, List<Wall> floors, List<GenericEntity> entityList)
         {
             foreach (GenericEntity ge in entityList)
             {
                 switch (ge.EntityType) {
+                    case '0':
+                        Wall f = new Wall(
+                            new Rectangle(
+                                ge.Position,
+                                new Point(
+                                    Constants.WALL_SIZE,
+                                    Constants.WALL_SIZE
+                                    )
+                                ),
+                            Autotiler.GetWallTile(Autotiler.GetTileIndex(ge.OriginPosition.X, ge.OriginPosition.Y, '0'))
+                            );
+
+                        // add a new wall to the wall list
+                        SortItem(f);
+                        floors.Add(f);
+                        break;
                     case 'W':
                         Wall w = new Wall(
                             new Rectangle(
