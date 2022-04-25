@@ -179,7 +179,7 @@ namespace Slorpus
             
             // read the level out of a file
             level = new Level(wallList, floorList, Content);
-            List<GenericEntity> levelList = level.LoadFromFile($"levels\\{levelname}.sslvl"); //UPDATE FOR BUILD
+            List<GenericEntity> levelList = level.LoadFromFile($"..\\..\\..\\levels\\{levelname}.sslvl"); //UPDATE FOR BUILD
             
             // create managers and utils
             bulletManager = new BulletManager(bulletList, squareTexture);
@@ -250,7 +250,7 @@ namespace Slorpus
 
             // read the level out of a file
             level = new Level(wallList, floorList, Content);
-            List<GenericEntity> levelList = level.LoadFromFile($"customlevels\\{customPath}\\{levelName}.sslvl"); //UPDATE FOR BUILD
+            List<GenericEntity> levelList = level.LoadFromFile($"..\\..\\..\\customlevels\\{customPath}\\{levelName}.sslvl"); //UPDATE FOR BUILD
 
             // create managers and utils
             bulletManager = new BulletManager(bulletList, squareTexture);
