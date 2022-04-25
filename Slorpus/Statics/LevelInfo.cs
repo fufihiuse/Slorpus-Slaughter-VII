@@ -105,7 +105,6 @@ namespace Slorpus.Statics
             {
                 Game.LoadLevel(levels[CurrentLevel], customPath);
             }
-            Game.LoadLevel(Constants.LEVELS[CurrentLevel]);
         }
 
         public static void LevelCompleted()
