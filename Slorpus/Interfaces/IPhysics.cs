@@ -11,12 +11,6 @@ namespace Slorpus.Interfaces
         public Vector2 SubpixelCoords { get; }
 
         /// <summary>
-        /// returns velocity
-        /// this is just here for backwards compatibility, use the Velocity property instead.
-        /// </summary>
-        /// <returns></returns>
-        public Vector2 GetVelocity();
-        /// <summary>
         /// Moves the object relative to its current position.
         /// </summary>
         /// <param name="distance"></param>

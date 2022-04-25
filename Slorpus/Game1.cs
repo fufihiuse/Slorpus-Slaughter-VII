@@ -39,6 +39,7 @@ namespace Slorpus
         LevelInfo _levelInfo;
         Dereferencer _dereferencer;
         Layers layers;
+        Cursor cursor;
 
 
         static Effect _CRTFilter;
@@ -73,6 +74,7 @@ namespace Slorpus
         // things that should be recieving input events all the time
         List<IKeyPress> constantKeyPressList;
         List<IMouseClick> constantMouseClickList;
+        Layers constantLayers;
 
         private bool StartupSoundPlayed = false;
 
@@ -81,7 +83,7 @@ namespace Slorpus
             _graphics = new GraphicsDeviceManager(this);
             _graphics.GraphicsProfile = GraphicsProfile.HiDef;
             Content.RootDirectory = "Content";
-            IsMouseVisible = true;
+            IsMouseVisible = false;
         }
 
         protected override void Initialize()
@@ -103,6 +105,8 @@ namespace Slorpus
             
             soundEffects = new SoundEffects();
             uiManager = new UIManager(GraphicsDevice, this);
+
+            constantLayers = new Layers();
 
             base.Initialize();
         }
@@ -145,6 +149,10 @@ namespace Slorpus
             levelCompleteSplash = Content.Load<Texture2D>("splash/levelcomplete");
             testingFont = Content.Load<SpriteFont>("Arial12");
             notoSans = Content.Load<SpriteFont>("NotoSans30");
+            
+
+            cursor = new Cursor();
+            cursor.LoadContent(Content);
             
             // load UI
             uiManager.LoadUI(Content);
@@ -225,6 +233,9 @@ namespace Slorpus
             // add camera and physics to be updated
             updateList.Add(camera);
             updateList.Add(physicsManager);
+
+            // add cursor to draw
+            constantLayers.Add(cursor);
         }
 
         /// <summary>
@@ -379,9 +390,12 @@ namespace Slorpus
                     }
                     else if (physics_target is Enemy)
                     {
+                        LevelInfo.Pause(5);
+                        Camera.Shake(5, 10);
                         if (Enemy.Count <= 0)
                         {
                             // WIN CONDITION
+                            LevelInfo.Pause(5);
                             LevelInfo.LevelCompleted();
                         }
                     }
@@ -474,6 +488,14 @@ namespace Slorpus
             else
             {
                 uiManager.Draw(_spriteBatch);
+            }
+
+            foreach (List<IDraw> drawList in constantLayers)
+            {
+                foreach (IDraw d in drawList)
+                {
+                    d.Draw(_spriteBatch);
+                }
             }
 
             base.Draw(gameTime);

@@ -41,14 +41,6 @@ namespace Slorpus.Objects
         }
 
         /// <summary>
-        /// returns velocity
-        /// </summary>
-        /// <returns></returns>
-        public virtual Vector2 GetVelocity()
-        {
-            return vel;
-        }
-        /// <summary>
         /// Moves the object to a set of absolute coordinates
         /// </summary>
         /// <param name="location"></param>
