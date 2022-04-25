@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame_Textbox;
+using Microsoft.Xna.Framework.Content;
 
 using Slorpus.Objects;
 using Slorpus.Statics;
@@ -15,6 +17,7 @@ namespace Slorpus.Managers
         Menu,
         Game,
         Settings,
+        CustomLevel,
         Pause,
         GameOver
     }
@@ -33,15 +36,28 @@ namespace Slorpus.Managers
         public static bool IsGodModeOn { get { return isGodModeOn; } }
         private static bool isGodModeOn = false;
 
-        //fields  
+        //fields
         GameState currentGameState;
         GameState prevGameState;
+        GraphicsDevice GraphicsDevice;
+        Game1 Game1;
+
+        //Bool to control checkbox draw
+        private bool loadedCustom = false;
 
         //backgrounds
         Texture2D menuBackground;
         Texture2D settingsBackground;
         Texture2D pauseBackground;
         Texture2D gameOverBackground;
+        Texture2D customLevelBackground;
+
+        //Check Texture
+        Texture2D check;
+
+        //TextBox
+        TextBox textBox;
+        string inputtedText;
 
         //button lists
         List<Button> menuButtons;
@@ -49,6 +65,7 @@ namespace Slorpus.Managers
         List<Button> gameOverButtons;
         List<Button> pauseButtons;
         List<Button> settingsButtons;
+        List<Button> customLevelButtons;
 
         //buttons
         //menu
@@ -58,6 +75,7 @@ namespace Slorpus.Managers
         //settings
         Button godMode;
         Button back;
+        Button customLvl;
         //pause
         Button resume;
         Button pauseSettings;
@@ -65,6 +83,8 @@ namespace Slorpus.Managers
         //gameover
         Button retry;
         Button gameOverMenu;
+        //custom level loader
+        Button loadLevel;
 
         //properties
         public GameState CurrentGameState
@@ -76,8 +96,10 @@ namespace Slorpus.Managers
         }
 
         //constructor
-        public UIManager()
+        public UIManager(GraphicsDevice GraphicsDevice, Game1 Game1)
         {
+            this.Game1 = Game1;
+            this.GraphicsDevice = GraphicsDevice;
             currentGameState = GameState.Menu;
         }
 
@@ -85,13 +107,30 @@ namespace Slorpus.Managers
         /// <summary>
         /// loads all the textures for the buttons and then passes them into  the coresponding buttons including background
         /// </summary>
-        public void LoadUI(Microsoft.Xna.Framework.Content.ContentManager content)
+        public void LoadUI(ContentManager content)
         {
             //background
             menuBackground = content.Load<Texture2D>("menuBackground");
             settingsBackground = content.Load<Texture2D>("settingsBackground");
             pauseBackground = content.Load<Texture2D>("pauseBackground");
             gameOverBackground = content.Load<Texture2D>("gameOverBackground");
+            customLevelBackground = content.Load<Texture2D>("customLevelBackground");
+
+            //Text Input
+            textBox = new TextBox(
+                new Rectangle(300, 295, 200, 50),
+                11,
+                String.Empty,
+                GraphicsDevice,
+                Game1.NotoSans,
+                Color.Black,
+                Color.Red,
+                60);
+            textBox.Renderer.Color = new Color(0.63529411764f, 0.09411764705f, 0.09411764705f);
+            textBox.Active = false;
+            KeyboardInput.Initialize(Game1, 100f, 60);
+            //textBox.Area = new Rectangle(300, 295, 200, 50);
+            check = content.Load<Texture2D>("check");
 
 
             //testing button textures
@@ -105,6 +144,7 @@ namespace Slorpus.Managers
             gameOverButtons = new List<Button>();
             pauseButtons = new List<Button>();
             settingsButtons = new List<Button>();
+            customLevelButtons = new List<Button>();
 
             //make buttons
             //menu
@@ -116,6 +156,8 @@ namespace Slorpus.Managers
                 standard, hover, active);
             //settings
             godMode = new Button(new Rectangle(300, 295, 200, 50),
+                standard, hover, active);
+            customLvl = new Button(new Rectangle(300, 225, 200, 50),
                 standard, hover, active);
             back = new Button(new Rectangle(300, 365, 200, 50),
                 standard, hover, active);
@@ -131,6 +173,9 @@ namespace Slorpus.Managers
                 standard, hover, active);
             gameOverMenu = new Button(new Rectangle(300, 365, 200, 50),
                 standard, hover, active);
+            //custom level loader
+            loadLevel = new Button(new Rectangle(521, 295, 50, 50),
+                standard, hover, active);
 
             //add buttons to lists
             //menu
@@ -139,6 +184,7 @@ namespace Slorpus.Managers
             menuButtons.Add(menuExit);
             //settings
             settingsButtons.Add(godMode);
+            settingsButtons.Add(customLvl);
             settingsButtons.Add(back);
             //pause
             pauseButtons.Add(resume);
@@ -147,6 +193,10 @@ namespace Slorpus.Managers
             //gameover
             gameOverButtons.Add(retry);
             gameOverButtons.Add(gameOverMenu);
+            //custom level loader
+            customLevelButtons.Add(loadLevel);
+            customLevelButtons.Add(back);
+            
         }
         /// <summary>
         /// updates the ui gamestate depending on which button is pressed
@@ -161,6 +211,7 @@ namespace Slorpus.Managers
                     if (menuStart.Update(ms, msLoc))
                     {
                         currentGameState = GameState.Game;
+                        SoundEffects.PlayEffect("startbutton");
                     }
                     if (menuSettings.Update(ms, msLoc))
                     {
@@ -185,9 +236,45 @@ namespace Slorpus.Managers
                     {
                         isGodModeOn = !isGodModeOn;
                     }
+                    if (customLvl.Update(ms, msLoc))
+                    {
+                        currentGameState = GameState.CustomLevel;
+                        prevGameState = GameState.Settings;
+                        textBox.Active = true;
+                    }
                     if (back.Update(ms, msLoc))
                     {
                         currentGameState = prevGameState;
+                    }
+                    break;
+
+                case GameState.CustomLevel:
+                    KeyboardInput.Update();
+                    textBox.Update();
+                    if (godMode.Update(ms, msLoc))
+                    {
+                        isGodModeOn = !isGodModeOn;
+                    }
+                    if (loadLevel.Update(ms, msLoc))
+                    {
+                        inputtedText = textBox.Text.String;
+                        //Attempt to load custom level
+                        try
+                        {
+                            LevelInfo.LoadCustomLevel(inputtedText); //TODO: add custom input, look for pre-written library please oh god https://github.com/UnterrainerInformatik/Monogame-Textbox
+                            LevelInfo.ReloadLevel();
+                            loadedCustom = true;
+                        }
+                        catch (Exception) { }
+                        textBox.Clear();
+                    }
+                    if (back.Update(ms, msLoc))
+                    {
+                        currentGameState = prevGameState;
+                        prevGameState = GameState.Menu;
+                        textBox.Active = false;
+                        loadedCustom = false;
+                        textBox.Clear();
                     }
                     break;
 
@@ -241,8 +328,6 @@ namespace Slorpus.Managers
                         button.Draw(sb);
                     }
 
-                    // draw godmode debug message
-                    sb.DrawString(Game1.TestingFont, $"GODMODE: {isGodModeOn}", new Vector2(0, 0), Color.Red);
                     break;
 
                 case GameState.Game:
@@ -266,8 +351,44 @@ namespace Slorpus.Managers
                     {
                         button.Draw(sb);
                     }
-                    // godmode debug
-                    sb.DrawString(Game1.TestingFont, $"GODMODE: {isGodModeOn}", new Vector2(0, 0), Color.Red);
+                    if (isGodModeOn)
+                    {
+                        sb.DrawString(Game1.TestingFont, "GODMODE ENABLED", new Vector2(5, 0), Color.Red);
+                    }
+                    break;
+
+                case GameState.CustomLevel:
+                    //draw background
+                    sb.Draw(
+                        customLevelBackground,
+                        new Rectangle(0, 0, 800, 480),
+                        Color.White
+                        );
+
+                    //draw all settingsButtons
+                    foreach (Button button in customLevelButtons)
+                    {
+                        button.Draw(sb);
+                    }
+
+                    //Draw text box
+                    textBox.Draw(sb);
+
+                    //Draw check box
+                    sb.Draw(
+                        check,
+                        new Rectangle(522, 295, 48, 48),
+                        Color.White
+                        );
+
+                    if (loadedCustom) 
+                    {
+                        sb.DrawString(Game1.TestingFont, "Level loaded successfully!", new Vector2(5, 0), Color.Red);
+                    }
+                    else
+                    {
+                        sb.DrawString(Game1.TestingFont, "No custom level loaded", new Vector2(5, 0), Color.Red);
+                    }
                     break;
 
                 case GameState.Pause:

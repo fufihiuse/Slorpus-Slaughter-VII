@@ -73,10 +73,6 @@ namespace Slorpus.Objects
         /// returns velocity
         /// </summary>
         /// <returns></returns>
-        public Vector2 GetVelocity()
-        {
-            return vel;
-        }
         /// <summary>
         /// moves object
         /// </summary>

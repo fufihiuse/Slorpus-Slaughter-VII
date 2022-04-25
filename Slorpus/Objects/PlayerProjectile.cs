@@ -11,6 +11,9 @@ namespace Slorpus.Objects
     class PlayerProjectile : PhysicsObject, IUpdate, IDraw, IDestroyable, ILoad
     {
         Texture2D asset;
+
+        int timesBounced = 0;
+
         int currentFrame;
         double timer;
         double frameLength;
@@ -71,7 +74,10 @@ namespace Slorpus.Objects
                 Wall tempWall = (Wall)(object)other;
                 if (tempWall.IsMirror)
                 {
-                    SoundEffects.PlayEffect(2); // Plays firing off mirror sound effect
+                    timesBounced++;
+                    SoundEffects.PlayEffect("reflect", Math.Min(-0.1f + timesBounced*0.1f, 1)); // Plays firing off mirror sound effect
+                    LevelInfo.Pause(3);
+                    Camera.Shake(3, 5);
                     // get if the normal is primarily X or Y
                     if(Math.Abs(Position.X - wantedPosition.X) > Math.Abs(Position.Y - wantedPosition.Y))
                     {
@@ -100,8 +106,18 @@ namespace Slorpus.Objects
             }
             else if (other is Enemy)
             {
+                float shiftedPitch = Constants.ENEMY_VOLUME.MAX-Constants.ENEMY_VOLUME.MIN;
+                float pitch =  shiftedPitch * ((float)Enemy.Count-1) / ((float)LevelInfo.InitialEnemyCount);
+                // pitch = shiftedPitch - pitch; // inverts the pitch change
+                pitch += Constants.ENEMY_VOLUME.MIN;
+                SoundEffects.PlayEffect("enemy_death", pitch, 0.0f);
                 Enemy tempEnemy = (Enemy)(object)other;
                 tempEnemy.Destroy();
+            }
+            else if (other is Player)
+            {
+                // KILL YOURSELF
+                LevelInfo.ReloadLevel();
             }
             return false;
         }
