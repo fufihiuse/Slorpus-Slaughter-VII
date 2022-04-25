@@ -9,6 +9,8 @@ namespace Slorpus.Objects
         private bool isBulletCollider;
         private bool isMirror;
 
+        private int WallSprite;
+
         public Rectangle Position { get { return position; } }
         public bool IsMirror { get { return isMirror; } }
         public bool IsBulletCollider { get { return isBulletCollider; } }
@@ -19,6 +21,7 @@ namespace Slorpus.Objects
             this.position = position;
             isBulletCollider = bullet_collider;
             this.isMirror = isMirror;
+            WallSprite = 0;
         }
 
         /// <summary>
