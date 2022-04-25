@@ -72,6 +72,8 @@ namespace Slorpus
         List<IKeyPress> constantKeyPressList;
         List<IMouseClick> constantMouseClickList;
 
+        private bool StartupSoundPlayed = false;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -147,6 +149,10 @@ namespace Slorpus
             // load sound effects
             SoundEffects.AddSounds(Content);
             
+            if (!StartupSoundPlayed)
+                SoundEffects.PlayEffect("title-card");
+            StartupSoundPlayed = true;
+            
             // load first level
             LoadLevel(Constants.LEVELS[0]); 
         }
@@ -194,9 +200,15 @@ namespace Slorpus
             // handle different draw layers
             List<IDraw> drawables = levelParser.Drawables;
             // sort all the drawables into their respective layers
+            _levelInfo.initialEnemyCount = 0;
             foreach (IDraw d in drawables)
             {
                 layers.Add(d);
+                // also get enemy count since we're iterating anyway
+                if (d is Enemy)
+                {
+                    _levelInfo.initialEnemyCount += 1;
+                }
             }
             
             // misc additions to the lists
@@ -409,8 +421,8 @@ namespace Slorpus
         {
             Rectangle pRect = new Rectangle(location,
                 new Point(
-                    Constants.PLAYER_BULLET_SIZE,
-                    Constants.PLAYER_BULLET_SIZE
+                    Constants.PLAYER.BULLET_SIZE,
+                    Constants.PLAYER.BULLET_SIZE
                     )
                 );
 
