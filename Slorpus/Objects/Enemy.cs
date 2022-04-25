@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -21,7 +22,6 @@ namespace Slorpus.Objects
         public static int Count { get { return count; } }
 
         // enemy fields
-        private Texture2D enemyAsset;
         private int damage;
         private ShootingPattern shootingPattern;
 
@@ -38,6 +38,13 @@ namespace Slorpus.Objects
         private const float escBulletSpeed = 1.0f;
         // NOT IMPLEMENTED
         private const float homeBulletSpeed = 1.0f;
+
+        //animations
+        List<Texture2D> patternIdleAnimation;
+        List<Texture2D> trackingIdleAnimation;
+        int currentFrame;
+        double timer;
+        double frameLength;
 
         //properties
 
@@ -72,7 +79,14 @@ namespace Slorpus.Objects
             wantedBullets = new EnemyBullet[0];
             direction = 0;
             shoot = 0;
-            
+
+            //animation
+            currentFrame = 0;
+            timer = 0;
+            frameLength = 0.1;
+            patternIdleAnimation = new List<Texture2D>();
+            trackingIdleAnimation = new List<Texture2D>();
+
             // increase the number of enemies that exist
             count++;
 
@@ -82,7 +96,14 @@ namespace Slorpus.Objects
         public void LoadContent(ContentManager content)
         {
             // add stuff for different textures per ShootingPattern
-            enemyAsset = Game1.SquareTexture; // content.Load<Texture2D>("square");
+            patternIdleAnimation.Add(content.Load<Texture2D>("enemy/pattern/big_demon_idle_anim_f0"));
+            patternIdleAnimation.Add(content.Load<Texture2D>("enemy/pattern/big_demon_idle_anim_f1"));
+            patternIdleAnimation.Add(content.Load<Texture2D>("enemy/pattern/big_demon_idle_anim_f2"));
+            patternIdleAnimation.Add(content.Load<Texture2D>("enemy/pattern/big_demon_idle_anim_f3"));
+            trackingIdleAnimation.Add(content.Load<Texture2D>("enemy/tracking/chort_idle_anim_f0"));
+            trackingIdleAnimation.Add(content.Load<Texture2D>("enemy/tracking/chort_idle_anim_f1"));
+            trackingIdleAnimation.Add(content.Load<Texture2D>("enemy/tracking/chort_idle_anim_f2"));
+            trackingIdleAnimation.Add(content.Load<Texture2D>("enemy/tracking/chort_idle_anim_f3"));
         }
 
         /// <summary>
@@ -91,9 +112,25 @@ namespace Slorpus.Objects
         /// <param name="sb"></param>
         public void Draw(SpriteBatch sb)
         {
-            Rectangle target = Position;
+            /*
+            Texture2D targetTex = Game1.SquareTexture;
+            switch (shootingPattern)
+            {
+                case ShootingPattern.Ensconcing:
+                    targetTex = patternIdleAnimation[currentFrame];
+                    break;
+                case ShootingPattern.HomingAttack:
+                    targetTex = trackingIdleAnimation[currentFrame];
+                    break;
+            }
+            // targetTex = patternIdleAnimation[currentFrame];
+            Point size = new Point(targetTex.Width, targetTex.Height);
+            Rectangle target = new Rectangle(pos.Center, size);
+            */
+            Rectangle target = pos;
             target.Location -= Camera.Offset;
-            sb.Draw(enemyAsset, target, Color.Red);
+
+            sb.Draw(Game1.SquareTexture, target, Color.Red);
         }
 
         /// <summary>
@@ -136,6 +173,7 @@ namespace Slorpus.Objects
                 default:
                     break;
             }
+            UpdateFrame(gameTime);
         }
 
         /// <summary>
@@ -176,6 +214,24 @@ namespace Slorpus.Objects
         {
             count--;
             Dereferencer.Destroy(this);
+        }
+
+        /// <summary>
+        /// updates the frame
+        /// </summary>
+        /// <param name="gameTime"></param>
+        private void UpdateFrame(GameTime gameTime)
+        {
+            timer += gameTime.ElapsedGameTime.TotalSeconds;
+            if (timer >= frameLength)
+            {
+                currentFrame++;
+                if (currentFrame >= 3)
+                {
+                    currentFrame = 0;
+                }
+                timer -= frameLength;
+            }
         }
     }
 }

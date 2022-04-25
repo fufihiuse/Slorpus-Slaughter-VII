@@ -14,8 +14,15 @@ namespace Slorpus.Objects
 
         int timesBounced = 0;
 
+        int currentFrame;
+        double timer;
+        double frameLength;
+
         public PlayerProjectile(Rectangle pos, Vector2 vel, ContentManager content): base(pos, vel)
         {
+            currentFrame = 0;
+            timer = 0;
+            frameLength = 0.1;
             LoadContent(content);
         }
 
@@ -23,18 +30,30 @@ namespace Slorpus.Objects
 
         void IUpdate.Update(GameTime gameTime)
         {
+            // perform per-frame game logic
+            UpdateFrame(gameTime);
         }
 
         void IDraw.Draw(SpriteBatch sb)
         {
             Rectangle target = Position;
             target.Location -= Camera.Offset;
-            sb.Draw(asset, target, Color.White);
+            sb.Draw(
+                asset,
+                new Vector2(target.X, target.Y),
+                new Rectangle(16 * currentFrame, 0, 16, 16),
+                Color.Red,
+                0.0f,
+                Vector2.Zero,
+                1.0f,
+                SpriteEffects.None,
+                0.0f
+                );
         }
 
         public void LoadContent(ContentManager content)
         {
-            asset = Game1.SquareTexture; // content.Load<Texture2D>("square");
+            asset = content.Load<Texture2D>("bullet/cross");
         }
 
         public void Destroy()
@@ -101,6 +120,24 @@ namespace Slorpus.Objects
                 LevelInfo.ReloadLevel();
             }
             return false;
+        }
+
+        /// <summary>
+        /// updates the frame
+        /// </summary>
+        /// <param name="gameTime"></param>
+        private void UpdateFrame(GameTime gameTime)
+        {
+            timer += gameTime.ElapsedGameTime.TotalSeconds;
+            if (timer >= frameLength)
+            {
+                currentFrame++;
+                if (currentFrame >= 4)
+                {
+                    currentFrame = 0;
+                }
+                timer -= frameLength;
+            }
         }
     }
 }

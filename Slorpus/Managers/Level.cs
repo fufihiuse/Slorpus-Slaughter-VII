@@ -17,22 +17,29 @@ namespace Slorpus.Managers
     {
         //Fields
         private static char[,] level;
+        private List<Wall> floors;
         private List<Wall> walls;
         private Texture2D wallAsset;
         private Texture2D mirrorAsset;
         private Texture2D invisWallAsset;
         private Texture2D gridAsset;
+        private Texture2D wallTileset;
+        private Texture2D floorTileset;
 
         public static Point Size { get { return new Point(level.Length/level.GetLength(0), level.GetLength(0)); } }
+        public static char[,] Map { get { return level; } }
 
         //Constructor
-        public Level(List<Wall> walls, ContentManager content)
+        public Level(List<Wall> walls, List<Wall> floors, ContentManager content)
         {
             this.walls = walls;
-            this.wallAsset = Game1.SquareTexture; // content.Load<Texture2D>("square");
-            this.mirrorAsset = Game1.SquareTexture; //  content.Load<Texture2D>("square");
-            this.invisWallAsset = Game1.SquareTexture; // content.Load<Texture2D>("square");
-            this.gridAsset = content.Load<Texture2D>("grid");;
+            this.floors = floors;
+            wallAsset = Game1.SquareTexture; // content.Load<Texture2D>("square");
+            mirrorAsset = Game1.SquareTexture; //  content.Load<Texture2D>("square");
+            invisWallAsset = Game1.SquareTexture; // content.Load<Texture2D>("square");
+            wallTileset = content.Load<Texture2D>("tile/floor-tilemap");
+            floorTileset = content.Load<Texture2D>("tile/wall-tilemap");
+            gridAsset = content.Load<Texture2D>("grid");
         }
 
         //Methods 
@@ -61,12 +68,14 @@ namespace Slorpus.Managers
                     for (int column = 0; column < level.GetLength(1); column++)
                     {
                         level[row, column] = line[column];
-                        
-                        entityList.Add(
-                            new GenericEntity(
+
+                        GenericEntity e = new GenericEntity(
                                 line[column],
                                 column * Constants.WALL_SIZE,
-                                row * Constants.WALL_SIZE));
+                                row * Constants.WALL_SIZE,
+                                column, row);
+
+                        entityList.Add(e);
                     }
                     line = input.ReadLine();
                 }
@@ -95,16 +104,24 @@ namespace Slorpus.Managers
                 target.Location -= Camera.Offset;
                 if (w.IsMirror)
                 {
-                    sb.Draw(wallAsset, target, Color.Green);
-                }
-                else if (w.IsBulletCollider)
-                {
                     sb.Draw(wallAsset, target, Color.White);
+                }
+                else if (!w.IsBulletCollider)
+                {
+                    sb.Draw(wallAsset, target, Color.Yellow);
                 }
                 else
                 {
-                    sb.Draw(wallAsset, target, Color.Blue);
+                    sb.Draw(wallTileset, target, w.SubTex, Color.White);
                 }
+            }
+            
+            // draw floors
+            foreach (Wall f in floors)
+            {
+                target = f.Position;
+                target.Location -= Camera.Offset;
+                sb.Draw(floorTileset, target, f.SubTex, Color.White);
             }
 
             //TODO: TOGGLE FALSE BEFORE BUILD

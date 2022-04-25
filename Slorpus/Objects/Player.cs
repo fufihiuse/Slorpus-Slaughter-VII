@@ -18,9 +18,17 @@ namespace Slorpus.Objects
         Action<Point, Vector2> createBullet;
         // number of bullets the player currently has
         int bullets;
-        // player texture
-        Texture2D asset;
         int health;
+
+        //animation fields
+        bool left;
+        bool walking;
+        List<Texture2D> walkingAnimation;
+        List<Texture2D> idleAnimation;
+        int currentFrame;
+        double timer;
+        double frameLength;
+        
 
         Queue<Step> steps;
         
@@ -57,6 +65,15 @@ namespace Slorpus.Objects
             // select most recently instatiated player as the current player
             current = this;
 
+            //start up animation vars
+            left = false;
+            walking = false;
+            currentFrame = 0;
+            timer = 0;
+            frameLength = 0.1;
+            walkingAnimation = new List<Texture2D>();
+            idleAnimation = new List<Texture2D>();
+
             LoadContent(content);
         }
 
@@ -64,6 +81,7 @@ namespace Slorpus.Objects
         {
             KeyboardState kb = Keyboard.GetState();
             UpdatePlayerPosition(kb);
+            UpdateFrame(gameTime);
             
             if (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.S) ||
                 kb.IsKeyDown(Keys.D) || kb.IsKeyDown(Keys.A))
@@ -86,12 +104,48 @@ namespace Slorpus.Objects
         {
             Rectangle target = Position;
             target.Location -= Camera.Offset;
-            sb.Draw(asset, target, Color.White);
+            /*
+            if (left)
+            {
+                sb.Draw(
+                playerAnimationFrame(),
+                new Vector2(target.X, target.Y),
+                new Rectangle(0, 0, idleAnimation[0].Width, idleAnimation[0].Height),
+                Color.White,
+                0.0f,
+                Vector2.Zero,
+                1.0f,
+                SpriteEffects.FlipHorizontally,
+                0.0f
+                );
+            }
+            else
+            {
+                sb.Draw(
+                playerAnimationFrame(),
+                new Vector2(target.X, target.Y),
+                new Rectangle(0, 0, idleAnimation[0].Width, idleAnimation[0].Height),
+                Color.White,
+                0.0f,
+                Vector2.Zero,
+                1.0f,
+                SpriteEffects.None,
+                0.0f
+                );
+            }*/
+            sb.Draw(Game1.SquareTexture, target, Color.White);
         }
 
         public void LoadContent(ContentManager content)
         {
-            asset = Game1.SquareTexture; // content.Load<Texture2D>("square");
+            idleAnimation.Add(content.Load<Texture2D>("player/lizard_f_idle_anim_f0"));
+            idleAnimation.Add(content.Load<Texture2D>("player/lizard_f_idle_anim_f1"));
+            idleAnimation.Add(content.Load<Texture2D>("player/lizard_f_idle_anim_f2"));
+            idleAnimation.Add(content.Load<Texture2D>("player/lizard_f_idle_anim_f3"));
+            walkingAnimation.Add(content.Load<Texture2D>("player/lizard_f_run_anim_f0"));
+            walkingAnimation.Add(content.Load<Texture2D>("player/lizard_f_run_anim_f1"));
+            walkingAnimation.Add(content.Load<Texture2D>("player/lizard_f_run_anim_f2"));
+            walkingAnimation.Add(content.Load<Texture2D>("player/lizard_f_run_anim_f3"));
         }
 
         void IKeyPress.OnKeyPress(KeyboardState kb)
@@ -139,7 +193,7 @@ namespace Slorpus.Objects
         }
 
         /// <summary>
-        /// Updates the player position by detecting the keys pressed by the player
+        /// Updates the player position by detecting the keys pressed by the player and the animation state
         /// </summary>
         /// <param name="kb"></param>
         public void UpdatePlayerPosition(KeyboardState kb)
@@ -150,17 +204,42 @@ namespace Slorpus.Objects
             float xTemp = 0;
             float yTemp = 0;
 
+            //update direction
+            if(Screen.GetMousePosition().X > current.pos.X)
+            {
+                left = false;
+            }
+            else
+            {
+                left = true;
+            }
+
+            //bool for walking animation
+            walking = false;
+
             if (kb.IsKeyDown(Keys.W))
-            { yTemp = -1; }
+            { 
+                yTemp = -1;
+                walking = true;
+            }
 
             if (kb.IsKeyDown(Keys.S))
-            { yTemp = 1; }
+            { 
+                yTemp = 1;
+                walking = true;
+            }
 
             if (kb.IsKeyDown(Keys.A))
-            { xTemp = -1; }
+            { 
+                xTemp = -1;
+                walking = true;
+            }
 
             if (kb.IsKeyDown(Keys.D))
-            { xTemp = 1; }
+            { 
+                xTemp = 1;
+                walking = true;
+            }
 
             if (kb.IsKeyDown(Keys.W) && kb.IsKeyDown(Keys.D))
             {
@@ -204,6 +283,33 @@ namespace Slorpus.Objects
                 current = null;
             }
             Dereferencer.Destroy(this);
+        }
+
+        /// <summary>
+        /// returns the frame the player should be on
+        /// </summary>
+        /// <returns></returns>
+        private Texture2D playerAnimationFrame()
+        {
+            if (walking)
+            {
+                return walkingAnimation[currentFrame];
+            }
+            return idleAnimation[0];
+        }
+
+        private void UpdateFrame(GameTime gameTime)
+        {
+            timer += gameTime.ElapsedGameTime.TotalSeconds;
+            if(timer >= frameLength)
+            {
+                currentFrame++;
+                if (currentFrame >= 3)
+                {
+                    currentFrame = 0;
+                }
+                timer -= frameLength;
+            }
         }
     }
     /// <summary>
