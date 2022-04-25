@@ -306,8 +306,16 @@ namespace Slorpus.Utils
                         continue;
                     }
                     // set the bit at index "bit" to 1 if there's a wall
-                    if (adjacent == tile)
-                        final = final | ((uint)1 << bit);
+                    if (tile == '0')
+                    {
+                        if (adjacent == tile || adjacent == 'P' || adjacent == 'H' || adjacent == 'E')
+                            final = final | ((uint)1 << bit);
+                    }
+                    else
+                    {
+                        if (adjacent == tile)
+                            final = final | ((uint)1 << bit);
+                    }
                     // increment to the next bit
                     bit++;
                 }

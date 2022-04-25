@@ -104,6 +104,7 @@ namespace Slorpus.Objects
         {
             Rectangle target = Position;
             target.Location -= Camera.Offset;
+            /*
             if (left)
             {
                 sb.Draw(
@@ -131,7 +132,8 @@ namespace Slorpus.Objects
                 SpriteEffects.None,
                 0.0f
                 );
-            }
+            }*/
+            sb.Draw(Game1.SquareTexture, target, Color.White);
         }
 
         public void LoadContent(ContentManager content)

@@ -103,6 +103,7 @@ namespace Slorpus.Utils
                             Autotiler.GetWallTile(Autotiler.GetTileIndex(ge.OriginPosition.X, ge.OriginPosition.Y, '0'))
                             );
 
+                        // add a new wall to the wall list
                         floors.Add(f);
                         break;
                     case 'W':
@@ -118,6 +119,7 @@ namespace Slorpus.Utils
                             );
 
                         // add a new wall to the wall list
+                        SortItem(w);
                         walls.Add(w);
                         break;
                     case 'M':
@@ -133,6 +135,7 @@ namespace Slorpus.Utils
                             true, //is collidable
                             true //is a mirror
                             );
+                        SortItem(m);
                         // add a new mirror to the wall list
                         walls.Add(m);
                         break;
@@ -149,9 +152,26 @@ namespace Slorpus.Utils
                             false, //is collidable
                             false //is a mirror
                             );
+                        SortItem(b);
                         // add a new mirror to the wall list
                         walls.Add(b);
                         break;
+                }
+                if (ge.EntityType == 'P' || ge.EntityType == 'E' || ge.EntityType == 'H')
+                {
+                    Wall f = new Wall(
+                        new Rectangle(
+                            ge.Position,
+                            new Point(
+                                Constants.WALL_SIZE,
+                                Constants.WALL_SIZE
+                                )
+                            ),
+                        Autotiler.GetWallTile(Autotiler.GetTileIndex(ge.OriginPosition.X, ge.OriginPosition.Y, '0'))
+                        );
+
+                    // add a new wall to the wall list
+                    floors.Add(f);
                 }
             }
         }

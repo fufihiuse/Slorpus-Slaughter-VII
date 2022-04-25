@@ -113,6 +113,7 @@ namespace Slorpus.Objects
         public void Draw(SpriteBatch sb)
         {
             Texture2D targetTex = Game1.SquareTexture;
+            /*
             switch (shootingPattern)
             {
                 case ShootingPattern.Ensconcing:
@@ -122,6 +123,8 @@ namespace Slorpus.Objects
                     targetTex = trackingIdleAnimation[currentFrame];
                     break;
             }
+            */
+            targetTex = patternIdleAnimation[currentFrame];
             Point size = new Point(targetTex.Width, targetTex.Height);
             Rectangle target = new Rectangle(pos.Center, size);
             target.Location -= size / new Point(2,2);
