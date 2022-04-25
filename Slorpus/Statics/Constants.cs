@@ -34,14 +34,17 @@ namespace Slorpus.Statics
 
         //Array of levels to load
         public static readonly string[] LEVELS = { 
-            "ItBegins", //1
+            "ItBegins",
             "ReflectOnIt", //2
             "OutsideTheBox", //3
             "Frittata", //4
-            "Spiral",//5
-            "Diamond", //5
+            "Spiral",
+            "Pasmir",//5
+            "Diamond",
+            //5
             "TMI", //6
-            "Exeunt" }; //End
+            "Exeunt",
+            "Smile"}; //End
         //Awesome idea: seven room either gives you god mode and has a bunch of enemies, OR, counter for how many bullet bounces in 7 room
     }
 }
