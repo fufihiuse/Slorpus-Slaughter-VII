@@ -54,7 +54,7 @@ namespace Slorpus.Statics
         public static void LoadCustomLevel(string filepath)
         {
             customPath = filepath;
-            filepath = $"..\\..\\..\\customlevels\\{filepath}\\info.wal"; //UPDATE FOR BUILD
+            filepath = "$customlevels\\{filepath}\\info.wal"; //UPDATE FOR BUILD
             StreamReader input = new StreamReader(filepath);
             string line;
             try
