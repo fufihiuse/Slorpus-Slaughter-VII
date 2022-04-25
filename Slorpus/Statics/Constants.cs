@@ -38,6 +38,7 @@ namespace Slorpus.Statics
             "ReflectOnIt", //2
             "OutsideTheBox", //3
             "Frittata", //4
+            "Spiral",//5
             "Diamond", //5
             "TMI", //6
             "Exeunt" }; //End
