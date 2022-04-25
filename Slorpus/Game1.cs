@@ -58,7 +58,6 @@ namespace Slorpus
         List<IPhysics> physicsList;
         EnemyBullet[] bulletList;
         List<Wall> wallList;
-        List<Wall> floorList;
         SoundEffects soundEffects;
         Queue<IDestroyable> destroy_queue;
         
@@ -70,9 +69,6 @@ namespace Slorpus
         List<IKeyPress> constantKeyPressList;
         List<IMouseClick> constantMouseClickList;
 
-        //The only random event
-        Random rng;
-
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -83,7 +79,6 @@ namespace Slorpus
 
         protected override void Initialize()
         {
-            rng = new Random();
 
             destroy_queue = new Queue<IDestroyable>();
             _levelInfo = new LevelInfo(this);
@@ -158,19 +153,19 @@ namespace Slorpus
             layers = new Layers();
             
             // read the level out of a file
-            level = new Level(wallList, floorList, Content);
+            level = new Level(wallList, Content);
             List<GenericEntity> levelList = level.LoadFromFile($"..\\..\\..\\levels\\{levelname}.sslvl");
             
             // create managers and utils
             bulletManager = new BulletManager(bulletList, squareTexture);
             physicsManager = new PhysicsManager(physicsList, wallList, bulletManager);
-            LevelParser levelParser = new LevelParser(Content, rng);
+            LevelParser levelParser = new LevelParser(Content);
             
             // bullet creation function
             Action<Point, Vector2> createbullet = (Point loc, Vector2 vel) => CreateBullet(loc, vel);
             
             // parse data read from level (player requires the bullet creation func)
-            levelParser.GetWalls(wallList, floorList, levelList);
+            levelParser.GetWalls(wallList, levelList);
             levelParser.GetPhysicsObjects(physicsList, levelList, createbullet);
             
             // instantiate camera
@@ -436,7 +431,6 @@ namespace Slorpus
             }
             physicsList = new List<IPhysics>();
             wallList = new List<Wall>();
-            floorList = new List<Wall>();
             bulletList = new EnemyBullet[100];
         }
     }
