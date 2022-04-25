@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Content;
 
 using Slorpus.Objects;
 using Slorpus.Statics;
@@ -33,7 +34,7 @@ namespace Slorpus.Managers
         public static bool IsGodModeOn { get { return isGodModeOn; } }
         private static bool isGodModeOn = false;
 
-        //fields  
+        //fields
         GameState currentGameState;
         GameState prevGameState;
 
@@ -85,14 +86,13 @@ namespace Slorpus.Managers
         /// <summary>
         /// loads all the textures for the buttons and then passes them into  the coresponding buttons including background
         /// </summary>
-        public void LoadUI(Microsoft.Xna.Framework.Content.ContentManager content)
+        public void LoadUI(ContentManager content)
         {
             //background
             menuBackground = content.Load<Texture2D>("menuBackground");
             settingsBackground = content.Load<Texture2D>("settingsBackground");
             pauseBackground = content.Load<Texture2D>("pauseBackground");
             gameOverBackground = content.Load<Texture2D>("gameOverBackground");
-
 
             //testing button textures
             Texture2D standard = content.Load<Texture2D>("buttonPlaceholder");
@@ -161,6 +161,7 @@ namespace Slorpus.Managers
                     if (menuStart.Update(ms, msLoc))
                     {
                         currentGameState = GameState.Game;
+                        SoundEffects.PlayEffect("startbutton");
                     }
                     if (menuSettings.Update(ms, msLoc))
                     {

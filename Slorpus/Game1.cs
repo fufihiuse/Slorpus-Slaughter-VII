@@ -25,7 +25,9 @@ namespace Slorpus
 
         // debug assets for use everywhere
         private static Texture2D squareTexture;
+        private static Texture2D levelCompleteSplash;
         public static Texture2D SquareTexture { get { return squareTexture; } }
+        public static Texture2D LevelCompleteSplash { get { return levelCompleteSplash; } }
         private static SpriteFont testingFont;
         public static SpriteFont TestingFont { get { return testingFont; } }
 
@@ -35,6 +37,7 @@ namespace Slorpus
         LevelInfo _levelInfo;
         Dereferencer _dereferencer;
         Layers layers;
+
 
         static Effect _CRTFilter;
         static Effect _CRTFilterFullres;
@@ -68,6 +71,8 @@ namespace Slorpus
         // things that should be recieving input events all the time
         List<IKeyPress> constantKeyPressList;
         List<IMouseClick> constantMouseClickList;
+
+        private bool StartupSoundPlayed = false;
 
         public Game1()
         {
@@ -135,6 +140,7 @@ namespace Slorpus
                 );
 
             squareTexture = Content.Load<Texture2D>("square");
+            levelCompleteSplash = Content.Load<Texture2D>("splash/levelcomplete");
             testingFont = Content.Load<SpriteFont>("Arial12");
             
             // load UI
@@ -142,6 +148,10 @@ namespace Slorpus
             
             // load sound effects
             SoundEffects.AddSounds(Content);
+            
+            if (!StartupSoundPlayed)
+                SoundEffects.PlayEffect("title-card");
+            StartupSoundPlayed = true;
             
             // load first level
             LoadLevel(Constants.LEVELS[0]); 
@@ -190,9 +200,15 @@ namespace Slorpus
             // handle different draw layers
             List<IDraw> drawables = levelParser.Drawables;
             // sort all the drawables into their respective layers
+            _levelInfo.initialEnemyCount = 0;
             foreach (IDraw d in drawables)
             {
                 layers.Add(d);
+                // also get enemy count since we're iterating anyway
+                if (d is Enemy)
+                {
+                    _levelInfo.initialEnemyCount += 1;
+                }
             }
             
             // misc additions to the lists
@@ -211,7 +227,7 @@ namespace Slorpus
             if (prevMS.LeftButton != ButtonState.Pressed || uiManager.CurrentGameState == GameState.Game)
             {
                 //only update the game if the gamestate is game
-                if (uiManager.CurrentGameState == GameState.Game)
+                if (uiManager.CurrentGameState == GameState.Game && !LevelInfo.Paused)
                 {
                     GameUpdate(gameTime);
                 }
@@ -230,6 +246,8 @@ namespace Slorpus
             // update previous keyboard state
             prevKB = Keyboard.GetState();
             prevMS = Mouse.GetState();
+
+            LevelInfo.Update(gameTime);
         }
 
         protected void GameUpdate(GameTime gameTime)
@@ -294,7 +312,8 @@ namespace Slorpus
                     {
                         if (Enemy.Count <= 0)
                         {
-                            LevelInfo.LoadNextLevel();
+                            // WIN CONDITION
+                            LevelInfo.LevelCompleted();
                         }
                     }
                 }
@@ -380,6 +399,8 @@ namespace Slorpus
                         d.Draw(_spriteBatch);
                     }
                 }
+
+                LevelInfo.Draw(_spriteBatch);
             }
             else
             {
@@ -400,8 +421,8 @@ namespace Slorpus
         {
             Rectangle pRect = new Rectangle(location,
                 new Point(
-                    Constants.PLAYER_BULLET_SIZE,
-                    Constants.PLAYER_BULLET_SIZE
+                    Constants.PLAYER.BULLET_SIZE,
+                    Constants.PLAYER.BULLET_SIZE
                     )
                 );
 
