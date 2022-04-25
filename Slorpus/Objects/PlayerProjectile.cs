@@ -57,6 +57,8 @@ namespace Slorpus.Objects
                 {
                     timesBounced++;
                     SoundEffects.PlayEffect("reflect", Math.Min(-0.1f + timesBounced*0.1f, 1)); // Plays firing off mirror sound effect
+                    LevelInfo.Pause(3);
+                    Camera.Shake(3, 5);
                     // get if the normal is primarily X or Y
                     if(Math.Abs(Position.X - wantedPosition.X) > Math.Abs(Position.Y - wantedPosition.Y))
                     {
@@ -92,6 +94,11 @@ namespace Slorpus.Objects
                 SoundEffects.PlayEffect("enemy_death", pitch, 0.0f);
                 Enemy tempEnemy = (Enemy)(object)other;
                 tempEnemy.Destroy();
+            }
+            else if (other is Player)
+            {
+                // KILL YOURSELF
+                LevelInfo.ReloadLevel();
             }
             return false;
         }

@@ -24,6 +24,8 @@ namespace Slorpus.Statics
 
         static Action<SpriteBatch> draw;
 
+        static bool InLevelSplash = false;
+
         public LevelInfo(Game1 game)
         {
             currentLevel = 0;
@@ -55,6 +57,15 @@ namespace Slorpus.Statics
             Game.LoadLevel(Constants.LEVELS[CurrentLevel]);
         }
 
+        public static void LevelCompleted()
+        {
+            SoundEffects.PlayEffect("levelcomplete");
+            pauseTimer = length;
+            InLevelSplash = true;
+            _paused = true;
+            draw = DrawLevelComplete;
+        }
+
         public static void Update(GameTime gameTime)
         {
             if (pauseTimer > 0)
@@ -63,22 +74,24 @@ namespace Slorpus.Statics
             }
             else if (_paused)
             {
-                DisableLevelSplash();
+                if (InLevelSplash)
+                    DisableLevelSplash();
+                else
+                    _paused = false;
             }
         }
 
-        public static void LevelCompleted()
+        public static void Pause(int frames)
         {
-            SoundEffects.PlayEffect("levelcomplete");
-            pauseTimer = length;
+            pauseTimer = frames;
             _paused = true;
-            draw = DrawLevelComplete;
         }
 
         static void DisableLevelSplash()
         {
             draw = DrawNone;
             _paused = false;
+            InLevelSplash = false;
             LoadNextLevel();
         }
 
