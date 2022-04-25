@@ -14,7 +14,7 @@ namespace Slorpus.Managers
      * which wrap around things like selecting a certain bullet from
      * the array and moving it.
      */
-    class BulletManager: IDraw, IDestroyable
+    class BulletManager: IDraw, IDestroyable, IUpdate
     {
         private EnemyBullet[] bullets;
         private Texture2D bulletAsset;
@@ -22,6 +22,10 @@ namespace Slorpus.Managers
         private List<int> queuedBullets;
 
         private static BulletManager current;
+
+        //animation vars
+        double timer;
+        double frameLength;
 
         // get a reference to a given bullet
         public ref EnemyBullet this[int i]
@@ -53,7 +57,17 @@ namespace Slorpus.Managers
             for (int i = 0; i < bullets.Length; i ++)
             {
                 drawRect.Location = bullets[i].Position - Camera.Offset;
-                sb.Draw(bulletAsset, drawRect, Color.White);
+                sb.Draw(
+                bulletAsset,
+                new Vector2(drawRect.X, drawRect.Y),
+                new Rectangle(16 * bullets[i].CurrentFrame, 16 * bullets[i].Sprite, 16, 16),
+                Color.White,
+                0.0f,
+                Vector2.Zero,
+                1.0f,
+                SpriteEffects.None,
+                0.0f
+                );
             }
         }
 
@@ -157,6 +171,28 @@ namespace Slorpus.Managers
                 current = null;
             }
             Dereferencer.Destroy(this);
+        }
+
+        /// <summary>
+        /// Update the bullet sprites
+        /// </summary>
+        /// <param name="gameTime"></param>
+        public void Update(GameTime gameTime)
+        {
+            timer += gameTime.ElapsedGameTime.TotalSeconds;
+            if (timer >= frameLength)
+            {
+                //update all bullets
+                for (int i = 0; i < bullets.Length; i++)
+                {
+                    bullets[i].CurrentFrame++;
+                    if (bullets[i].CurrentFrame >= 4)
+                    {
+                        bullets[i].CurrentFrame = 0;
+                    }
+                }
+                timer -= frameLength;
+            }
         }
     }
 }

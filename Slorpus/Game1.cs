@@ -70,6 +70,9 @@ namespace Slorpus
         List<IKeyPress> constantKeyPressList;
         List<IMouseClick> constantMouseClickList;
 
+        //The only random event
+        Random rng;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -80,6 +83,7 @@ namespace Slorpus
 
         protected override void Initialize()
         {
+            rng = new Random();
 
             destroy_queue = new Queue<IDestroyable>();
             _levelInfo = new LevelInfo(this);
@@ -160,7 +164,7 @@ namespace Slorpus
             // create managers and utils
             bulletManager = new BulletManager(bulletList, squareTexture);
             physicsManager = new PhysicsManager(physicsList, wallList, bulletManager);
-            LevelParser levelParser = new LevelParser(Content);
+            LevelParser levelParser = new LevelParser(Content, rng);
             
             // bullet creation function
             Action<Point, Vector2> createbullet = (Point loc, Vector2 vel) => CreateBullet(loc, vel);

@@ -45,6 +45,7 @@ namespace Slorpus.Objects
         int currentFrame;
         double timer;
         double frameLength;
+        Random rng;
 
         //properties
 
@@ -68,7 +69,8 @@ namespace Slorpus.Objects
         public Enemy(
             Rectangle pos,
             ContentManager content,
-            ShootingPattern shootingPattern)
+            ShootingPattern shootingPattern,
+            Random rng)
             // default to 0,0 velocity
             : base(pos, new Vector2(0,0))
         {
@@ -86,6 +88,7 @@ namespace Slorpus.Objects
             frameLength = 0.1;
             patternIdleAnimation = new List<Texture2D>();
             trackingIdleAnimation = new List<Texture2D>();
+            this.rng = rng;
 
             // increase the number of enemies that exist
             count++;
@@ -152,7 +155,7 @@ namespace Slorpus.Objects
                     {
                         wantedBullets[0] = new EnemyBullet(
                                 new Point(Position.Location.X + Constants.ENEMY_SIZE / 2, (Position.Location.Y + Constants.ENEMY_SIZE / 2) - 2),
-                                UpdateBulletDirection());
+                                UpdateBulletDirection(), rng.Next(0,17));
                         shoot = 0;
                     }
                     break;
@@ -162,7 +165,7 @@ namespace Slorpus.Objects
                     {
                         wantedBullets[0] = new EnemyBullet(
                             new Point((Position.Location.X + Constants.ENEMY_SIZE/2), (Position.Location.Y + Constants.ENEMY_SIZE/2)-2),
-                            TargetPlayer());
+                            TargetPlayer(), rng.Next(0,17));
                         shoot = 0;
                     }
                     break;

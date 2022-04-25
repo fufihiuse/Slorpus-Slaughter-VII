@@ -23,6 +23,7 @@ namespace Slorpus.Utils
         List<IDraw> drawables;
         List<IMouseClick> mouseClickables;
         List<IKeyPress> keyPressables;
+        Random rng;
         
         // for passing to objects to load their textures
         ContentManager content;
@@ -70,13 +71,14 @@ namespace Slorpus.Utils
             }
         }
 
-        public LevelParser(ContentManager content)
+        public LevelParser(ContentManager content, Random rng)
         {
             this.content = content;
             updateables = new List<IUpdate>();
             drawables = new List<IDraw>();
             mouseClickables = new List<IMouseClick>();
             keyPressables = new List<IKeyPress>();
+            this.rng = rng;
         }
 
 
@@ -198,7 +200,8 @@ namespace Slorpus.Utils
                                     Constants.ENEMY_SIZE)
                                 ),
                             content,
-                            ShootingPattern.Ensconcing);
+                            ShootingPattern.Ensconcing,
+                            rng);
                         SortItem(e);
                         physicsObjects.Add(e);
                         break;
@@ -212,7 +215,8 @@ namespace Slorpus.Utils
                                     Constants.ENEMY_SIZE)
                                 ),
                             content,
-                            ShootingPattern.HomingAttack);
+                            ShootingPattern.HomingAttack,
+                            rng);
                         SortItem(h);
                         physicsObjects.Add(h);
                         break;

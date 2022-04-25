@@ -18,15 +18,21 @@ namespace Slorpus.Objects
         Point pos;
         Vector2 vel;
         Vector2 subpixel_pos;
+        int spriteNum;
+        int currentFrame;
         public Point Position { get { return pos;  } set { pos = value;  } }
         public Vector2 Velocity { get { return vel;  } set { vel = value; } }
+        public int Sprite { get { return spriteNum; } }
+        public int CurrentFrame { get { return currentFrame; } set { currentFrame = value; } }
 
         //Constructor
-        public EnemyBullet(Point position, Vector2 velocity)
+        public EnemyBullet(Point position, Vector2 velocity, int sprite)
         {
             pos = position;
             vel = velocity;
             subpixel_pos = new Vector2(0, 0);
+            spriteNum = sprite;
+            currentFrame = 0;
         }
         /// <summary>
         /// Moves the object to a set of absolute coordinates
