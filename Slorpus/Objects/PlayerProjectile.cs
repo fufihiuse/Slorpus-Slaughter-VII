@@ -39,15 +39,9 @@ namespace Slorpus.Objects
             Rectangle target = Position;
             target.Location -= Camera.Offset;
             sb.Draw(
-                asset,
-                new Vector2(target.X, target.Y),
-                new Rectangle(16 * currentFrame, 0, 16, 16),
-                Color.Red,
-                0.0f,
-                Vector2.Zero,
-                1.0f,
-                SpriteEffects.None,
-                0.0f
+                Game1.SquareTexture,
+                target,
+                Color.White
                 );
         }
 
