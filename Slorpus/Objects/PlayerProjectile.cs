@@ -42,7 +42,7 @@ namespace Slorpus.Objects
                 asset,
                 new Vector2(target.X, target.Y),
                 new Rectangle(16 * currentFrame, 0, 16, 16),
-                Color.White,
+                Color.Red,
                 0.0f,
                 Vector2.Zero,
                 1.0f,

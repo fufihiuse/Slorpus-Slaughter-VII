@@ -104,11 +104,11 @@ namespace Slorpus.Managers
                 target.Location -= Camera.Offset;
                 if (w.IsMirror)
                 {
-                    sb.Draw(wallAsset, target, Color.Green);
+                    sb.Draw(wallAsset, target, Color.White);
                 }
                 else if (!w.IsBulletCollider)
                 {
-                    sb.Draw(wallAsset, target, Color.Blue);
+                    sb.Draw(wallAsset, target, Color.Yellow);
                 }
                 else
                 {
