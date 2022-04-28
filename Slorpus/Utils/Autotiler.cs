@@ -268,9 +268,52 @@ namespace Slorpus.Utils
                 case 0b101111110:
                     return finalize(5, 0);
 
+                
+                // REMAINING 3-ADJACENT PATTERNS
+                case 0b000010111:
+                    return finalize(3, 0);
+                case 0b100110100:
+                    return finalize(2, 3);
+                case 0b111010000:
+                    return finalize(3, 2);
+                case 0b001011001:
+                    return finalize(0, 3);
+                case 0b000011101:
+                    return finalize(0, 3);
+                case 0b000110011:
+                    return finalize(2, 0);
+                case 0b100010110:
+                    return finalize(3, 0);
+                case 0b010110100:
+                    return finalize(2, 2);
+                case 0b101110000:
+                    return finalize(2, 3);
+                case 0b110011000:
+                    return finalize(0, 2);
+                case 0b011010001:
+                    return finalize(3, 0);
+                case 0b001011010:
+                    return finalize(2, 2);
+                
                 // 3-indent
                 case 0b011111100:
                     return finalize(6, 3);
+                case 0b111110010:
+                    return finalize(3, 1);
+                case 0b111011100:
+                    return finalize(0, 2);
+                case 0b011111001:
+                    return finalize(1, 2);
+                case 0b101011011:
+                    return finalize(0, 0);
+                case 0b010011111:
+                    return finalize(4, 2);
+                case 0b001110111:
+                    return finalize(2, 0);
+                case 0b100111110:
+                    return finalize(5, 0);
+                case 0b110110101:
+                    return finalize(2, 2);
 
                 // fallback
                 default:
