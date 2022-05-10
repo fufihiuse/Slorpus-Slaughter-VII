@@ -12,13 +12,15 @@ namespace Slorpus.Managers
     class PhysicsManager: IUpdate
     {
         private List<Wall> wallList;
+        private List<Wall> bowList;
         private List<IPhysics> physicsObjects;
         private BulletManager bulletManager;
 
-        public PhysicsManager(List<IPhysics> physicsObjects, List<Wall> wallList, BulletManager bulletManager)
+        public PhysicsManager(List<IPhysics> physicsObjects, List<Wall> wallList, BulletManager bulletManager, List<Wall> bowList)
         {
             this.physicsObjects = physicsObjects;
             this.wallList = wallList;
+            this.bowList = bowList;
             this.bulletManager = bulletManager;
         }
 
@@ -58,8 +60,41 @@ namespace Slorpus.Managers
                 {
                     if (wall.Collision(physicsObject.Position))
                     {
-                        // skip bullet hitting non bullet collider walls
-                        if (!wall.IsBulletCollider && physicsObject is PlayerProjectile) { continue; }
+                        // skip bullet hitting non bullet collider walls, removed for BOW fix
+                        //if (!wall.IsBulletCollider && physicsObject is PlayerProjectile) { continue; }
+
+                        // correct the location of the object to no be colliding
+                        CorrectObject(wall, prev, physicsObject);
+
+                        // handlers
+                        bool cancel_collision_complex = physicsObject.OnCollisionComplex(wall, previousVelocity, wantedLocation);
+                        bool cancel_collision = physicsObject.OnCollision(wall);
+
+                        if (!cancel_collision && !cancel_collision_complex)
+                        {
+                            // if you collide, remove sub pixel collision so as to prevent
+                            // the object "technically" being inside the wall but not really
+                            physicsObject.Move(-physicsObject.SubpixelOffset);
+                            break;
+                        }
+                        else
+                        {
+                            // cancel the collision by returning to previous state
+                            Vector2 wantedLocationV = new Vector2(wantedLocation.X, wantedLocation.Y);
+                            Vector2 newLoc = new Vector2(physicsObject.Position.X, physicsObject.Position.Y);
+                            physicsObject.Move(-(newLoc - wantedLocationV));
+                            physicsObject.Velocity = previousVelocity;
+                        }
+                    }
+                }
+
+                foreach (Wall wall in bowList)
+                {
+                    if (wall.Collision(physicsObject.Position))
+                    {
+                        // skip bullet hitting non bullet collider walls, removed for BOW fix
+                        if (physicsObject is PlayerProjectile) { continue; }
+
                         // correct the location of the object to no be colliding
                         CorrectObject(wall, prev, physicsObject);
 
@@ -149,6 +184,15 @@ namespace Slorpus.Managers
 
             // check if recursion is necessary
             foreach (Wall wall in wallList)
+            {
+                if (wall.Collision(physicsObject.Position))
+                {
+                    physicsObject.OnCollision<Wall>(wall);
+                    CorrectObject(wall, previousPos, physicsObject);
+                    break;
+                }
+            }
+            foreach (Wall wall in bowList)
             {
                 if (wall.Collision(physicsObject.Position))
                 {

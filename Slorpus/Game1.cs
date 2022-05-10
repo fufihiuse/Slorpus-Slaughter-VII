@@ -63,6 +63,7 @@ namespace Slorpus
         List<IPhysics> physicsList;
         EnemyBullet[] bulletList;
         List<Wall> wallList;
+        List<Wall> bowList;
         List<Wall> floorList;
         SoundEffects soundEffects;
         Queue<IDestroyable> destroy_queue;
@@ -178,19 +179,19 @@ namespace Slorpus
             layers = new Layers();
             
             // read the level out of a file
-            level = new Level(wallList, floorList, Content);
+            level = new Level(wallList, floorList, Content, bowList);
             List<GenericEntity> levelList = level.LoadFromFile($"..\\..\\..\\levels\\{levelname}.sslvl"); //UPDATE FOR BUILD
             
             // create managers and utils
             bulletManager = new BulletManager(bulletList, squareTexture);
-            physicsManager = new PhysicsManager(physicsList, wallList, bulletManager);
+            physicsManager = new PhysicsManager(physicsList, wallList, bulletManager, bowList);
             LevelParser levelParser = new LevelParser(Content);
             
             // bullet creation function
             Action<Point, Vector2> createbullet = (Point loc, Vector2 vel) => CreateBullet(loc, vel);
             
             // parse data read from level (player requires the bullet creation func)
-            levelParser.GetWalls(wallList, floorList, levelList);
+            levelParser.GetWalls(wallList, floorList, levelList, bowList);
             levelParser.GetPhysicsObjects(physicsList, levelList, createbullet);
             
             // instantiate camera
@@ -249,19 +250,19 @@ namespace Slorpus
             layers = new Layers();
 
             // read the level out of a file
-            level = new Level(wallList, floorList, Content);
+            level = new Level(wallList, floorList, Content, bowList);
             List<GenericEntity> levelList = level.LoadFromFile($"..\\..\\..\\customlevels\\{customPath}\\{levelName}.sslvl"); //UPDATE FOR BUILD
 
             // create managers and utils
             bulletManager = new BulletManager(bulletList, squareTexture);
-            physicsManager = new PhysicsManager(physicsList, wallList, bulletManager);
+            physicsManager = new PhysicsManager(physicsList, wallList, bulletManager, bowList);
             LevelParser levelParser = new LevelParser(Content);
 
             // bullet creation function
             Action<Point, Vector2> createbullet = (Point loc, Vector2 vel) => CreateBullet(loc, vel);
 
             // parse data read from level (player requires the bullet creation func)
-            levelParser.GetWalls(wallList, floorList, levelList);
+            levelParser.GetWalls(wallList, floorList, levelList, bowList);
             levelParser.GetPhysicsObjects(physicsList, levelList, createbullet);
 
             // instantiate camera
@@ -543,6 +544,7 @@ namespace Slorpus
             }
             physicsList = new List<IPhysics>();
             wallList = new List<Wall>();
+            bowList = new List<Wall>();
             floorList = new List<Wall>();
             bulletList = new EnemyBullet[100];
         }
