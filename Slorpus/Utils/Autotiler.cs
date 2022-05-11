@@ -10,7 +10,90 @@ namespace Slorpus.Utils
 {
     class Autotiler
     {
+        /// <summary>
+        /// Broken an unused. Meant to intelligently find the best matching
+        /// tile for autotiling, without brute forcing every possible combination.
+        /// </summary>
+        /// <param name="index">Binary value representing the arrangement of tiles.</param>
+        /// <returns>Sub-rectangle of a blob tileset.</returns>
         public static Rectangle GetWallTile(uint index)
+        {
+            Func<int, int, Rectangle> finalize = (int row, int column) =>
+            {
+                return new Rectangle(
+                    row*Constants.WALL_SIZE,
+                    column*Constants.WALL_SIZE,
+                    Constants.WALL_SIZE, Constants.WALL_SIZE);
+            };
+            
+            // dictionary of a bunch of possible orientations of walls
+            Dictionary<uint, Point> possibleStates = new Dictionary<uint, Point>();
+            
+            // possible states
+            // 0 = no tile
+            // 1 = tile
+            // 2 = doesnt matter
+            possibleStates.Add(222222222, new Point(3, 3)); // default
+            possibleStates.Add(202010202, new Point(3, 3));
+            possibleStates.Add(212110202, new Point(0, 0));
+            possibleStates.Add(212010202, new Point(1, 0));
+            possibleStates.Add(202110202, new Point(0, 1));
+            possibleStates.Add(212111212, new Point(1, 1));
+            possibleStates.Add(212011202, new Point(2, 0));
+            possibleStates.Add(202110212, new Point(0, 2));
+            possibleStates.Add(202011202, new Point(2, 1));
+            possibleStates.Add(202010212, new Point(1, 2));
+            possibleStates.Add(202011212, new Point(2, 2));
+            
+            // go through all the possible states and find the one that best matches
+            int bestScore = 0;
+            uint bestMatch = 222222222;
+            foreach (uint possibleState in possibleStates.Keys)
+            {
+                // score this number based on how similar it is to the actual state of the tile
+                int score = 0;
+                for (int i = 0; i < 9; i++)
+                {
+                    uint checkDigit = (possibleState / (uint)Math.Pow(10, i)) % 10;
+                    // if (checkDigit == 2) { continue; } // skip tiles that dont matter for this potential state
+
+                    // get the i'th digit of the index (its in binary though)
+                    uint actualDigit = ((index & ((uint)1 << i)) != 0) ? (uint)1 : 0;
+
+                    //if (i == 4 && actualDigit == 0) { return finalize(8, 4); }
+                    
+                    // readable code for once
+                    if (checkDigit == actualDigit)
+                    {
+                        score++;
+                    }
+                    else
+                    {
+                        score--;
+                    }
+
+                    // also stop if we found the best possible one
+                    if (score == 9) { break; }
+                }
+
+                // update the best found state so far
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    bestMatch = possibleState;
+                }
+            }
+
+            Point subRectCoords = possibleStates[bestMatch];
+            return finalize(subRectCoords.X, subRectCoords.Y);
+        }
+
+        /// <summary>
+        /// Brute forces every possible combination/arrangement of tiles.
+        /// </summary>
+        /// <param name="index">Binary value representing the arrangement of tiles.</param>
+        /// <returns>Sub-rectangle texture of a blob tileset.</returns>
+        public static Rectangle GetWallTileSimple(uint index)
         {
             Func<int, int, Rectangle> finalize = (int row, int column) =>
             {
@@ -225,6 +308,13 @@ namespace Slorpus.Utils
                 case 0b100111111:
                     // top and top right indent
                     return finalize(1, 0);
+                
+                // 2 opposite-corner indents
+                case 0b101111110:
+                    return finalize(5, 0);
+
+                case 0b010111111:
+                    return finalize(8, 2);
 
                 // 4-indent
                 case 0b110110010:
@@ -236,6 +326,9 @@ namespace Slorpus.Utils
                 case 0b010110110:
                     // top left and right side gone
                     return finalize(7, 2);
+                case 0b100110110:
+                    // top and right side gone
+                    return finalize(2, 0);
                 case 0b000011111:
                     // top side and left middle gone
                     return finalize(0, 0);
@@ -248,6 +341,9 @@ namespace Slorpus.Utils
                 case 0b011011010:
                     // left side and bottom right gone
                     return finalize(4, 1);
+                case 0b011011001:
+                    // left side and bottom middle gone
+                    return finalize(0, 2);
                 case 0b011010011:
                     // left side and right middle gone
                     return finalize(3, 1);
@@ -256,19 +352,44 @@ namespace Slorpus.Utils
                     return finalize(4, 2);
                 case 0b111011000:
                     // bottom side and left middle gone
-                    return finalize(0, 1);
+                    return finalize(0, 2);
                 case 0b111110000:
                     // bottom side and right middle gone
                     return finalize(2, 2);
                 case 0b011111000:
                     // bottom side and top left gone
                     return finalize(6, 3);
-
-                // 2 opposite-corner indents
-                case 0b101111110:
+                case 0b000111110:
+                    // top side and bottom right gone
                     return finalize(5, 0);
 
-                
+                // 4 indent, no complete sides gone
+                // parallel cases are actually covered by the T junctions
+                case 0b001110110:
+                    // top left side and right bottom side gone
+                    return finalize(2, 0);
+                case 0b001111100:
+                    // top left side and bottom right side gone
+                    return finalize(1, 3);
+                case 0b100011011:
+                    // top right side and left bottom side gone
+                    return finalize(0, 0);
+                case 0b100111001:
+                    // top right side and bottom left side gone
+                    return finalize(1, 3);
+                case 0b011010110:
+                    // left top side and right bottom side gone
+                    return finalize(3, 1);
+                case 0b011011100:
+                    // left top side and bottom right side gone
+                    return finalize(0, 2);
+                case 0b110010011:
+                    // right top side and left bottom side gone
+                    return finalize(3, 1);
+                case 0b110110001:
+                    // right top side and bottom left side gone
+                    return finalize(2, 2);
+
                 // REMAINING 3-ADJACENT PATTERNS
                 case 0b000010111:
                     return finalize(3, 0);
@@ -314,6 +435,33 @@ namespace Slorpus.Utils
                     return finalize(5, 0);
                 case 0b110110101:
                     return finalize(2, 2);
+                
+                // corners, no extensions
+                // like diagonals if you turned off "pixel perfect" mode in aseprite
+                case 0b100110111:
+                    // top right corner
+                    return finalize(2, 0);
+                case 0b111110100:
+                    // bottom right corner
+                    return finalize(2, 2);
+                case 0b111011001:
+                    // bottom left corner
+                    return finalize(0, 2);
+                case 0b001011111:
+                    // top left corner
+                    return finalize(0, 0);
+
+                // stuff in the 7 on the last level
+                // two adjacent empty tiles, both diagonal
+                case 0b101011111:
+                    return finalize(0, 0);
+                case 0b111110101:
+                    return finalize(2, 2);
+                case 0b101110111:
+                    return finalize(2, 0);
+                case 0b111011101:
+                    return finalize(0, 2);
+
 
                 // fallback
                 default:
@@ -345,6 +493,7 @@ namespace Slorpus.Utils
                     catch (IndexOutOfRangeException)
                     {
                         // no wall there, try the next one
+                        final = final | ((uint)1 << bit); // comment this out if outside tiles should look empty
                         bit++;
                         continue;
                     }
