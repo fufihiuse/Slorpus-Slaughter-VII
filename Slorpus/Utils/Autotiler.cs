@@ -462,6 +462,43 @@ namespace Slorpus.Utils
                 case 0b111011101:
                     return finalize(0, 2);
 
+                case 0b110010111:
+                    return finalize(3, 1);
+                case 0b001111011:
+                    return finalize(6, 0);
+                case 0b111111010:
+                    return finalize(8, 1);
+                case 0b111010110:
+                    return finalize(3, 1);
+                case 0b001010011:
+                    return finalize(3, 0);
+                case 0b110010100:
+                    return finalize(3, 2);
+                case 0b010010001:
+                    return finalize(3, 2);
+                case 0b001010010:
+                    return finalize(3, 0);
+
+                // stuff from yellow spiral level
+                case 0b110110100:
+                    return finalize(2, 2);
+                case 0b011011101:
+                    return finalize(0, 2);
+                case 0b011110000:
+                    return finalize(7, 3);
+                case 0b001011110:
+                    return finalize(4, 0);
+                case 0b011110100:
+                    return finalize(7, 3);
+                case 0b011011110:
+                    return finalize(4, 1);
+                case 0b110011001:
+                    return finalize(4, 3);
+                case 0b100111011:
+                    return finalize(6, 0);
+                case 0b110111011:
+                    return finalize(9, 1);
+
 
                 // fallback
                 default:
