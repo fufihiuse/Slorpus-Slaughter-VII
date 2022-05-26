@@ -15,6 +15,7 @@ namespace Slorpus.Managers
         private List<Wall> bowList;
         private List<IPhysics> physicsObjects;
         private BulletManager bulletManager;
+        private int maxRecursion; //Tracks amount of corrections
 
         public PhysicsManager(List<IPhysics> physicsObjects, List<Wall> wallList, BulletManager bulletManager, List<Wall> bowList)
         {
@@ -22,6 +23,7 @@ namespace Slorpus.Managers
             this.wallList = wallList;
             this.bowList = bowList;
             this.bulletManager = bulletManager;
+            maxRecursion = 0;
         }
 
         public void Update(GameTime gameTime)
@@ -147,6 +149,12 @@ namespace Slorpus.Managers
         /// <param name="physicsObject">The object that is colliding.</param>
         private void CorrectObject(Wall collided, Vector2 previousPos, IPhysics physicsObject)
         {
+            //Checks how many times CorrectObject has been called on this wall, if more than 10, returns
+            if (maxRecursion >= 10)
+            {
+                maxRecursion = 0;
+                return;
+            }
             // this will get multiplied by the overlap amount to create the correction
             Vector2 correctionCoeff;
             // distance from where the object was last from to the wall
@@ -187,6 +195,7 @@ namespace Slorpus.Managers
             {
                 if (wall.Collision(physicsObject.Position))
                 {
+                    maxRecursion++;
                     physicsObject.OnCollision<Wall>(wall);
                     CorrectObject(wall, previousPos, physicsObject);
                     break;
@@ -201,6 +210,7 @@ namespace Slorpus.Managers
                     break;
                 }
             }
+            maxRecursion = 0;
         }
         
         /// <summary>
@@ -209,6 +219,7 @@ namespace Slorpus.Managers
         /// <param name="size">The size that every physics object has.</param>
         public void CollideAndMoveBullets(GameTime gametime, Point size)
         {
+
             // indexes of bullets that need to be removed after this loop
             List<int> queuedBullets = new List<int>();
             
