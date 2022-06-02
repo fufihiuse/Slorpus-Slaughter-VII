@@ -402,7 +402,7 @@ namespace Slorpus.Utils
                 case 0b000011101:
                     return finalize(0, 3);
                 case 0b000110011:
-                    return finalize(2, 0);
+                    return finalize(7, 0);
                 case 0b100010110:
                     return finalize(3, 0);
                 case 0b010110100:
@@ -410,7 +410,7 @@ namespace Slorpus.Utils
                 case 0b101110000:
                     return finalize(2, 3);
                 case 0b110011000:
-                    return finalize(0, 2);
+                    return finalize(4, 3);
                 case 0b011010001:
                     return finalize(3, 0);
                 case 0b001011010:
@@ -497,7 +497,37 @@ namespace Slorpus.Utils
                 case 0b100111011:
                     return finalize(6, 0);
                 case 0b110111011:
-                    return finalize(9, 1);
+                    return finalize(9, 0);
+                
+                // the end
+                case 0b011110111:
+                    return finalize(7, 2);
+                case 0b111011110:
+                    return finalize(4, 1);
+                case 0b000110101:
+                    return finalize(2, 3);
+
+                // penis level
+                case 0b000011100:
+                    return finalize(0, 3);
+                case 0b101110110:
+                    return finalize(2, 0);
+                case 0b100010010:
+                    return finalize(3, 0);
+                case 0b100011001:
+                    return finalize(0, 3);
+                case 0b000110001:
+                    return finalize(2, 3);
+                case 0b100011000:
+                    return finalize(0, 3);
+                case 0b110010001:
+                    return finalize(3, 2);
+                case 0b100110010:
+                    return finalize(7, 0);
+
+                // the hard level
+                case 0b001011011:
+                    return finalize(0, 0);
 
 
                 // fallback
