@@ -34,6 +34,7 @@ namespace Slorpus.Statics
 
         //Array of levels to load
         public static readonly string[] LEVELS = { 
+            // "autotiling", // level containing every possible arrangement of tiles
             "ItBegins",
             "ReflectOnIt", //2
             "OutsideTheBox", //3
