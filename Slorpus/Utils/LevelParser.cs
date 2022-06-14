@@ -86,7 +86,7 @@ namespace Slorpus.Utils
         /// <param name="walls">The wall list class who needs to have the newly loaded walls added to it.</param>
         /// <param name="entityList">Information about all the game objects that need to be created.</param>
         /// <returns>A list of all the walls in the level.</returns>
-        public void GetWalls(List<Wall> walls, List<Wall> floors, List<GenericEntity> entityList)
+        public void GetWalls(List<Wall> walls, List<Wall> floors, List<GenericEntity> entityList, List<Wall> bows)
         {
             foreach (GenericEntity ge in entityList)
             {
@@ -154,7 +154,7 @@ namespace Slorpus.Utils
                             );
                         SortItem(b);
                         // add a new mirror to the wall list
-                        walls.Add(b);
+                        bows.Add(b);
                         break;
                 }
                 if (ge.EntityType == 'P' || ge.EntityType == 'E' || ge.EntityType == 'H')

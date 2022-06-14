@@ -19,6 +19,7 @@ namespace Slorpus.Managers
         private static char[,] level;
         private List<Wall> floors;
         private List<Wall> walls;
+        private List<Wall> bows;
         private Texture2D wallAsset;
         private Texture2D mirrorAsset;
         private Texture2D invisWallAsset;
@@ -30,9 +31,10 @@ namespace Slorpus.Managers
         public static char[,] Map { get { return level; } }
 
         //Constructor
-        public Level(List<Wall> walls, List<Wall> floors, ContentManager content)
+        public Level(List<Wall> walls, List<Wall> floors, ContentManager content, List<Wall> bows)
         {
             this.walls = walls;
+            this.bows = bows;
             this.floors = floors;
             wallAsset = Game1.SquareTexture; // content.Load<Texture2D>("square");
             mirrorAsset = Game1.SquareTexture; //  content.Load<Texture2D>("square");
@@ -106,14 +108,18 @@ namespace Slorpus.Managers
                 {
                     sb.Draw(wallAsset, target, Color.White);
                 }
-                else if (!w.IsBulletCollider)
-                {
-                    sb.Draw(wallAsset, target, Color.Yellow);
-                }
                 else
                 {
                     sb.Draw(wallTileset, target, w.SubTex, Color.White);
                 }
+            }
+
+            //draw BOWs
+            foreach(Wall w in bows)
+            {
+                target = w.Position;
+                target.Location -= Camera.Offset;
+                sb.Draw(wallAsset, target, Color.Yellow);
             }
             
             // draw floors

@@ -86,16 +86,19 @@ namespace Slorpus.Objects
                 }
                 else
                 {
+                    /* removed for BOW issue
                     if (!tempWall.IsBulletCollider)
                     {
                         // cancel collision
                         return true;
                     }
+                    
                     else
                     {
+                    */
                         // just hit a regular wall, now destroy
                         Destroy();
-                    }
+                  //}
                 }
             }
             else if (other is Enemy)
