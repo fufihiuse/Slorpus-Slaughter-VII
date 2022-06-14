@@ -100,7 +100,7 @@ namespace Slorpus.Utils
                                     Constants.WALL_SIZE
                                     )
                                 ),
-                            Autotiler.GetWallTile(Autotiler.GetTileIndex(ge.OriginPosition.X, ge.OriginPosition.Y, '0'))
+                            Autotiler.GetWallTileSimple(Autotiler.GetTileIndex(ge.OriginPosition.X, ge.OriginPosition.Y, '0'))
                             );
 
                         // add a new wall to the wall list
@@ -115,7 +115,7 @@ namespace Slorpus.Utils
                                     Constants.WALL_SIZE
                                     )
                                 ),
-                            Autotiler.GetWallTile(Autotiler.GetTileIndex(ge.OriginPosition.X, ge.OriginPosition.Y))
+                            Autotiler.GetWallTileSimple(Autotiler.GetTileIndex(ge.OriginPosition.X, ge.OriginPosition.Y))
                             );
 
                         // add a new wall to the wall list
@@ -131,7 +131,7 @@ namespace Slorpus.Utils
                                     Constants.WALL_SIZE
                                     )
                                 ),
-                            Autotiler.GetWallTile(Autotiler.GetTileIndex(ge.OriginPosition.X, ge.OriginPosition.Y)),
+                            Autotiler.GetWallTileSimple(Autotiler.GetTileIndex(ge.OriginPosition.X, ge.OriginPosition.Y)),
                             true, //is collidable
                             true //is a mirror
                             );
@@ -148,7 +148,7 @@ namespace Slorpus.Utils
                                     Constants.WALL_SIZE
                                     )
                                 ),
-                            Autotiler.GetWallTile(Autotiler.GetTileIndex(ge.OriginPosition.X, ge.OriginPosition.Y)),
+                            Autotiler.GetWallTileSimple(Autotiler.GetTileIndex(ge.OriginPosition.X, ge.OriginPosition.Y)),
                             false, //is collidable
                             false //is a mirror
                             );
@@ -167,7 +167,7 @@ namespace Slorpus.Utils
                                 Constants.WALL_SIZE
                                 )
                             ),
-                        Autotiler.GetWallTile(Autotiler.GetTileIndex(ge.OriginPosition.X, ge.OriginPosition.Y, '0'))
+                        Autotiler.GetWallTileSimple(Autotiler.GetTileIndex(ge.OriginPosition.X, ge.OriginPosition.Y, '0'))
                         );
 
                     // add a new wall to the wall list
