@@ -18,6 +18,7 @@ namespace Slorpus.Managers
         Game,
         Settings,
         CustomLevel,
+        Credits,
         Pause,
         GameOver
     }
@@ -45,12 +46,16 @@ namespace Slorpus.Managers
         //Bool to control checkbox draw
         private bool loadedCustom = false;
 
+        //Keyboard state
+        KeyboardState oldKS = Keyboard.GetState();
+
         //backgrounds
         Texture2D menuBackground;
         Texture2D settingsBackground;
         Texture2D pauseBackground;
         Texture2D gameOverBackground;
         Texture2D customLevelBackground;
+        Texture2D creditsBackground;
 
         //Check Texture
         Texture2D check;
@@ -66,6 +71,7 @@ namespace Slorpus.Managers
         List<Button> pauseButtons;
         List<Button> settingsButtons;
         List<Button> customLevelButtons;
+        List<Button> creditsButtons;
 
         //buttons
         //menu
@@ -73,9 +79,11 @@ namespace Slorpus.Managers
         Button menuSettings;
         Button menuExit;
         //settings
-        Button godMode;
+        Button enterCredits;
         Button back;
         Button customLvl;
+        //Credits
+        Button creditsBack;
         //pause
         Button resume;
         Button pauseSettings;
@@ -115,6 +123,7 @@ namespace Slorpus.Managers
             pauseBackground = content.Load<Texture2D>("pauseBackground");
             gameOverBackground = content.Load<Texture2D>("gameOverBackground");
             customLevelBackground = content.Load<Texture2D>("customLevelBackground");
+            creditsBackground = content.Load<Texture2D>("creditsBackground");
 
             //Text Input
             textBox = new TextBox(
@@ -133,8 +142,9 @@ namespace Slorpus.Managers
             check = content.Load<Texture2D>("check");
 
 
-            //testing button textures
-            Texture2D standard = content.Load<Texture2D>("buttonPlaceholder");
+
+        //testing button textures
+        Texture2D standard = content.Load<Texture2D>("buttonPlaceholder");
             Texture2D active = content.Load<Texture2D>("buttonPlaceholderActive");
             Texture2D hover = content.Load<Texture2D>("buttonPlaceholderHover");
 
@@ -145,6 +155,7 @@ namespace Slorpus.Managers
             pauseButtons = new List<Button>();
             settingsButtons = new List<Button>();
             customLevelButtons = new List<Button>();
+            creditsButtons = new List<Button>();
 
             //make buttons
             //menu
@@ -155,11 +166,14 @@ namespace Slorpus.Managers
             menuExit = new Button(new Rectangle(300, 365, 200, 50), 
                 standard, hover, active);
             //settings
-            godMode = new Button(new Rectangle(300, 295, 200, 50),
+            enterCredits = new Button(new Rectangle(300, 295, 200, 50),
                 standard, hover, active);
             customLvl = new Button(new Rectangle(300, 225, 200, 50),
                 standard, hover, active);
             back = new Button(new Rectangle(300, 365, 200, 50),
+                standard, hover, active);
+            //credits
+            creditsBack = new Button(new Rectangle(289, 413, 200, 50),
                 standard, hover, active);
             //pause
             resume = new Button(new Rectangle(300, 225, 200, 50),
@@ -183,9 +197,11 @@ namespace Slorpus.Managers
             menuButtons.Add(menuSettings);
             menuButtons.Add(menuExit);
             //settings
-            settingsButtons.Add(godMode);
+            settingsButtons.Add(enterCredits);
             settingsButtons.Add(customLvl);
             settingsButtons.Add(back);
+            //credits
+            creditsButtons.Add(creditsBack);
             //pause
             pauseButtons.Add(resume);
             pauseButtons.Add(pauseSettings);
@@ -215,8 +231,8 @@ namespace Slorpus.Managers
                     }
                     if (menuSettings.Update(ms, msLoc))
                     {
+                        prevGameState = currentGameState;
                         currentGameState = GameState.Settings;
-                        prevGameState = GameState.Menu;
                     }
                     if (menuExit.Update(ms, msLoc))
                     {
@@ -225,14 +241,18 @@ namespace Slorpus.Managers
                     break;
 
                 case GameState.Game:
-                    if (ks.IsKeyDown(Keys.Escape))
+                    if (ks.IsKeyDown(Keys.Escape) && !oldKS.IsKeyDown(Keys.Escape))
                     {
                         currentGameState = GameState.Pause;
                     }
                     break;
 
                 case GameState.Settings:
-                    if (godMode.Update(ms, msLoc))
+                    if (enterCredits.Update(ms, msLoc))
+                    {
+                        currentGameState = GameState.Credits;
+                    }
+                    if (ks.IsKeyDown(Keys.OemTilde) && !oldKS.IsKeyDown(Keys.OemTilde))
                     {
                         isGodModeOn = !isGodModeOn;
                     }
@@ -248,10 +268,17 @@ namespace Slorpus.Managers
                     }
                     break;
 
+                case GameState.Credits:
+                    if(creditsBack.Update(ms, msLoc))
+                    {
+                        currentGameState = GameState.Settings;
+                    }
+                    break;
+
                 case GameState.CustomLevel:
                     KeyboardInput.Update();
                     textBox.Update();
-                    if (godMode.Update(ms, msLoc))
+                    if (enterCredits.Update(ms, msLoc))
                     {
                         isGodModeOn = !isGodModeOn;
                     }
@@ -279,14 +306,14 @@ namespace Slorpus.Managers
                     break;
 
                 case GameState.Pause:
-                    if (resume.Update(ms, msLoc))
+                    if (resume.Update(ms, msLoc) || (ks.IsKeyDown(Keys.Escape) && !oldKS.IsKeyDown(Keys.Escape)))
                     {
                         currentGameState = GameState.Game;
                     }
                     if (pauseSettings.Update(ms, msLoc))
                     {
+                        prevGameState = currentGameState;
                         currentGameState = GameState.Settings;
-                        prevGameState = GameState.Menu;
                     }
                     if (pauseExit.Update(ms, msLoc))
                     {
@@ -306,6 +333,7 @@ namespace Slorpus.Managers
                     }
                     break;
             }
+            oldKS = ks;
         }
         /// <summary>
         /// draws all UI
@@ -353,7 +381,22 @@ namespace Slorpus.Managers
                     }
                     if (isGodModeOn)
                     {
-                        sb.DrawString(Game1.TestingFont, "GODMODE ENABLED", new Vector2(5, 0), Color.Red);
+                        sb.DrawString(Game1.TestingFont, "GodMode ENABLED", new Vector2(5, 0), Color.Red);
+                    }
+                    break;
+
+                case GameState.Credits:
+                    //draw background
+                    sb.Draw(
+                        creditsBackground,
+                        new Rectangle(0, 0, 800, 480),
+                        Color.White
+                        );
+
+                    //draw all settingsButtons
+                    foreach (Button button in creditsButtons)
+                    {
+                        button.Draw(sb);
                     }
                     break;
 
