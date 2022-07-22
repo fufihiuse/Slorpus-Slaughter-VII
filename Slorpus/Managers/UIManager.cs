@@ -356,6 +356,9 @@ namespace Slorpus.Managers
                         button.Draw(sb);
                     }
 
+                    //Draw debug text
+                    sb.DrawString(Game1.NotoSans, "PRE-RELEASE v2", new Vector2(5, -5), Color.Red);//REMOVE FOR BUILD
+
                     break;
 
                 case GameState.Game:
