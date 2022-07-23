@@ -278,10 +278,6 @@ namespace Slorpus.Managers
                 case GameState.CustomLevel:
                     KeyboardInput.Update();
                     textBox.Update();
-                    if (enterCredits.Update(ms, msLoc))
-                    {
-                        isGodModeOn = !isGodModeOn;
-                    }
                     if (loadLevel.Update(ms, msLoc))
                     {
                         inputtedText = textBox.Text.String;
