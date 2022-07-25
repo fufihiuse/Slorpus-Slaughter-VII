@@ -94,6 +94,8 @@ namespace Slorpus.Managers
         //custom level loader
         Button loadLevel;
 
+        Button fullscreen;
+
         //properties
         public GameState CurrentGameState
         {
@@ -143,10 +145,11 @@ namespace Slorpus.Managers
 
 
 
-        //testing button textures
-        Texture2D standard = content.Load<Texture2D>("buttonPlaceholder");
+            //testing button textures
+            Texture2D standard = content.Load<Texture2D>("buttonPlaceholder");
             Texture2D active = content.Load<Texture2D>("buttonPlaceholderActive");
             Texture2D hover = content.Load<Texture2D>("buttonPlaceholderHover");
+            Texture2D fullscreenTex = content.Load<Texture2D>("fullscreen");
 
             //button lists
             menuButtons = new List<Button>();
@@ -191,21 +194,28 @@ namespace Slorpus.Managers
             loadLevel = new Button(new Rectangle(521, 295, 50, 50),
                 standard, hover, active);
 
+            // fullscreen button
+            fullscreen = new Button(new Rectangle(Constants.SCREEN_WIDTH - 35, 10, 25, 25),
+                fullscreenTex, fullscreenTex, fullscreenTex);
+
             //add buttons to lists
             //menu
             menuButtons.Add(menuStart);
             menuButtons.Add(menuSettings);
             menuButtons.Add(menuExit);
+            menuButtons.Add(fullscreen);
             //settings
             settingsButtons.Add(enterCredits);
             settingsButtons.Add(customLvl);
             settingsButtons.Add(back);
+            settingsButtons.Add(fullscreen);
             //credits
             creditsButtons.Add(creditsBack);
             //pause
             pauseButtons.Add(resume);
             pauseButtons.Add(pauseSettings);
             pauseButtons.Add(pauseExit);
+            pauseButtons.Add(fullscreen);
             //gameover
             gameOverButtons.Add(retry);
             gameOverButtons.Add(gameOverMenu);
@@ -238,6 +248,9 @@ namespace Slorpus.Managers
                     {
                         Environment.Exit(0);
                     }
+                    if (fullscreen.Update(ms, msLoc)) {
+                        Screen.ToggleFullscreenSignal(); 
+                    }
                     break;
 
                 case GameState.Game:
@@ -265,6 +278,9 @@ namespace Slorpus.Managers
                     if (back.Update(ms, msLoc))
                     {
                         currentGameState = prevGameState;
+                    }
+                    if (fullscreen.Update(ms, msLoc)) {
+                        Screen.ToggleFullscreenSignal(); 
                     }
                     break;
 
@@ -315,6 +331,9 @@ namespace Slorpus.Managers
                     {
                         currentGameState = GameState.Menu;
                         LevelInfo.ReloadLevel();
+                    }
+                    if (fullscreen.Update(ms, msLoc)) {
+                        Screen.ToggleFullscreenSignal(); 
                     }
                     break;
 
