@@ -237,6 +237,7 @@ namespace Slorpus.Managers
                     if (menuStart.Update(ms, msLoc))
                     {
                         currentGameState = GameState.Game;
+                        SoundEffects.Stop("title-card");
                         SoundEffects.PlayEffectVolume("startbutton", 0.8f, 0.0f, 0);
                     }
                     if (menuSettings.Update(ms, msLoc))

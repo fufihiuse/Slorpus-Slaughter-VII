@@ -67,6 +67,12 @@ namespace Slorpus.Statics
         {
             soundEffectsBank[name].Play(1.0f, pitch, pan);
         }
+
+        public static void Stop(string name)
+        {
+            soundEffectsBank[name].Dispose();
+        }
+
         public static void PlayEffectVolume(string name, float volume, float pitch=0.0f, float pan=0.0f)
         {
             soundEffectsBank[name].Play(volume, pitch, pan);
