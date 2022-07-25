@@ -69,7 +69,7 @@ namespace Slorpus.Objects
                 if (tempWall.IsMirror)
                 {
                     timesBounced++;
-                    SoundEffects.PlayEffect("reflect", Math.Min(-0.1f + timesBounced*0.1f, 1)); // Plays firing off mirror sound effect
+                    SoundEffects.PlayEffectVolume("reflect", 0.6f, Math.Min(-0.1f + timesBounced*0.1f, 1)); // Plays firing off mirror sound effect
                     LevelInfo.Pause(3);
                     Camera.Shake(3, 5);
                     // get if the normal is primarily X or Y
@@ -107,7 +107,7 @@ namespace Slorpus.Objects
                 float pitch =  shiftedPitch * ((float)Enemy.Count-1) / ((float)LevelInfo.InitialEnemyCount);
                 // pitch = shiftedPitch - pitch; // inverts the pitch change
                 pitch += Constants.ENEMY_VOLUME.MIN;
-                SoundEffects.PlayEffect("enemy_death", pitch, 0.0f);
+                SoundEffects.PlayEffectVolume("enemy_death", 0.6f, pitch, 0.0f);
                 Enemy tempEnemy = (Enemy)(object)other;
                 tempEnemy.Destroy();
             }
