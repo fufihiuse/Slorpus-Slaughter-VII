@@ -353,7 +353,7 @@ namespace Slorpus.Managers
                     }
 
                     //Draw debug text
-                    sb.DrawString(Game1.NotoSans, "PRE-RELEASE v2", new Vector2(5, -5), Color.Red);//REMOVE FOR BUILD
+                    sb.DrawString(Game1.NotoSans, "PRE-RELEASE v2  //  CTRL + F FOR FULLSCREEN", new Vector2(5, -5), Color.Red);//REMOVE FOR BUILD
 
                     break;
 
