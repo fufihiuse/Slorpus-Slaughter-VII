@@ -4,10 +4,11 @@
     "includedFrameworks": [
       {
         "name": "Microsoft.NETCore.App",
-        "version": "3.1.22"
+        "version": "3.1.27"
       }
     ],
     "configProperties": {
+      "System.Reflection.Metadata.MetadataUpdater.IsSupported": false,
       "System.Runtime.TieredCompilation": false
     }
   }
