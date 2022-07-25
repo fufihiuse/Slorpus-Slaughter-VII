@@ -40,7 +40,7 @@ namespace Slorpus.Statics
             "OutsideTheBox", //3
             "Frittata", //4
             "Spiral",
-            "Pasmir",//5
+            "BlissArmy",//5
             "Diamond",
             //5
             "TMI", //6

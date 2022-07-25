@@ -162,7 +162,7 @@ namespace Slorpus
             SoundEffects.AddSounds(Content);
             
             if (!StartupSoundPlayed)
-                SoundEffects.PlayEffect("title-card");
+                SoundEffects.PlayEffectVolume("title-card", 0.8f, 0f, 0);
             StartupSoundPlayed = true;
             
             // load first level
@@ -180,7 +180,8 @@ namespace Slorpus
             
             // read the level out of a file
             level = new Level(wallList, floorList, Content, bowList);
-            List<GenericEntity> levelList = level.LoadFromFile($"..\\..\\..\\levels\\{levelname}.sslvl"); //UPDATE FOR BUILD
+            List<GenericEntity> levelList = level.LoadFromFile($"..\\..\\..\\levels\\{levelname}.sslvl"); //SWAP FOR BUILD
+            //List<GenericEntity> levelList = level.LoadFromFile($"levels\\{levelname}.sslvl");
             
             // create managers and utils
             bulletManager = new BulletManager(bulletList, squareTexture);
@@ -251,7 +252,8 @@ namespace Slorpus
 
             // read the level out of a file
             level = new Level(wallList, floorList, Content, bowList);
-            List<GenericEntity> levelList = level.LoadFromFile($"..\\..\\..\\customlevels\\{customPath}\\{levelName}.sslvl"); //UPDATE FOR BUILD
+            List<GenericEntity> levelList = level.LoadFromFile($"..\\..\\..\\customlevels\\{customPath}\\{levelName}.sslvl"); //SWAP FOR BUILD
+            //List<GenericEntity> levelList = level.LoadFromFile($"customlevels\\{customPath}\\{levelName}.sslvl");
 
             // create managers and utils
             bulletManager = new BulletManager(bulletList, squareTexture);

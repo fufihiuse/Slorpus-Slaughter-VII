@@ -188,7 +188,7 @@ namespace Slorpus.Objects
                     bullets--;
                 }
 
-                SoundEffects.PlayEffect("bullet"); // Plays firing sound effect
+                SoundEffects.PlayEffectVolume("bullet", 0.8f, 0, 0); // Plays firing sound effect
             }
         }
 
@@ -327,9 +327,10 @@ namespace Slorpus.Objects
 
         public Step(int length, string soundEffect)
         {
-            play = () => { SoundEffects.PlayEffect(soundEffect); };
+            play = () => { SoundEffects.PlayEffectVolume(soundEffect, 0.15f, 0, 0); };
             timer = length;
-            
+
+            // wow this code sucks man
             switch (soundEffect)
             {
                 case "walk1":

@@ -529,6 +529,24 @@ namespace Slorpus.Utils
                 case 0b001011011:
                     return finalize(0, 0);
 
+                // smile level
+                case 0b011111110:
+                    return finalize(9, 1);
+                case 0b111010101:
+                    return finalize(3, 2);
+                case 0b100011111:
+                    return finalize(0, 0);
+                case 0b101111000:
+                    return finalize(1, 3);
+                case 0b110111000:
+                    return finalize(5, 3);
+                case 0b101111011:
+                    return finalize(6, 0);
+                case 0b100110011:
+                    return finalize(7, 0);
+                case 0b110111101:
+                    return finalize(5, 3);
+
 
                 // fallback
                 default:
