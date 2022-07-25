@@ -320,6 +320,18 @@
 /processorParam:TextureFormat=Color
 /build:enemy/tracking/chort_shoot_anim_f3.png
 
+#begin fullscreen.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fullscreen.png
+
 #begin gameOverBackground.png
 /importer:TextureImporter
 /processor:TextureProcessor

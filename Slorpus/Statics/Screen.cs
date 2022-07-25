@@ -76,6 +76,11 @@ namespace Slorpus.Statics
             _isFullscreen = false;
         }
 
+        public static void ToggleFullscreenSignal()
+        {
+            current.ToggleFullscreen();
+        }
+
         private void ToggleFullscreen()
         {
             if (_isFullscreen)
