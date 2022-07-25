@@ -195,7 +195,7 @@ namespace Slorpus.Managers
                 standard, hover, active);
 
             // fullscreen button
-            fullscreen = new Button(new Rectangle(Constants.SCREEN_WIDTH - 35, 10, 25, 25),
+            fullscreen = new Button(new Rectangle(Constants.SCREEN_WIDTH - 55, 10, 45, 45),
                 fullscreenTex, fullscreenTex, fullscreenTex);
 
             //add buttons to lists
@@ -203,7 +203,7 @@ namespace Slorpus.Managers
             menuButtons.Add(menuStart);
             menuButtons.Add(menuSettings);
             menuButtons.Add(menuExit);
-            menuButtons.Add(fullscreen);
+            //menuButtons.Add(fullscreen);
             //settings
             settingsButtons.Add(enterCredits);
             settingsButtons.Add(customLvl);
@@ -215,7 +215,7 @@ namespace Slorpus.Managers
             pauseButtons.Add(resume);
             pauseButtons.Add(pauseSettings);
             pauseButtons.Add(pauseExit);
-            pauseButtons.Add(fullscreen);
+            //pauseButtons.Add(fullscreen);
             //gameover
             gameOverButtons.Add(retry);
             gameOverButtons.Add(gameOverMenu);
@@ -372,7 +372,7 @@ namespace Slorpus.Managers
                     }
 
                     //Draw debug text
-                    sb.DrawString(Game1.NotoSans, "PRE-RELEASE v2  //  CTRL + F FOR FULLSCREEN", new Vector2(5, -5), Color.Red);//REMOVE FOR BUILD
+                    //sb.DrawString(Game1.NotoSans, "PRE-RELEASE v2  //  CTRL + F FOR FULLSCREEN", new Vector2(5, -5), Color.Red);//REMOVE FOR BUILD
 
                     break;
 
