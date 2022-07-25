@@ -195,7 +195,7 @@ namespace Slorpus.Managers
                 standard, hover, active);
 
             // fullscreen button
-            fullscreen = new Button(new Rectangle(5, 455, 20, 20),
+            fullscreen = new Button(new Rectangle(Constants.SCREEN_WIDTH - 35, 10, 25, 25),
                 fullscreenTex, fullscreenTex, fullscreenTex);
 
             //add buttons to lists
