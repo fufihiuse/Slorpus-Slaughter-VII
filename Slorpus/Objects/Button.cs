@@ -53,7 +53,7 @@ namespace Slorpus.Objects
         {
             if (position.Contains(msLoc) && ms.LeftButton == ButtonState.Pressed)
             {
-                SoundEffects.PlayEffect("click");
+                SoundEffects.PlayEffectVolume("click", 0.5f, 0, 0);
                 bc = ButtonCondition.Active;
                 return true;
             }

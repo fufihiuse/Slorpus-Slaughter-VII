@@ -162,7 +162,7 @@ namespace Slorpus
             SoundEffects.AddSounds(Content);
             
             if (!StartupSoundPlayed)
-                SoundEffects.PlayEffect("title-card");
+                SoundEffects.PlayEffectVolume("title-card", 0.8f, 0f, 0);
             StartupSoundPlayed = true;
             
             // load first level
