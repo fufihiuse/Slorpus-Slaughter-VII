@@ -73,6 +73,7 @@ namespace Slorpus.Objects
                     LevelInfo.Pause(3);
                     Camera.Shake(3, 5);
                     // get if the normal is primarily X or Y
+                    Console.WriteLine("Position.X: {0} wantedPosition.X: {1} Velocity: {2}", Position.X, wantedPosition.X, vel);
                     if(Math.Abs(Position.X - wantedPosition.X) > Math.Abs(Position.Y - wantedPosition.Y))
                     {
                         // reflect across the Y axis
