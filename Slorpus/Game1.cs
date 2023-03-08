@@ -335,11 +335,33 @@ namespace Slorpus
 
         protected void GameUpdate(GameTime gameTime)
         {
+            for (int i = 0; i < updateList.Count; i++)
+            {
+                updateList[i].Update(gameTime);
 
+                // Manage player projectiles
+                if (updateList[i].GetType() == typeof(PlayerProjectile))
+                {
+                    PlayerProjectile temp = (PlayerProjectile)updateList[i];
+                    if (temp.changedOnLast)
+                    {
+                        temp.changedOnLast = false;
+                        updateList[i] = temp;
+                    }
+                    else if (temp.hitMirrorOnLastFrame)
+                    {
+                        temp.hitMirrorOnLastFrame = false;
+                        updateList[i] = temp;
+                    }
+                }
+            }
+
+            /*
             foreach (IUpdate u in updateList)
             {
                 u.Update(gameTime);
             }
+            */
 
             // check for changes in input
             if (Keyboard.GetState() != prevKB)

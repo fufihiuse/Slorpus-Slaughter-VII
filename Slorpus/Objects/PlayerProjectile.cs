@@ -17,12 +17,16 @@ namespace Slorpus.Objects
         int currentFrame;
         double timer;
         double frameLength;
+        public bool hitMirrorOnLastFrame;
+        public bool changedOnLast;
 
         public PlayerProjectile(Rectangle pos, Vector2 vel, ContentManager content): base(pos, vel)
         {
             currentFrame = 0;
             timer = 0;
             frameLength = 0.1;
+            hitMirrorOnLastFrame = false;
+            changedOnLast = false;
             LoadContent(content);
         }
 
@@ -68,21 +72,27 @@ namespace Slorpus.Objects
                 Wall tempWall = (Wall)(object)other;
                 if (tempWall.IsMirror)
                 {
-                    timesBounced++;
-                    SoundEffects.PlayEffectVolume("reflect", 0.6f, Math.Min(-0.1f + timesBounced*0.1f, 1)); // Plays firing off mirror sound effect
-                    LevelInfo.Pause(3);
-                    Camera.Shake(3, 5);
-                    // get if the normal is primarily X or Y
-                    Console.WriteLine("Position.X: {0} wantedPosition.X: {1} Velocity: {2}", Position.X, wantedPosition.X, vel);
-                    if(Math.Abs(Position.X - wantedPosition.X) > Math.Abs(Position.Y - wantedPosition.Y))
+                    if (!hitMirrorOnLastFrame)
                     {
-                        // reflect across the Y axis
-                        vel = prevVel * new Vector2(-1, 1);
-                    }
-                    else
-                    {
-                        // reflect across the X axis
-                        vel = prevVel * new Vector2(1, -1);
+                        timesBounced++;
+                        SoundEffects.PlayEffectVolume("reflect", 0.6f, Math.Min(-0.1f + timesBounced * 0.1f, 1)); // Plays firing off mirror sound effect
+                        LevelInfo.Pause(3);
+                        Camera.Shake(3, 5);
+                        hitMirrorOnLastFrame = true;
+                        changedOnLast = true;
+
+                        // get if the normal is primarily X or Y
+                        Console.WriteLine("X Diff: {0} Y Diff: {1} Velocity: {2} PrevVel: {3}", Math.Abs(Position.X - wantedPosition.X), Math.Abs(Position.Y - wantedPosition.Y), vel, prevVel);
+                        if (Math.Abs(Position.X - wantedPosition.X) > Math.Abs(Position.Y - wantedPosition.Y))
+                        {
+                            // reflect across the Y axis
+                            vel = prevVel * new Vector2(-1, 1);
+                        }
+                        else
+                        {
+                            // reflect across the X axis
+                            vel = prevVel * new Vector2(1, -1);
+                        }
                     }
                 }
                 else
