@@ -59,8 +59,9 @@ namespace Slorpus.Managers
             // scale impulse by mass
             impulse *= body.Mass;
             
-            // adjust  so that we cancel out the body's current velocity along the normal
-            impulse += Vector2.Reflect(body.Velocity, collision.Normal);
+            // this is a really weird way of reflecting the velocit over the normal, but it only works for AABBs
+            Vector2 axisToAdjust = new Vector2(Math.Abs(collision.Normal.X), Math.Abs(collision.Normal.Y));
+            impulse += body.Velocity * axisToAdjust * -1;
 
             // apply the impulses
             body.Impulses += impulse *= deltaTime;
