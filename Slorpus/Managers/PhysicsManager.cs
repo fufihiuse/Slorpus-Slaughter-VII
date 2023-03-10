@@ -16,7 +16,6 @@ namespace Slorpus.Managers
         private List<Wall> bowList;
         private List<IPhysics> physicsObjects;
         private BulletManager bulletManager;
-        private int maxRecursion; //Tracks amount of corrections
 
         public PhysicsManager(List<IPhysics> physicsObjects, List<Wall> wallList, BulletManager bulletManager, List<Wall> bowList)
         {
@@ -24,7 +23,6 @@ namespace Slorpus.Managers
             this.wallList = wallList;
             this.bowList = bowList;
             this.bulletManager = bulletManager;
-            maxRecursion = 0;
         }
 
         private void ApplyUniversalImpulses(IPhysics body, float deltaTime)

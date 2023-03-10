@@ -47,6 +47,9 @@ namespace Slorpus.Objects
         double frameLength;
         
         public override ushort Mask { get { return Constants.ENEMY_COLLISION_MASK; } }
+        
+        private float mass = Constants.ENEMY_MASS;
+        public override float Mass { get { return mass; } }
 
         //properties
 

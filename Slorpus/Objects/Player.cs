@@ -28,8 +28,11 @@ namespace Slorpus.Objects
         int currentFrame;
         double timer;
         double frameLength;
+
+        private float mass = Constants.PLAYER_MASS;
         
         public override ushort Mask { get { return Constants.PLAYER_COLLISION_MASK; } }
+        public override float Mass { get { return mass; } }
         
 
         Queue<Step> steps;

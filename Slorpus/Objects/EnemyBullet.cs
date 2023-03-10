@@ -39,21 +39,6 @@ namespace Slorpus.Objects
 
         public bool OnCollision<T>(T other)
         {
-            // get destroyed or play an effect or something when colliding with a wall
-            // hurt player when colliding with them
-            if (typeof(T) == typeof(Wall))
-            {
-                Wall temp = (Wall)(object)other;
-                // bullet hit wall, etc
-                
-                if (!temp.IsBulletCollider)
-                {
-                    return false;
-                }
-                // normal wall, destroy this bullet
-                return true;
-            }
-
             try
             {
                 Player temp = (Player)(object)other;

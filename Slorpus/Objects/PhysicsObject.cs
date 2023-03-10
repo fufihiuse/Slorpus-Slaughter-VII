@@ -16,13 +16,13 @@ namespace Slorpus.Objects
         protected Vector2 vel;
         protected Vector2 impulses;
         protected Vector2 subPixelOffset;
-        protected float mass;
+        private float mass = 1;
 
         public Vector2 SubpixelOffset { get { return subPixelOffset; } }
         public virtual Rectangle Position { get { return pos;  } }
         public Vector2 Velocity { get { return vel;  } set { vel = value; } }
         public Vector2 Impulses { get { return impulses;  } set { impulses = value; } }
-        public float Mass { get { return mass; } }
+        public virtual float Mass { get { return mass; } }
         public Vector2 SubpixelCoords { get
             {
                 return new Vector2(
