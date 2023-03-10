@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 using Slorpus.Interfaces.Base;
 using Slorpus.Statics;
+using Slorpus.Utils;
 
 namespace Slorpus.Objects
 {
@@ -17,6 +18,7 @@ namespace Slorpus.Objects
         int currentFrame;
         double timer;
         double frameLength;
+        public override ushort Mask { get { return Constants.PLAYER_BULLET_COLLISION_MASK; } }
 
         public PlayerProjectile(Rectangle pos, Vector2 vel, ContentManager content): base(pos, vel)
         {
@@ -56,7 +58,7 @@ namespace Slorpus.Objects
         }
         
         // Handles bouncing off mirrors.
-        public override bool OnCollisionComplex<T>(T other, Vector2 prevVel, Point wantedPosition) 
+        public override bool OnCollision<T>(T other, CollisionInfo collision) 
         {
             if (other is Player)
             {
@@ -72,33 +74,12 @@ namespace Slorpus.Objects
                     SoundEffects.PlayEffectVolume("reflect", 0.6f, Math.Min(-0.1f + timesBounced*0.1f, 1)); // Plays firing off mirror sound effect
                     LevelInfo.Pause(3);
                     Camera.Shake(3, 5);
-                    // get if the normal is primarily X or Y
-                    if(Math.Abs(Position.X - wantedPosition.X) > Math.Abs(Position.Y - wantedPosition.Y))
-                    {
-                        // reflect across the Y axis
-                        vel = prevVel * new Vector2(-1, 1);
-                    }
-                    else
-                    {
-                        // reflect across the X axis
-                        vel = prevVel * new Vector2(1, -1);
-                    }
+
+                    vel = Vector2.Reflect(vel, collision.Normal);
                 }
                 else
                 {
-                    /* removed for BOW issue
-                    if (!tempWall.IsBulletCollider)
-                    {
-                        // cancel collision
-                        return true;
-                    }
-                    
-                    else
-                    {
-                    */
-                        // just hit a regular wall, now destroy
-                        Destroy();
-                  //}
+                    Destroy();
                 }
             }
             else if (other is Enemy)

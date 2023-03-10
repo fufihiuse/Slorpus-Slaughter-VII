@@ -29,20 +29,43 @@ namespace Slorpus.Managers
 
         private void ApplyUniversalImpulses(IPhysics body, float deltaTime)
         {
-            // calculate drag (percentage reduction in 
+            // calculate drag (percentage reduction in velocity each frame)
             Vector2 drag = new Vector2(body.Velocity.X, body.Velocity.Y);
             drag *= Constants.UNIVERSAL_DRAG * -1 * deltaTime;
 
             // scale to the number of collision iterations (only apply 1/3) of drag per iteration
             // if there are 3 iterations
-            drag *= 1.0f / (float)Constants.COLLISION_ITERATIONS;
+            drag *= 1.0f / Constants.COLLISION_ITERATIONS;
 
             body.Impulses += drag;
         }
 
-        private void ApplyConstraintImpulses(IPhysics body, float deltaTime)
+        private void ApplyConstraintImpulses(IPhysics body, Wall wall, float deltaTime)
         {
+            CollisionInfo collision = wall.Collision(body.Position);
+            if (!collision.Collided) { return; }
+            
+            // call the body's collision handler
+            body.OnCollision(wall, collision);
 
+            // if masked, then just call the handler and be done with it
+            if ((wall.Mask & body.Mask) != 0) { return; }
+
+            // begin calculating corrective impulses ------------------------------
+
+            // impulse begins as the depth along the normal
+            Vector2 impulse = new Vector2(collision.Normal.X, collision.Normal.Y);
+            impulse *= collision.Depth;
+            // scale downwards by the amount we actually want to correct
+            impulse *= Constants.PHYSICS_CORRECTION_AMOUNT;
+            // scale impulse by mass
+            impulse *= body.Mass;
+            
+            // adjust  so that we cancel out the body's current velocity along the normal
+            impulse += Vector2.Reflect(body.Velocity, collision.Normal);
+
+            // apply the impulses
+            body.Impulses += impulse *= deltaTime;
         }
 
         public void Update(GameTime gameTime)
@@ -57,7 +80,14 @@ namespace Slorpus.Managers
                     physicsObject.ApplyImpulses();
                     
                     // apply impulses for constraining bodies to walls
-                    ApplyConstraintImpulses(physicsObject, deltaTime);
+                    foreach (Wall wall in wallList)
+                    {
+                        ApplyConstraintImpulses(physicsObject, wall, deltaTime);
+                    }
+                    foreach (Wall wall in bowList)
+                    {
+                        ApplyConstraintImpulses(physicsObject, wall, deltaTime);
+                    }
                     physicsObject.ApplyImpulses();
 
                     // actually move the body
@@ -72,109 +102,6 @@ namespace Slorpus.Managers
             physicsObjects.Add(physicsObject);
         }
 
-        /// <summary>
-        /// Moves objects which implement IPhysics and calls their respective collision handlers if necessary (STRETCH GOAL)
-        /// </summary>
-        public void MovePhysics(GameTime gameTime)
-        {
-            // declare stuff once to reduce memory allocation and reallocation
-            Vector2 prev = new Vector2();
-            // loop through each physics object and move it
-            foreach (IPhysics physicsObject in physicsObjects)
-            {
-                // record the previous position
-                prev = physicsObject.SubpixelCoords;
-                prev.X += physicsObject.Position.Width / 2;
-                prev.Y += physicsObject.Position.Height / 2;
-                // move the physics object
-                physicsObject.Move(physicsObject.Velocity);
-
-                Point wantedLocation = physicsObject.Position.Location;
-                Vector2 previousVelocity = physicsObject.Velocity;
-
-                // now check if it's colliding with any walls n stuff
-                foreach (Wall wall in wallList)
-                {
-                    if (wall.Collision(physicsObject.Position))
-                    {
-                        // skip bullet hitting non bullet collider walls, removed for BOW fix
-                        //if (!wall.IsBulletCollider && physicsObject is PlayerProjectile) { continue; }
-
-                        // correct the location of the object to no be colliding
-                        CorrectObject(wall, prev, physicsObject);
-
-                        // handlers
-                        bool cancel_collision_complex = physicsObject.OnCollisionComplex(wall, previousVelocity, wantedLocation);
-                        bool cancel_collision = physicsObject.OnCollision(wall);
-
-                        if (!cancel_collision && !cancel_collision_complex)
-                        {
-                            // if you collide, remove sub pixel collision so as to prevent
-                            // the object "technically" being inside the wall but not really
-                            physicsObject.Move(-physicsObject.SubpixelOffset);
-                            break;
-                        }
-                        else
-                        {
-                            // cancel the collision by returning to previous state
-                            Vector2 wantedLocationV = new Vector2(wantedLocation.X, wantedLocation.Y);
-                            Vector2 newLoc = new Vector2(physicsObject.Position.X, physicsObject.Position.Y);
-                            physicsObject.Move(-(newLoc - wantedLocationV));
-                            physicsObject.Velocity = previousVelocity;
-                        }
-                    }
-                }
-
-                foreach (Wall wall in bowList)
-                {
-                    if (wall.Collision(physicsObject.Position))
-                    {
-                        // skip bullet hitting non bullet collider walls, removed for BOW fix
-                        if (physicsObject is PlayerProjectile) { continue; }
-
-                        // correct the location of the object to no be colliding
-                        CorrectObject(wall, prev, physicsObject);
-
-                        // handlers
-                        bool cancel_collision_complex = physicsObject.OnCollisionComplex(wall, previousVelocity, wantedLocation);
-                        bool cancel_collision = physicsObject.OnCollision(wall);
-
-                        if (!cancel_collision && !cancel_collision_complex)
-                        {
-                            // if you collide, remove sub pixel collision so as to prevent
-                            // the object "technically" being inside the wall but not really
-                            physicsObject.Move(-physicsObject.SubpixelOffset);
-                            break;
-                        }
-                        else
-                        {
-                            // cancel the collision by returning to previous state
-                            Vector2 wantedLocationV = new Vector2(wantedLocation.X, wantedLocation.Y);
-                            Vector2 newLoc = new Vector2(physicsObject.Position.X, physicsObject.Position.Y);
-                            physicsObject.Move(-(newLoc - wantedLocationV));
-                            physicsObject.Velocity = previousVelocity;
-                        }
-                    }
-                }
-
-                foreach (IPhysics other in physicsObjects)
-                {
-                    if (physicsObject == other)
-                    {
-                        continue;
-                    }
-                    if (physicsObject.Position.Intersects(other.Position))
-                    {
-                        // note: its not consistent which object will have its handler called first
-                        physicsObject.OnCollision(other);
-                        physicsObject.OnCollisionComplex(other, previousVelocity, wantedLocation);
-                        other.OnCollision(physicsObject);
-                        other.OnCollisionComplex(physicsObject, previousVelocity, wantedLocation);
-                    }
-                }
-            }
-        }
-        
         /// <summary>
         /// Moves bullets and calls bulletManager.Destroy if they hit a wall.
         /// </summary>

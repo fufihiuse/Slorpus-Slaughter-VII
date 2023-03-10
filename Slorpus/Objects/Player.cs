@@ -29,6 +29,8 @@ namespace Slorpus.Objects
         double timer;
         double frameLength;
         
+        public override ushort Mask { get { return Constants.PLAYER_COLLISION_MASK; } }
+        
 
         Queue<Step> steps;
         

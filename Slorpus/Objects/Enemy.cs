@@ -45,6 +45,8 @@ namespace Slorpus.Objects
         int currentFrame;
         double timer;
         double frameLength;
+        
+        public override ushort Mask { get { return Constants.ENEMY_COLLISION_MASK; } }
 
         //properties
 

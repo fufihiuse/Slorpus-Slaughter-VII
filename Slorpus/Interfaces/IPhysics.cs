@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Slorpus.Utils;
 
 namespace Slorpus.Interfaces
 {
@@ -10,6 +11,8 @@ namespace Slorpus.Interfaces
         public Vector2 SubpixelOffset { get; }
         public Vector2 SubpixelCoords { get; }
         public Vector2 Impulses { get; set; }
+
+        public ushort Mask { get; }
 
         public float Mass { get; }
 
@@ -34,14 +37,7 @@ namespace Slorpus.Interfaces
         /// Called by the PhysicsManager whenever this object collides with a wall.
         /// </summary>
         /// <param name="other">The rectangle of the other object collided with.</param>
-        public bool OnCollision<T>(T other);
-        
-        /// <summary>
-        /// Called by the PhysicsManager whenever this object collides with a wall.
-        /// </summary>
-        /// <param name="other">The rectangle of the other object collided with.</param>
-        /// <param name="previousVelocity">The velocity before being corrected for collision.</param>
-        /// <param name="wantedPosition">Position of the object before being corrected to prevent collision.</param>
-        public bool OnCollisionComplex<T>(T other, Vector2 previousVelocity, Point wantedPosition);
+        /// <param name="collision">Information about the collision that occurred.</param>
+        public bool OnCollision<T>(T other, CollisionInfo collision);
     }
 }

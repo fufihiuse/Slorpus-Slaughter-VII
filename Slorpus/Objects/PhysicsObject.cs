@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 
 using Slorpus.Interfaces;
+using Slorpus.Utils;
 
 namespace Slorpus.Objects
 {
@@ -29,6 +30,9 @@ namespace Slorpus.Objects
                     pos.Y + subPixelOffset.Y );
             }
         }
+        
+        // by default, collide with nothing
+        public virtual ushort Mask { get { return 0; } }
 
         public void ApplyImpulses()
         {
@@ -66,8 +70,7 @@ namespace Slorpus.Objects
             pos.X = location.X;
         }
 
-        public virtual bool OnCollision<T>(T other) { return false; }
-        public virtual bool OnCollisionComplex<T>(T other, Vector2 previousVelocity, Point wantedPosition) { return false; }
+        public virtual bool OnCollision<T>(T other, CollisionInfo collision) { return false; }
 
         /// <summary>
         /// moves the object a certain distance

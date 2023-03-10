@@ -15,6 +15,35 @@ namespace Slorpus.Statics
         public const int COLLISION_ITERATIONS = 3;
         public const float UNIVERSAL_DRAG = 0.1f;
 
+        private const ushort PLAYER_COLLISION_BIT =          0b00001000;
+        private const ushort WALL_COLLISION_BIT =            0b00000100;
+        private const ushort BOW_COLLISION_BIT =             0b00000010;
+        private const ushort PLAYER_BULLET_COLLISION_BIT =   0b00000001;
+        private const ushort ENEMY_COLLISION_BIT =           0b00010000;
+
+        public const float PHYSICS_CORRECTION_AMOUNT = 0.8f;
+        
+        // player only collides with walls
+        public const ushort PLAYER_COLLISION_MASK =
+            WALL_COLLISION_BIT |
+            PLAYER_COLLISION_BIT;
+        // bullet also collides with BOWs
+        public const ushort PLAYER_BULLET_COLLISION_MASK =
+            WALL_COLLISION_BIT |
+            BOW_COLLISION_BIT |
+            PLAYER_BULLET_COLLISION_BIT;
+        // walls collide with everything
+        public const ushort WALL_COLLISION_MASK = 1;
+        // BOWs just collide with bullets
+        public const ushort BOW_COLLISION_MASK =
+            PLAYER_BULLET_COLLISION_BIT |
+            BOW_COLLISION_BIT;
+        public const ushort ENEMY_COLLISION_MASK =
+            PLAYER_BULLET_COLLISION_BIT |
+            PLAYER_COLLISION_BIT |
+            WALL_COLLISION_BIT |
+            ENEMY_COLLISION_BIT;
+
         public struct ENEMY_VOLUME {
             public const float MAX = 1.0f;
             public const float MIN = -0.5f;

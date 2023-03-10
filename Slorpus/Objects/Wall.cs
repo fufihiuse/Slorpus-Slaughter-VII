@@ -2,6 +2,7 @@
 
 using Microsoft.Xna.Framework;
 using Slorpus.Utils;
+using Slorpus.Statics;
 
 namespace Slorpus.Objects
 {
@@ -10,21 +11,22 @@ namespace Slorpus.Objects
         //fields
         private Rectangle position;
         private Rectangle subTex;
-        private bool isBulletCollider;
         private bool isMirror;
+        private ushort mask;
 
         public Rectangle Position { get { return position; } }
         public Rectangle SubTex { get { return subTex; } }
         public bool IsMirror { get { return isMirror; } }
-        public bool IsBulletCollider { get { return isBulletCollider; } }
+        public ushort Mask { get { return mask; } }
 
         //constuctor
         public Wall(Rectangle position, Rectangle subTex, bool bullet_collider = true, bool isMirror = false)
         {
             this.position = position;
-            isBulletCollider = bullet_collider;
             this.isMirror = isMirror;
             this.subTex = subTex;
+
+            this.mask = (bullet_collider) ? Constants.WALL_COLLISION_MASK : Constants.BOW_COLLISION_MASK;
         }
 
         /// <summary>
