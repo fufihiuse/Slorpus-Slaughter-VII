@@ -159,11 +159,13 @@ namespace Slorpus.Objects
             yin += kb.IsKeyDown(Keys.W) ? -1 : 0;
 
             Vector2 input = new Vector2(xin, yin);
-            input = Vector2.Normalize(input);
-            
-            // whether or not we are walking = whether or not we are giving input
-            // (use by animations and sound playing)
-            walking = (input.LengthSquared() > 0);
+
+            if (input.LengthSquared() > 0) {
+                input = Vector2.Normalize(input);
+                // whether or not we are walking = whether or not we are giving input
+                // (use by animations and sound playing)
+                walking = true;
+            }
 
             impulses += input * Constants.PLAYER_MOVE_IMPULSE;
         }
