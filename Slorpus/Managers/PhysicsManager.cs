@@ -67,6 +67,15 @@ namespace Slorpus.Managers
             body.Impulses += impulse *= deltaTime;
         }
 
+        private void CallCollisionHandlers(IPhysics bodyA, IPhysics bodyB)
+        {
+            CollisionInfo collision = CollisionMath.Between(bodyA.Position, bodyB.Position);
+            if (!collision.Collided) { return; }
+            
+            bodyA.OnCollision(bodyB, collision);
+            bodyB.OnCollision(bodyA, collision);
+        }
+
         public void Update(GameTime gameTime)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -88,6 +97,13 @@ namespace Slorpus.Managers
                         ApplyConstraintImpulses(physicsObject, wall, deltaTime);
                     }
                     physicsObject.ApplyImpulses();
+
+                    // do collision handler between dynamic bodies but don't actually make them collide
+                    foreach (IPhysics other in physicsObjects)
+                    {
+                        if (other == physicsObject) { continue; }
+                        CallCollisionHandlers(physicsObject, other);
+                    }
 
                     // actually move the body
                     physicsObject.Move(physicsObject.Velocity);
