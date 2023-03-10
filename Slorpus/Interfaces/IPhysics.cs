@@ -9,6 +9,9 @@ namespace Slorpus.Interfaces
         public Vector2 Velocity { get; set; }
         public Vector2 SubpixelOffset { get; }
         public Vector2 SubpixelCoords { get; }
+        public Vector2 Impulses { get; set; }
+
+        public float Mass { get; }
 
         /// <summary>
         /// Moves the object relative to its current position.
@@ -21,6 +24,11 @@ namespace Slorpus.Interfaces
         /// </summary>
         /// <param name="location">The coordinates to move to.</param>
         public void Teleport(Point location);
+        
+        /// <summary>
+        /// Adds the object's impulses to its velocity.
+        /// </summary>
+        public void ApplyImpulses();
         
         /// <summary>
         /// Called by the PhysicsManager whenever this object collides with a wall.

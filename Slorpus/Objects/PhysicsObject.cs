@@ -13,17 +13,33 @@ namespace Slorpus.Objects
         //fields
         protected Rectangle pos;
         protected Vector2 vel;
+        protected Vector2 impulses;
         protected Vector2 subPixelOffset;
+        protected float mass;
 
         public Vector2 SubpixelOffset { get { return subPixelOffset; } }
         public virtual Rectangle Position { get { return pos;  } }
         public Vector2 Velocity { get { return vel;  } set { vel = value; } }
+        public Vector2 Impulses { get { return impulses;  } set { impulses = value; } }
+        public float Mass { get { return mass; } }
         public Vector2 SubpixelCoords { get
             {
                 return new Vector2(
                     pos.X + subPixelOffset.X,
                     pos.Y + subPixelOffset.Y );
             }
+        }
+
+        public void ApplyImpulses()
+        {
+            // scale by inverse of mass
+            impulses.X *= 1.0f / mass;
+            impulses.Y *= 1.0f / mass;
+            // apply
+            vel += impulses;
+            // no warm starting (impulses don't carry over)
+            impulses.X = 0;
+            impulses.Y = 0;
         }
 
         //constructor

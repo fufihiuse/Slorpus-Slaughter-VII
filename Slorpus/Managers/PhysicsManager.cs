@@ -6,6 +6,7 @@ using Slorpus.Objects;
 using Slorpus.Interfaces;
 using Slorpus.Interfaces.Base;
 using Slorpus.Statics;
+using Slorpus.Utils;
 
 namespace Slorpus.Managers
 {
@@ -26,9 +27,43 @@ namespace Slorpus.Managers
             maxRecursion = 0;
         }
 
+        private void ApplyUniversalImpulses(IPhysics body, float deltaTime)
+        {
+            // calculate drag (percentage reduction in 
+            Vector2 drag = new Vector2(body.Velocity.X, body.Velocity.Y);
+            drag *= Constants.UNIVERSAL_DRAG * -1 * deltaTime;
+
+            // scale to the number of collision iterations (only apply 1/3) of drag per iteration
+            // if there are 3 iterations
+            drag *= 1.0f / (float)Constants.COLLISION_ITERATIONS;
+
+            body.Impulses += drag;
+        }
+
+        private void ApplyConstraintImpulses(IPhysics body, float deltaTime)
+        {
+
+        }
+
         public void Update(GameTime gameTime)
         {
-            MovePhysics(gameTime);
+            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            for (int i = 0; i < Constants.COLLISION_ITERATIONS; i++)
+            {
+                foreach (IPhysics physicsObject in physicsObjects)
+                {
+                    // get and apply impulses for forces like gravity and drag
+                    ApplyUniversalImpulses(physicsObject, deltaTime);
+                    physicsObject.ApplyImpulses();
+                    
+                    // apply impulses for constraining bodies to walls
+                    ApplyConstraintImpulses(physicsObject, deltaTime);
+                    physicsObject.ApplyImpulses();
+
+                    // actually move the body
+                    physicsObject.Move(physicsObject.Velocity);
+                }
+            }
             CollideAndMoveBullets(gameTime, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE));
         }
 
@@ -138,79 +173,6 @@ namespace Slorpus.Managers
                     }
                 }
             }
-        }
-        
-        /// <summary>
-        /// Moves an object so that is it no longer colliding with a certain wall,
-        /// and then recurses to ensure it is not colliding with any other walls.
-        /// </summary>
-        /// <param name="collided">The wall being collided with.</param>
-        /// <param name="previousPos">Position of the object before it began overlapping.</param>
-        /// <param name="physicsObject">The object that is colliding.</param>
-        private void CorrectObject(Wall collided, Vector2 previousPos, IPhysics physicsObject)
-        {
-            //Checks how many times CorrectObject has been called on this wall, if more than 10, returns
-            if (maxRecursion >= 10)
-            {
-                maxRecursion = 0;
-                return;
-            }
-            // this will get multiplied by the overlap amount to create the correction
-            Vector2 correctionCoeff;
-            // distance from where the object was last from to the wall
-            Vector2 diff = new Vector2(
-                previousPos.X,
-                previousPos.Y
-                ) - new Vector2(
-                    collided.Position.Center.X,
-                    collided.Position.Center.Y
-                    );
-            // amount the wall and object are currently overlapping
-            Rectangle overlapRect = Rectangle.Intersect(collided.Position, physicsObject.Position);
-            Vector2 overlap = new Vector2(overlapRect.Width, overlapRect.Height);
-
-            // generate correction coefficients
-            float absX = Math.Abs(diff.X);
-            float absY = Math.Abs(diff.Y);
-            if (absX > absY)
-            {
-                correctionCoeff = new Vector2(Math.Sign(diff.X), 0);
-                // we are correcting X which means we collided on that axis
-                // remove X velocity
-                physicsObject.Velocity = new Vector2(0, physicsObject.Velocity.Y);
-            }
-            else
-            {
-                correctionCoeff = new Vector2(0, Math.Sign(diff.Y));
-                // we are correcting Y which means we collided on that axis
-                // remove Y velocity
-                physicsObject.Velocity = new Vector2(physicsObject.Velocity.X, 0);
-            }
-
-            // move object by the right correction amount
-            physicsObject.Move(Vector2.Multiply(correctionCoeff, overlap));
-
-            // check if recursion is necessary
-            foreach (Wall wall in wallList)
-            {
-                if (wall.Collision(physicsObject.Position))
-                {
-                    maxRecursion++;
-                    physicsObject.OnCollision<Wall>(wall);
-                    CorrectObject(wall, previousPos, physicsObject);
-                    break;
-                }
-            }
-            foreach (Wall wall in bowList)
-            {
-                if (wall.Collision(physicsObject.Position))
-                {
-                    physicsObject.OnCollision<Wall>(wall);
-                    CorrectObject(wall, previousPos, physicsObject);
-                    break;
-                }
-            }
-            maxRecursion = 0;
         }
         
         /// <summary>

@@ -12,6 +12,9 @@ namespace Slorpus.Statics
         public const float MIN_FOLLOW_DISTANCE = 250f;
         public const float MIN_DETECTION_DISTANCE = 400;
 
+        public const int COLLISION_ITERATIONS = 3;
+        public const float UNIVERSAL_DRAG = 0.1f;
+
         public struct ENEMY_VOLUME {
             public const float MAX = 1.0f;
             public const float MIN = -0.5f;

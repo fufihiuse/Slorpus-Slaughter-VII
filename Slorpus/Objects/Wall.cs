@@ -1,5 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using System;
+
+using Microsoft.Xna.Framework;
+using Slorpus.Utils;
 
 namespace Slorpus.Objects
 {
@@ -30,9 +32,19 @@ namespace Slorpus.Objects
         /// </summary>
         /// <param name="hitbox"></param>
         /// <returns></returns>
-        public bool Collision(Rectangle hitbox)
+        public CollisionInfo Collision(Rectangle hitbox)
         {
-            return position.Intersects(hitbox);
+            // dont use the builtin Intersects method because we need additional information
+            // about the overlap like depth and normal
+            // NOTE: using Top as the minimum side of the collision, assumes Top < Bottom (inverted coordinates)
+            Vector2 min = new Vector2(Math.Max(hitbox.Left, position.Left), Math.Max(hitbox.Top, position.Top));
+            Vector2 max = new Vector2(Math.Min(hitbox.Right, position.Right), Math.Min(hitbox.Bottom, position.Bottom));
+            bool collided = min.X < max.X && min.Y < max.Y;
+
+            Vector2 depth = new Vector2(0.0f);
+            Vector2 normal = new Vector2(0.0f);
+
+            return new CollisionInfo(collided, depth, normal);
         }
     }
 }
