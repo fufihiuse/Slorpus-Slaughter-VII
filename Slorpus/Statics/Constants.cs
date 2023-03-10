@@ -26,6 +26,7 @@ namespace Slorpus.Statics
         public const float PLAYER_MASS = 1;
         public const float ENEMY_MASS = 1;
         public const float PLAYER_BULLET_MASS = 1;
+        public const float PLAYER_MOVE_IMPULSE = 2;
         
         // player only collides with walls
         public const ushort PLAYER_COLLISION_MASK =

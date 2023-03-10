@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Audio;
 
 using Slorpus.Managers;
 using Slorpus.Interfaces;
@@ -15,31 +14,27 @@ namespace Slorpus.Objects
 {
     class Player : PhysicsObject, IUpdate, IDraw, IMouseClick, IKeyPress, ILoad, IDestroyable
     {
+        // bullet instantiation function
         Action<Point, Vector2> createBullet;
-        // number of bullets the player currently has
+
+        // player state
         int bullets;
         int health;
 
-        //animation fields
-        bool left;
+        //animation state
         bool walking;
-        List<Texture2D> walkingAnimation;
-        List<Texture2D> idleAnimation;
-        int currentFrame;
-        double timer;
-        double frameLength;
-
+        
+        // physics information
         private float mass = Constants.PLAYER_MASS;
-        
         public override ushort Mask { get { return Constants.PLAYER_COLLISION_MASK; } }
-        public override float Mass { get { return mass; } }
+        public override float Mass { get { return mass; } }        
+        public static new Rectangle Position { get { return current.pos; } }
         
 
+        // the step sound effects that need to be player
         Queue<Step> steps;
         
-        // publicly expose players position
         private static Player current;
-        public static new Rectangle Position { get { return current.pos; } }
         
         public int Health
         {
@@ -71,13 +66,7 @@ namespace Slorpus.Objects
             current = this;
 
             //start up animation vars
-            left = false;
             walking = false;
-            currentFrame = 0;
-            timer = 0;
-            frameLength = 0.1;
-            walkingAnimation = new List<Texture2D>();
-            idleAnimation = new List<Texture2D>();
 
             LoadContent(content);
         }
@@ -85,8 +74,7 @@ namespace Slorpus.Objects
         void IUpdate.Update(GameTime gameTime)
         {
             KeyboardState kb = Keyboard.GetState();
-            UpdatePlayerPosition(kb);
-            UpdateFrame(gameTime);
+            GetAndApplyInput(kb);
             
             if (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.S) ||
                 kb.IsKeyDown(Keys.D) || kb.IsKeyDown(Keys.A))
@@ -109,54 +97,12 @@ namespace Slorpus.Objects
         {
             Rectangle target = Position;
             target.Location -= Camera.Offset;
-            /*
-            if (left)
-            {
-                sb.Draw(
-                playerAnimationFrame(),
-                new Vector2(target.X, target.Y),
-                new Rectangle(0, 0, idleAnimation[0].Width, idleAnimation[0].Height),
-                Color.White,
-                0.0f,
-                Vector2.Zero,
-                1.0f,
-                SpriteEffects.FlipHorizontally,
-                0.0f
-                );
-            }
-            else
-            {
-                sb.Draw(
-                playerAnimationFrame(),
-                new Vector2(target.X, target.Y),
-                new Rectangle(0, 0, idleAnimation[0].Width, idleAnimation[0].Height),
-                Color.White,
-                0.0f,
-                Vector2.Zero,
-                1.0f,
-                SpriteEffects.None,
-                0.0f
-                );
-            }*/
             sb.Draw(Game1.SquareTexture, target, Color.White);
         }
-
-        public void LoadContent(ContentManager content)
-        {
-            idleAnimation.Add(content.Load<Texture2D>("player/lizard_f_idle_anim_f0"));
-            idleAnimation.Add(content.Load<Texture2D>("player/lizard_f_idle_anim_f1"));
-            idleAnimation.Add(content.Load<Texture2D>("player/lizard_f_idle_anim_f2"));
-            idleAnimation.Add(content.Load<Texture2D>("player/lizard_f_idle_anim_f3"));
-            walkingAnimation.Add(content.Load<Texture2D>("player/lizard_f_run_anim_f0"));
-            walkingAnimation.Add(content.Load<Texture2D>("player/lizard_f_run_anim_f1"));
-            walkingAnimation.Add(content.Load<Texture2D>("player/lizard_f_run_anim_f2"));
-            walkingAnimation.Add(content.Load<Texture2D>("player/lizard_f_run_anim_f3"));
-        }
-
-        void IKeyPress.OnKeyPress(KeyboardState kb)
-        {
-            // key pressed logic
-        }
+        
+        // unused, but need to be implemented to make interfaces happy
+        public void LoadContent(ContentManager content){}
+        void IKeyPress.OnKeyPress(KeyboardState kb) {}
 
 
         /// <summary>
@@ -198,86 +144,28 @@ namespace Slorpus.Objects
         }
 
         /// <summary>
-        /// Updates the player position by detecting the keys pressed by the player and the animation state
+        /// Gets the input from the keyboard and applies it to the player's state; the walking state
+        /// as well as the physics impulses are updated to move the player.
         /// </summary>
-        /// <param name="kb"></param>
-        public void UpdatePlayerPosition(KeyboardState kb)
+        /// <param name="kb">The current state of the keyboard.</param>
+        public void GetAndApplyInput(KeyboardState kb)
         {
-            float speed = 0.5f;
             float xin = 0;
             float yin = 0;
-            float xTemp = 0;
-            float yTemp = 0;
 
-            //update direction
-            if(Screen.GetMousePosition().X > current.pos.X)
-            {
-                left = false;
-            }
-            else
-            {
-                left = true;
-            }
+            xin += kb.IsKeyDown(Keys.A) ? -1 : 0;
+            xin += kb.IsKeyDown(Keys.D) ? 1 : 0;
+            yin += kb.IsKeyDown(Keys.S) ? 1 : 0;
+            yin += kb.IsKeyDown(Keys.W) ? -1 : 0;
 
-            //bool for walking animation
-            walking = false;
+            Vector2 input = new Vector2(xin, yin);
+            input = Vector2.Normalize(input);
+            
+            // whether or not we are walking = whether or not we are giving input
+            // (use by animations and sound playing)
+            walking = (input.LengthSquared() > 0);
 
-            if (kb.IsKeyDown(Keys.W))
-            { 
-                yTemp = -1;
-                walking = true;
-            }
-
-            if (kb.IsKeyDown(Keys.S))
-            { 
-                yTemp = 1;
-                walking = true;
-            }
-
-            if (kb.IsKeyDown(Keys.A))
-            { 
-                xTemp = -1;
-                walking = true;
-            }
-
-            if (kb.IsKeyDown(Keys.D))
-            { 
-                xTemp = 1;
-                walking = true;
-            }
-
-            if (kb.IsKeyDown(Keys.W) && kb.IsKeyDown(Keys.D))
-            {
-                xTemp = 0.707f;
-                yTemp = -0.707f;
-            }
-            if (kb.IsKeyDown(Keys.W) && kb.IsKeyDown(Keys.A))
-            {
-                xTemp = -0.707f;
-                yTemp = -0.707f;
-            }
-            if (kb.IsKeyDown(Keys.A) && kb.IsKeyDown(Keys.S))
-            {
-                xTemp = -0.707f;
-                yTemp = 0.707f;
-            }
-            if (kb.IsKeyDown(Keys.S) && kb.IsKeyDown(Keys.D))
-            {
-                xTemp = 0.707f;
-                yTemp = 0.707f;
-            }
-            if (kb.IsKeyDown(Keys.A) && kb.IsKeyDown(Keys.D))
-            {
-                xTemp = 0f;
-            }
-            if (kb.IsKeyDown(Keys.W) && kb.IsKeyDown(Keys.S))
-            {
-                yTemp = 0f;
-            }
-            xin += xTemp;
-            yin += yTemp;
-
-            Velocity = new Vector2((Velocity.X + (xin * speed)) * 0.9f, (Velocity.Y + (yin * speed)) * 0.9f);
+            impulses += input * Constants.PLAYER_MOVE_IMPULSE;
         }
 
         public void Destroy()
@@ -288,33 +176,6 @@ namespace Slorpus.Objects
                 current = null;
             }
             Dereferencer.Destroy(this);
-        }
-
-        /// <summary>
-        /// returns the frame the player should be on
-        /// </summary>
-        /// <returns></returns>
-        private Texture2D playerAnimationFrame()
-        {
-            if (walking)
-            {
-                return walkingAnimation[currentFrame];
-            }
-            return idleAnimation[0];
-        }
-
-        private void UpdateFrame(GameTime gameTime)
-        {
-            timer += gameTime.ElapsedGameTime.TotalSeconds;
-            if(timer >= frameLength)
-            {
-                currentFrame++;
-                if (currentFrame >= 3)
-                {
-                    currentFrame = 0;
-                }
-                timer -= frameLength;
-            }
         }
     }
     /// <summary>
