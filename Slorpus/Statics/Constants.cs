@@ -13,7 +13,7 @@ namespace Slorpus.Statics
         public const float MIN_DETECTION_DISTANCE = 400;
 
         public const int COLLISION_ITERATIONS = 3;
-        public const float UNIVERSAL_DRAG = 0.1f;
+        public const float UNIVERSAL_DRAG = 0.5f;
 
         private const ushort PLAYER_COLLISION_BIT =          0b00001000;
         private const ushort WALL_COLLISION_BIT =            0b00000100;
