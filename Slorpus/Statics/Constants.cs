@@ -27,21 +27,26 @@ namespace Slorpus.Statics
         public const float ENEMY_MASS = 1;
         public const float PLAYER_BULLET_MASS = 1;
         public const float PLAYER_MOVE_IMPULSE = 0.1f;
+        public const float PLAYER_FRICTION_COEFFICIENT = 0.1f;
+        
+        // basically just a global scalar to friction
+        public const float GRAVITY = 0.5f;
         
         // player only collides with walls
         public const ushort PLAYER_COLLISION_MASK =
             WALL_COLLISION_BIT |
+            BOW_COLLISION_BIT |
             PLAYER_COLLISION_BIT;
         // bullet also collides with BOWs
         public const ushort PLAYER_BULLET_COLLISION_MASK =
             WALL_COLLISION_BIT |
-            BOW_COLLISION_BIT |
             PLAYER_BULLET_COLLISION_BIT;
         // walls collide with everything
         public const ushort WALL_COLLISION_MASK = 1;
         // BOWs just collide with bullets
         public const ushort BOW_COLLISION_MASK =
-            PLAYER_BULLET_COLLISION_BIT |
+            PLAYER_COLLISION_BIT |
+            ENEMY_COLLISION_BIT |
             BOW_COLLISION_BIT;
         public const ushort ENEMY_COLLISION_MASK =
             PLAYER_BULLET_COLLISION_BIT |

@@ -54,14 +54,15 @@ namespace Slorpus.Managers
             // impulse begins as the depth along the normal
             Vector2 impulse = new Vector2(collision.Normal.X, collision.Normal.Y);
             impulse *= collision.Depth;
+
+            // this is a really weird way of reflecting the velocit over the normal, but it only works for AABBs
+            Vector2 axisToAdjust = new Vector2(Math.Abs(collision.Normal.X), Math.Abs(collision.Normal.Y));
+            impulse += body.Velocity * axisToAdjust * -1;
+            
             // scale downwards by the amount we actually want to correct
             impulse *= Constants.PHYSICS_CORRECTION_AMOUNT;
             // scale impulse by mass
             impulse *= body.Mass;
-            
-            // this is a really weird way of reflecting the velocit over the normal, but it only works for AABBs
-            Vector2 axisToAdjust = new Vector2(Math.Abs(collision.Normal.X), Math.Abs(collision.Normal.Y));
-            impulse += body.Velocity * axisToAdjust * -1;
 
             // apply the impulses
             body.Impulses += impulse *= deltaTime;
@@ -92,12 +93,11 @@ namespace Slorpus.Managers
                     {
                         ApplyConstraintImpulses(physicsObject, wall, deltaTime);
                     }
+                    // same but for bullet only walls
                     foreach (Wall wall in bowList)
                     {
                         ApplyConstraintImpulses(physicsObject, wall, deltaTime);
                     }
-                    physicsObject.ApplyImpulses();
-
                     // do collision handler between dynamic bodies but don't actually make them collide
                     foreach (IPhysics other in physicsObjects)
                     {
@@ -106,6 +106,7 @@ namespace Slorpus.Managers
                     }
 
                     // actually move the body
+                    physicsObject.ApplyImpulses();
                     physicsObject.Move(physicsObject.Velocity);
                 }
             }

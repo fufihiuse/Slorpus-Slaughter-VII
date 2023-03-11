@@ -63,6 +63,7 @@ namespace Slorpus.Objects
         // Handles bouncing off mirrors.
         public override bool OnCollision<T>(T other, CollisionInfo collision) 
         {
+            // TODO: figure out why where are multiple conditionals here that check for if the other is player
             if (other is Player)
             {
                 return false;
@@ -80,9 +81,11 @@ namespace Slorpus.Objects
 
                     vel = Vector2.Reflect(vel, collision.Normal);
                 }
-                else
+                else if ((Mask & tempWall.Mask) > 0)
                 {
                     Destroy();
+                } else {
+                    return false;
                 }
             }
             else if (other is Enemy)
@@ -91,6 +94,7 @@ namespace Slorpus.Objects
                 float pitch =  shiftedPitch * ((float)Enemy.Count-1) / ((float)LevelInfo.InitialEnemyCount);
                 // pitch = shiftedPitch - pitch; // inverts the pitch change
                 pitch += Constants.ENEMY_VOLUME.MIN;
+                Console.WriteLine("Pitch: " + pitch);
                 SoundEffects.PlayEffectVolume("enemy_death", 0.6f, pitch, 0.0f);
                 Enemy tempEnemy = (Enemy)(object)other;
                 tempEnemy.Destroy();

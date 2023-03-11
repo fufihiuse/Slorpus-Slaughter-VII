@@ -26,7 +26,7 @@ namespace Slorpus.Objects
             this.isMirror = isMirror;
             this.subTex = subTex;
 
-            this.mask = (bullet_collider) ? Constants.WALL_COLLISION_MASK : Constants.BOW_COLLISION_MASK;
+            mask = (bullet_collider) ? Constants.WALL_COLLISION_MASK : Constants.BOW_COLLISION_MASK;
         }
 
         /// <summary>
