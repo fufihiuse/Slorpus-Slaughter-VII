@@ -91,6 +91,19 @@ namespace Slorpus.Objects
                         );
                 }
             }
+
+            // apply friction every frame, if moving
+            if (vel.Length() != 0)
+            {
+                Vector2 friction = Vector2.Negate(Vector2.Normalize(vel)
+                    * Constants.PLAYER_FRICTION_COEFFICIENT * Constants.GRAVITY * mass);
+
+                // clamp the friction to be no larger than the velocity
+                friction.X = (Math.Clamp(Math.Abs(friction.X), 0, Math.Abs(vel.X))) * Math.Sign(friction.X);
+                friction.Y = (Math.Clamp(Math.Abs(friction.Y), 0, Math.Abs(vel.Y))) * Math.Sign(friction.Y);
+
+                impulses += friction;
+            }
         }
 
         void IDraw.Draw(SpriteBatch sb)
