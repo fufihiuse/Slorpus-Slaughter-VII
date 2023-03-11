@@ -38,16 +38,16 @@ namespace Slorpus.Managers
             body.Impulses += drag;
         }
 
-        private void ApplyConstraintImpulses(IPhysics body, Wall wall, float deltaTime)
+        private bool ApplyConstraintImpulses(IPhysics body, Wall wall, float deltaTime)
         {
             CollisionInfo collision = wall.Collision(body.Position);
-            if (!collision.Collided) { return; }
+            if (!collision.Collided) { return false; }
             
             // call the body's collision handler
             body.OnCollision(wall, collision);
 
             // if masked, then just call the handler and be done with it
-            if ((wall.Mask & body.Mask) != 0) { return; }
+            if ((wall.Mask & body.Mask) != 0) { return false; }
 
             // begin calculating corrective impulses ------------------------------
 
@@ -65,44 +65,68 @@ namespace Slorpus.Managers
 
             // apply the impulses
             body.Impulses += impulse *= deltaTime;
+
+            return true;
         }
 
-        private void CallCollisionHandlers(IPhysics bodyA, IPhysics bodyB)
+        private bool CallCollisionHandlers(IPhysics bodyA, IPhysics bodyB)
         {
             CollisionInfo collision = CollisionMath.Between(bodyA.Position, bodyB.Position);
-            if (!collision.Collided) { return; }
-            
+            if (!collision.Collided) { return false; }
+
             bodyA.OnCollision(bodyB, collision);
             bodyB.OnCollision(bodyA, collision);
+
+            return true;
         }
 
         public void Update(GameTime gameTime)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            // keep track of collision information for every physics object.
+            CollisionHistory[] collisions = new CollisionHistory[physicsObjects.Count];
+            for (int i = 0; i < physicsObjects.Count; i++)
+            {
+                collisions[i] = new CollisionHistory(wallList.Count, bowList.Count, physicsObjects.Count);
+            }
+
+            // begin physics correction iterations
             for (int i = 0; i < Constants.COLLISION_ITERATIONS; i++)
             {
-                foreach (IPhysics physicsObject in physicsObjects)
+                for (int physObjIndex = 0; physObjIndex < physicsObjects.Count; physObjIndex++)
                 {
+                    IPhysics physicsObject = physicsObjects[physObjIndex];
                     // get and apply impulses for forces like gravity and drag
                     ApplyUniversalImpulses(physicsObject, deltaTime);
                     physicsObject.ApplyImpulses();
                     
                     // apply impulses for constraining bodies to walls
-                    foreach (Wall wall in wallList)
+                    for (int wallIndex = 0; wallIndex < wallList.Count; wallIndex++)
                     {
-                        ApplyConstraintImpulses(physicsObject, wall, deltaTime);
+                        if (collisions[physObjIndex].wallsCollidedWith[wallIndex])
+                            continue;
+                        Wall wall = wallList[wallIndex];
+                        collisions[physObjIndex].wallsCollidedWith[wallIndex] = ApplyConstraintImpulses(physicsObject, wall, deltaTime);
                     }
-                    foreach (Wall wall in bowList)
+                    // same thing but for BOWs (bullet-only walls)
+                    for (int wallIndex = 0; wallIndex < bowList.Count; wallIndex++)
                     {
-                        ApplyConstraintImpulses(physicsObject, wall, deltaTime);
+                        if (collisions[physObjIndex].bowsCollidedWith[wallIndex])
+                            continue;
+                        Wall wall = bowList[wallIndex];
+                        collisions[physObjIndex].bowsCollidedWith[wallIndex] = ApplyConstraintImpulses(physicsObject, wall, deltaTime);
                     }
                     physicsObject.ApplyImpulses();
 
-                    // do collision handler between dynamic bodies but don't actually make them collide
-                    foreach (IPhysics other in physicsObjects)
+                    // do collision handler between dynamic bodies but don't actually make them collide (once per frame)
+                    for (int otherIndex = 0; otherIndex < physicsObjects.Count; otherIndex++)
                     {
+                        if (collisions[physObjIndex].physicsObjectsCollidedWith[otherIndex])
+                            continue;
+                        IPhysics other = physicsObjects[otherIndex];
                         if (other == physicsObject) { continue; }
-                        CallCollisionHandlers(physicsObject, other);
+                        collisions[physObjIndex].physicsObjectsCollidedWith[otherIndex] = CallCollisionHandlers(physicsObject, other);
                     }
 
                     // actually move the body
@@ -153,6 +177,22 @@ namespace Slorpus.Managers
                 }
             }
             bulletManager.DestroyBatch(queuedBullets.ToArray());
+        }
+    }
+    /// <summary>
+    /// Stores information about what objects any given physics object has collided with.
+    /// Used to prevent the collision handler between two objects from being called twice in a frame.
+    /// </summary>
+    struct CollisionHistory
+    {
+        public bool[] wallsCollidedWith;
+        public bool[] bowsCollidedWith;
+        public bool[] physicsObjectsCollidedWith;
+        public CollisionHistory(int numberOfWalls, int numberOfBows, int numberOfPhysicsObjects)
+        {
+            wallsCollidedWith = new bool[numberOfWalls];
+            bowsCollidedWith = new bool[numberOfBows];
+            physicsObjectsCollidedWith = new bool[numberOfPhysicsObjects];
         }
     }
 }
