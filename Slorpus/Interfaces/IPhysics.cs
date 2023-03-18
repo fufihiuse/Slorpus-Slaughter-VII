@@ -18,6 +18,9 @@ namespace Slorpus.Interfaces
 
         public int ID { get; }
 
+        public Point PositionAtBeginningOfFrame { get; }
+        public void SyncPositionAtBeginningOfFrame();
+
         /// <summary>
         /// Moves the object relative to its current position.
         /// </summary>

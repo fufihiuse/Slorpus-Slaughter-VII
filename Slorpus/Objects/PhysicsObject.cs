@@ -24,6 +24,9 @@ namespace Slorpus.Objects
         public Vector2 Velocity { get { return vel;  } set { vel = value; } }
         public Vector2 Impulses { get { return impulses;  } set { impulses = value; } }
         public virtual float Mass { get { return mass; } }
+
+        private Point positionAtBeginningOfFrame;
+        public Point PositionAtBeginningOfFrame { get { return positionAtBeginningOfFrame; } }
         public Vector2 SubpixelCoords { get
             {
                 return new Vector2(
@@ -55,6 +58,7 @@ namespace Slorpus.Objects
         {
             this.pos = pos;
             this.vel = vel;
+            positionAtBeginningOfFrame = new Point();
         }
         
         // simple overload constructor that accepts a rectangle instead of separate width and heights
@@ -63,6 +67,14 @@ namespace Slorpus.Objects
             this.pos = pos;
             this.vel = vel;
             id = UUID.get();
+        }
+        
+        /// <summary>
+        /// Update the PositionAtBeginningOfFrame variable to match Position.
+        /// </summary>
+        public void SyncPositionAtBeginningOfFrame()
+        {
+            positionAtBeginningOfFrame = pos.Location;
         }
 
         /// <summary>

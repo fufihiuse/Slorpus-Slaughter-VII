@@ -85,17 +85,13 @@ namespace Slorpus.Managers
             };
 
             // ensure bodies are always in same order
-            int hashA = bodyA.GetHashCode();
-            int hashB = bodyB.GetHashCode();
-            if (hashA > hashB)
+            if (bodyA.ID > bodyB.ID)
             {
                 int hash = HashDynamicOnDynamicCollision(bodyA, bodyB);
-                Console.WriteLine("HANDLER: " + hash + "\t BODY A :" + bodyA + "\t BODY B:" + bodyB);
                 collisionHandlers[hash] = handler;
             } else
             {
                 int hash = HashDynamicOnDynamicCollision(bodyB, bodyA);
-                Console.WriteLine("HANDLER: " + hash + "\t BODY A :" + bodyA + "\t BODY B:" + bodyB);
                 collisionHandlers[hash] = handler;
             }
         }
@@ -103,6 +99,13 @@ namespace Slorpus.Managers
         public void Update(GameTime gameTime)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            // keep track of where each object started
+            foreach (IPhysics physicsObject in physicsObjects)
+            {
+                physicsObject.SyncPositionAtBeginningOfFrame();
+            }
+
+            // physics loop
             for (int i = 0; i < Constants.COLLISION_ITERATIONS; i++)
             {
                 foreach (IPhysics physicsObject in physicsObjects)
@@ -189,13 +192,14 @@ namespace Slorpus.Managers
             int result = body.ID;
             // physics bodies tend to never occupy the same location so
             // using XY for this should usually generate unique numbers
-            result = (result * 397) ^ body.Position.Bottom;
-            result = (result * 397) ^ body.Position.Left;
+            result = (result * 397) ^ body.PositionAtBeginningOfFrame.X;
+            result = (result * 397) ^ body.PositionAtBeginningOfFrame.Y;
             return result;
         }
         private int HashWall(Wall wall)
         {
             int result = wall.ID;
+            // assumes that walls will not move during a physics iteration
             result = (result * 397) ^ wall.Position.Bottom;
             result = (result * 397) ^ wall.Position.Left;
             return result;
