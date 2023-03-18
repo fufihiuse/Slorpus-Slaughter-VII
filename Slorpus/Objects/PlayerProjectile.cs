@@ -95,7 +95,6 @@ namespace Slorpus.Objects
                 }
                 else if ((Mask & tempWall.Bit) > 0)
                 {
-                    Console.WriteLine("Projectile mask: " + Mask + "\t Wall bit: " + tempWall.Bit);
                     Destroy();
                 } else {
                     return false;
