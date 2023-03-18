@@ -17,7 +17,8 @@ namespace Slorpus.Statics
         public const int UUID_MAX = 10000;
 
         public const int COLLISION_ITERATIONS = 10;
-        public const float UNIVERSAL_DRAG = 0.5f;
+        public const float UNIVERSAL_DRAG = 0f; // disabled
+        public const float PLAYER_DRAG = 0.5f;
 
         private const ushort PLAYER_COLLISION_BIT =          0b00001000;
         private const ushort WALL_COLLISION_BIT =            0b00000100;
@@ -68,7 +69,7 @@ namespace Slorpus.Statics
             public const int STEP_SPEED = 20;
             public const int SIZE = 16;
             public const int BULLET_SIZE = 10;
-            public const float BULLET_SPEED = 6f;
+            public const float BULLET_SPEED = 1f;
         }
       
         // public const int SCREEN_WIDTH = 480;

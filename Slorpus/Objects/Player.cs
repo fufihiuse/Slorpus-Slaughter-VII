@@ -73,6 +73,11 @@ namespace Slorpus.Objects
 
         void IUpdate.Update(GameTime gameTime)
         {
+            // calculate drag (percentage reduction in velocity each frame)
+            Vector2 drag = new Vector2(vel.X, vel.Y);
+            drag *= Constants.PLAYER_DRAG * -1 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            impulses += drag;
+
             KeyboardState kb = Keyboard.GetState();
             GetAndApplyInput(kb);
             
