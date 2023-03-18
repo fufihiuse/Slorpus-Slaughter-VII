@@ -14,6 +14,8 @@ namespace Slorpus.Interfaces
 
         public ushort Mask { get; }
 
+        public ushort Bit { get; }
+
         public float Mass { get; }
 
         public int ID { get; }

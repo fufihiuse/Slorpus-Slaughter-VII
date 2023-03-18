@@ -40,7 +40,8 @@ namespace Slorpus.Managers
             collisionHandlers[hash] = handler;
 
             // if masked, then just make the handler and be done with it
-            if ((wall.Mask & body.Mask) == 0) { return; }
+            // (wall does not get collision handlers, wall.Mask is unused)
+            if ((body.Mask & wall.Bit) == 0) { return; }
 
             // begin calculating corrective impulses ------------------------------
 
@@ -66,21 +67,19 @@ namespace Slorpus.Managers
             CollisionInfo collision = CollisionMath.Between(bodyA.Position, bodyB.Position);
             if (!collision.Collided) { return; }
 
-            Action handler = () => {
-                bodyA.OnCollision(bodyB, collision);
-                bodyB.OnCollision(bodyA, collision);
+            Action handlerA = () => {
+                if ((bodyA.Mask & bodyB.Bit) != 0)
+                    bodyA.OnCollision(bodyB, collision);
             };
-
-            // ensure bodies are always in same order
-            if (bodyA.ID > bodyB.ID)
-            {
-                int hash = HashDynamicOnDynamicCollision(bodyA, bodyB);
-                collisionHandlers[hash] = handler;
-            } else
-            {
-                int hash = HashDynamicOnDynamicCollision(bodyB, bodyA);
-                collisionHandlers[hash] = handler;
-            }
+            int hashA = HashDynamicOnDynamicCollision(bodyA, bodyB);
+            collisionHandlers[hashA] = handlerA;
+            
+            Action handlerB = () => {
+                if ((bodyB.Mask & bodyA.Bit) != 0)
+                    bodyB.OnCollision(bodyA, collision);
+            };
+            int hashB = HashDynamicOnDynamicCollision(bodyB, bodyA);
+            collisionHandlers[hashB] = handlerB;
         }
 
         public void Update(GameTime gameTime)

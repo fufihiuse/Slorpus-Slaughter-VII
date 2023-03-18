@@ -19,6 +19,7 @@ namespace Slorpus.Objects
         double timer;
         double frameLength;
         public override ushort Mask { get { return Constants.PLAYER_BULLET_COLLISION_MASK; } }
+        public override ushort Bit { get { return Constants.PLAYER_BULLET_COLLISION_BIT; } }
         
         private float mass = Constants.PLAYER_BULLET_MASS;
         public override float Mass { get { return mass; } }

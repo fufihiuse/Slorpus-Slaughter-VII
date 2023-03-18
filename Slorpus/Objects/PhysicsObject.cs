@@ -37,6 +37,7 @@ namespace Slorpus.Objects
         
         // by default, collide with nothing
         public virtual ushort Mask { get { return 0; } }
+        public virtual ushort Bit { get { return 0; } }
 
         int id;
         public int ID { get { return id; } }

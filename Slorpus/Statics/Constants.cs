@@ -19,11 +19,11 @@ namespace Slorpus.Statics
         public const int COLLISION_ITERATIONS = 10;
         public const float PLAYER_DRAG = 0.5f;
 
-        private const ushort PLAYER_COLLISION_BIT =          0b00001000;
-        private const ushort WALL_COLLISION_BIT =            0b00000100;
-        private const ushort BOW_COLLISION_BIT =             0b00000010;
-        private const ushort PLAYER_BULLET_COLLISION_BIT =   0b00000001;
-        private const ushort ENEMY_COLLISION_BIT =           0b00010000;
+        public const ushort PLAYER_COLLISION_BIT =          0b00001000;
+        public const ushort WALL_COLLISION_BIT =            0b00000100;
+        public const ushort BOW_COLLISION_BIT =             0b00000010;
+        public const ushort PLAYER_BULLET_COLLISION_BIT =   0b00000001;
+        public const ushort ENEMY_COLLISION_BIT =           0b00010000;
 
         public const float PHYSICS_CORRECTION_AMOUNT = 0.5f;
 

@@ -13,11 +13,13 @@ namespace Slorpus.Objects
         private Rectangle subTex;
         private bool isMirror;
         private ushort mask;
+        private ushort bit;
 
         public Rectangle Position { get { return position; } }
         public Rectangle SubTex { get { return subTex; } }
         public bool IsMirror { get { return isMirror; } }
         public ushort Mask { get { return mask; } }
+        public ushort Bit { get { return mask; } }
 
         int id;
         public int ID { get { return id; } }
@@ -30,8 +32,10 @@ namespace Slorpus.Objects
             this.subTex = subTex;
 
             id = UUID.get();
-
+            
+            // mask is actually unecessary because the wall has no collision handlers
             mask = (bullet_collider) ? Constants.WALL_COLLISION_MASK : Constants.BOW_COLLISION_MASK;
+            bit = (bullet_collider) ? Constants.WALL_COLLISION_BIT : Constants.BOW_COLLISION_BIT;
         }
 
         /// <summary>
