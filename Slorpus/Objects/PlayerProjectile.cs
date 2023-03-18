@@ -24,12 +24,17 @@ namespace Slorpus.Objects
         private float mass = Constants.PLAYER_BULLET_MASS;
         public override float Mass { get { return mass; } }
 
+        private Vector2 intendedVelocity;
+        private bool reflectedThisFrame;
+
         public PlayerProjectile(Rectangle pos, Vector2 vel, ContentManager content): base(pos, vel)
         {
             currentFrame = 0;
             timer = 0;
             frameLength = 0.1;
             LoadContent(content);
+            intendedVelocity = vel;
+            reflectedThisFrame = false;
         }
 
         //get player proj pos?
@@ -37,6 +42,7 @@ namespace Slorpus.Objects
         void IUpdate.Update(GameTime gameTime)
         {
             // perform per-frame game logic
+            reflectedThisFrame = false;
             UpdateFrame(gameTime);
         }
 
@@ -75,15 +81,21 @@ namespace Slorpus.Objects
                 Wall tempWall = (Wall)(object)other;
                 if (tempWall.IsMirror)
                 {
-                    timesBounced++;
-                    SoundEffects.PlayEffectVolume("reflect", 0.6f, Math.Min(-0.1f + timesBounced*0.1f, 1)); // Plays firing off mirror sound effect
-                    LevelInfo.Pause(3);
-                    Camera.Shake(3, 5);
+                    if (!reflectedThisFrame)
+                    {
+                        reflectedThisFrame = true;
+                        timesBounced++;
+                        SoundEffects.PlayEffectVolume("reflect", 0.6f, Math.Min(-0.1f + timesBounced * 0.1f, 1)); // Plays firing off mirror sound effect
+                        LevelInfo.Pause(3);
+                        Camera.Shake(3, 5);
 
-                    vel = Vector2.Reflect(vel, collision.Normal);
+                        vel = Vector2.Reflect(intendedVelocity, collision.Normal);
+                        intendedVelocity = vel;
+                    }
                 }
-                else if ((Mask & tempWall.Mask) > 0)
+                else if ((Mask & tempWall.Bit) > 0)
                 {
+                    Console.WriteLine("Projectile mask: " + Mask + "\t Wall bit: " + tempWall.Bit);
                     Destroy();
                 } else {
                     return false;
@@ -95,7 +107,6 @@ namespace Slorpus.Objects
                 float pitch =  shiftedPitch * ((float)Enemy.Count-1) / ((float)LevelInfo.InitialEnemyCount);
                 // pitch = shiftedPitch - pitch; // inverts the pitch change
                 pitch += Constants.ENEMY_VOLUME.MIN;
-                Console.WriteLine("Pitch: " + pitch);
                 SoundEffects.PlayEffectVolume("enemy_death", 0.6f, pitch, 0.0f);
                 Enemy tempEnemy = (Enemy)(object)other;
                 tempEnemy.Destroy();

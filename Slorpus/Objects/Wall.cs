@@ -19,7 +19,7 @@ namespace Slorpus.Objects
         public Rectangle SubTex { get { return subTex; } }
         public bool IsMirror { get { return isMirror; } }
         public ushort Mask { get { return mask; } }
-        public ushort Bit { get { return mask; } }
+        public ushort Bit { get { return bit; } }
 
         int id;
         public int ID { get { return id; } }
@@ -36,6 +36,11 @@ namespace Slorpus.Objects
             // mask is actually unecessary because the wall has no collision handlers
             mask = (bullet_collider) ? Constants.WALL_COLLISION_MASK : Constants.BOW_COLLISION_MASK;
             bit = (bullet_collider) ? Constants.WALL_COLLISION_BIT : Constants.BOW_COLLISION_BIT;
+
+            if (!bullet_collider && isMirror)
+            {
+                throw new Exception("Cannot initialize a wall which is both a mirror and a BOW.");
+            }
         }
 
         /// <summary>
