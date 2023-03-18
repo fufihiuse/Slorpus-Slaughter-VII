@@ -25,13 +25,13 @@ namespace Slorpus.Statics
         private const ushort PLAYER_BULLET_COLLISION_BIT =   0b00000001;
         private const ushort ENEMY_COLLISION_BIT =           0b00010000;
 
-        public const float PHYSICS_CORRECTION_AMOUNT = 0.8f;
+        public const float PHYSICS_CORRECTION_AMOUNT = 0.5f;
 
         public const float PLAYER_MASS = 1;
         public const float ENEMY_MASS = 1;
         public const float PLAYER_BULLET_MASS = 1;
         public const float PLAYER_MOVE_IMPULSE = 0.1f;
-        public const float PLAYER_FRICTION_COEFFICIENT = 0.1f;
+        public const float PLAYER_FRICTION_COEFFICIENT = 0.17f;
         
         // basically just a global scalar to friction
         public const float GRAVITY = 0.5f;
