@@ -53,7 +53,7 @@ namespace Slorpus.Managers
             collisionHandlers[hash] = handler;
 
             // if masked, then just make the handler and be done with it
-            if ((wall.Mask & body.Mask) != 0) { return; }
+            if ((wall.Mask & body.Mask) == 0) { return; }
 
             // begin calculating corrective impulses ------------------------------
 

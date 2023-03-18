@@ -18,7 +18,6 @@ namespace Slorpus.Objects
         int currentFrame;
         double timer;
         double frameLength;
-        int calledThisFrame;
         public override ushort Mask { get { return Constants.PLAYER_BULLET_COLLISION_MASK; } }
         
         private float mass = Constants.PLAYER_BULLET_MASS;
@@ -30,7 +29,6 @@ namespace Slorpus.Objects
             timer = 0;
             frameLength = 0.1;
             LoadContent(content);
-            calledThisFrame = 0;
         }
 
         //get player proj pos?
@@ -39,12 +37,6 @@ namespace Slorpus.Objects
         {
             // perform per-frame game logic
             UpdateFrame(gameTime);
-
-            if (calledThisFrame > 0)
-            {
-                Console.WriteLine("Times the OnCollision for the player projectile was called this frame: " + calledThisFrame);
-                calledThisFrame = 0;
-            }
         }
 
         void IDraw.Draw(SpriteBatch sb)
@@ -71,7 +63,6 @@ namespace Slorpus.Objects
         // Handles bouncing off mirrors.
         public override bool OnCollision<T>(T other, CollisionInfo collision) 
         {
-            calledThisFrame++;
             // TODO: figure out why where are multiple conditionals here that check for if the other is player
             if (other is Player)
             {

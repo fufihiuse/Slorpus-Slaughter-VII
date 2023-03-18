@@ -46,7 +46,7 @@ namespace Slorpus.Statics
             WALL_COLLISION_BIT |
             PLAYER_BULLET_COLLISION_BIT;
         // walls collide with everything
-        public const ushort WALL_COLLISION_MASK = 1;
+        public const ushort WALL_COLLISION_MASK = 254;
         // BOWs just collide with bullets
         public const ushort BOW_COLLISION_MASK =
             PLAYER_COLLISION_BIT |
