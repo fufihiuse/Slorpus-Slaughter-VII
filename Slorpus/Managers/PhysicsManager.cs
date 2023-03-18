@@ -60,18 +60,18 @@ namespace Slorpus.Managers
             // impulse begins as the depth along the normal
             Vector2 impulse = new Vector2(collision.Normal.X, collision.Normal.Y);
             impulse *= collision.Depth;
+            // scale downwards by the amount we actually want to correct
+            impulse *= Constants.PHYSICS_CORRECTION_AMOUNT;
 
             // this is a really weird way of reflecting the velocity over the normal, but it only works for AABBs
             Vector2 axisToAdjust = new Vector2(Math.Abs(collision.Normal.X), Math.Abs(collision.Normal.Y));
             impulse += body.Velocity * axisToAdjust * -1;
             
-            // scale downwards by the amount we actually want to correct
-            impulse *= Constants.PHYSICS_CORRECTION_AMOUNT;
-            // scale impulse by mass
+            // scale impulse by mass (impulses are all inversely scaled by mass, so this cancels that out)
             impulse *= body.Mass;
 
             // apply the impulses
-            body.Impulses += impulse *= deltaTime;
+            body.Impulses += impulse * deltaTime;
         }
 
         private void CreateCollisionHandlers(IPhysics bodyA, IPhysics bodyB)
