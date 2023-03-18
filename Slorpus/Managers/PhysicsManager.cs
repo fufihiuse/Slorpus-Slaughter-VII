@@ -29,19 +29,6 @@ namespace Slorpus.Managers
             collisionHandlers = new Dictionary<int, Action>();
         }
 
-        private void ApplyUniversalImpulses(IPhysics body, float deltaTime)
-        {
-            // calculate drag (percentage reduction in velocity each frame)
-            Vector2 drag = new Vector2(body.Velocity.X, body.Velocity.Y);
-            drag *= Constants.UNIVERSAL_DRAG * -1 * deltaTime;
-
-            // scale to the number of collision iterations (only apply 1/3 of drag per iteration
-            // if there are 3 iterations)
-            drag *= 1.0f / Constants.COLLISION_ITERATIONS;
-
-            body.Impulses += drag;
-        }
-
         private void ApplyConstraintImpulses(IPhysics body, Wall wall, float deltaTime)
         {
             CollisionInfo collision = wall.Collision(body.Position, body.SubpixelOffset);
@@ -110,10 +97,6 @@ namespace Slorpus.Managers
             {
                 foreach (IPhysics physicsObject in physicsObjects)
                 {
-                    // get and apply impulses for forces like gravity and drag
-                    ApplyUniversalImpulses(physicsObject, deltaTime);
-                    physicsObject.ApplyImpulses();
-                    
                     // apply impulses for constraining bodies to walls
                     foreach (Wall wall in wallList)
                     {

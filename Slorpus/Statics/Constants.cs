@@ -17,7 +17,6 @@ namespace Slorpus.Statics
         public const int UUID_MAX = 10000;
 
         public const int COLLISION_ITERATIONS = 10;
-        public const float UNIVERSAL_DRAG = 0f; // disabled
         public const float PLAYER_DRAG = 0.5f;
 
         private const ushort PLAYER_COLLISION_BIT =          0b00001000;
