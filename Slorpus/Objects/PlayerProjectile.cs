@@ -25,7 +25,8 @@ namespace Slorpus.Objects
         public override float Mass { get { return mass; } }
 
         private Vector2 intendedVelocity;
-        private bool reflectedThisFrame;
+
+        private Vector2 lastNormal;
 
         public PlayerProjectile(Rectangle pos, Vector2 vel, ContentManager content): base(pos, vel)
         {
@@ -34,7 +35,7 @@ namespace Slorpus.Objects
             frameLength = 0.1;
             LoadContent(content);
             intendedVelocity = vel;
-            reflectedThisFrame = false;
+            lastNormal = Vector2.Zero;
         }
 
         //get player proj pos?
@@ -42,7 +43,6 @@ namespace Slorpus.Objects
         void IUpdate.Update(GameTime gameTime)
         {
             // perform per-frame game logic
-            reflectedThisFrame = false;
             UpdateFrame(gameTime);
         }
 
@@ -81,15 +81,15 @@ namespace Slorpus.Objects
                 Wall tempWall = (Wall)(object)other;
                 if (tempWall.IsMirror)
                 {
-                    if (!reflectedThisFrame)
+                    if (collision.Normal != lastNormal)
                     {
-                        reflectedThisFrame = true;
                         timesBounced++;
                         SoundEffects.PlayEffectVolume("reflect", 0.6f, Math.Min(-0.1f + timesBounced * 0.1f, 1)); // Plays firing off mirror sound effect
                         LevelInfo.Pause(3);
                         Camera.Shake(3, 5);
 
                         vel = Vector2.Reflect(intendedVelocity, collision.Normal);
+                        lastNormal = collision.Normal;
                         intendedVelocity = vel;
                     }
                 }

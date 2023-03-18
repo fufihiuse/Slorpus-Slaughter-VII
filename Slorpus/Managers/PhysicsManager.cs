@@ -96,6 +96,7 @@ namespace Slorpus.Managers
             {
                 foreach (IPhysics physicsObject in physicsObjects)
                 {
+                    // try to resolve any collisions that have occurred as a result of movement
                     // apply impulses for constraining bodies to walls
                     foreach (Wall wall in wallList)
                     {
@@ -113,8 +114,9 @@ namespace Slorpus.Managers
                         CreateCollisionHandlers(physicsObject, other);
                     }
 
-                    // actually move the body
+                    // cause the impulses on the object to manipulate the body
                     physicsObject.ApplyImpulses();
+                    // actually move the body
                     physicsObject.Move(physicsObject.Velocity);
                 }
             }
