@@ -2,6 +2,7 @@
 
 using Slorpus.Interfaces;
 using Slorpus.Utils;
+using Slorpus.Statics;
 
 namespace Slorpus.Objects
 {
@@ -34,6 +35,9 @@ namespace Slorpus.Objects
         // by default, collide with nothing
         public virtual ushort Mask { get { return 0; } }
 
+        int id;
+        public int ID { get { return id; } }
+
         public void ApplyImpulses()
         {
             // scale by inverse of mass
@@ -58,6 +62,7 @@ namespace Slorpus.Objects
         {
             this.pos = pos;
             this.vel = vel;
+            id = UUID.get();
         }
 
         /// <summary>

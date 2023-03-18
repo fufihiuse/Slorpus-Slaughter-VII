@@ -16,6 +16,8 @@ namespace Slorpus.Managers
         private List<Wall> bowList;
         private List<IPhysics> physicsObjects;
         private BulletManager bulletManager;
+        // this gets filled and then cleared each frame
+        private Dictionary<int, Action> collisionHandlers;
 
         public PhysicsManager(List<IPhysics> physicsObjects, List<Wall> wallList, BulletManager bulletManager, List<Wall> bowList)
         {
@@ -23,6 +25,8 @@ namespace Slorpus.Managers
             this.wallList = wallList;
             this.bowList = bowList;
             this.bulletManager = bulletManager;
+
+            collisionHandlers = new Dictionary<int, Action>();
         }
 
         private void ApplyUniversalImpulses(IPhysics body, float deltaTime)
@@ -31,8 +35,8 @@ namespace Slorpus.Managers
             Vector2 drag = new Vector2(body.Velocity.X, body.Velocity.Y);
             drag *= Constants.UNIVERSAL_DRAG * -1 * deltaTime;
 
-            // scale to the number of collision iterations (only apply 1/3) of drag per iteration
-            // if there are 3 iterations
+            // scale to the number of collision iterations (only apply 1/3 of drag per iteration
+            // if there are 3 iterations)
             drag *= 1.0f / Constants.COLLISION_ITERATIONS;
 
             body.Impulses += drag;
@@ -40,13 +44,15 @@ namespace Slorpus.Managers
 
         private void ApplyConstraintImpulses(IPhysics body, Wall wall, float deltaTime)
         {
-            CollisionInfo collision = wall.Collision(body.Position);
+            CollisionInfo collision = wall.Collision(body.Position, body.SubpixelOffset);
             if (!collision.Collided) { return; }
-            
-            // call the body's collision handler
-            body.OnCollision(wall, collision);
 
-            // if masked, then just call the handler and be done with it
+            // store the body's collision handler
+            Action handler = () => { body.OnCollision(wall, collision); };
+            int hash = HashDynamicOnStaticCollision(wall, body);
+            collisionHandlers[hash] = handler;
+
+            // if masked, then just make the handler and be done with it
             if ((wall.Mask & body.Mask) != 0) { return; }
 
             // begin calculating corrective impulses ------------------------------
@@ -55,7 +61,7 @@ namespace Slorpus.Managers
             Vector2 impulse = new Vector2(collision.Normal.X, collision.Normal.Y);
             impulse *= collision.Depth;
 
-            // this is a really weird way of reflecting the velocit over the normal, but it only works for AABBs
+            // this is a really weird way of reflecting the velocity over the normal, but it only works for AABBs
             Vector2 axisToAdjust = new Vector2(Math.Abs(collision.Normal.X), Math.Abs(collision.Normal.Y));
             impulse += body.Velocity * axisToAdjust * -1;
             
@@ -68,13 +74,30 @@ namespace Slorpus.Managers
             body.Impulses += impulse *= deltaTime;
         }
 
-        private void CallCollisionHandlers(IPhysics bodyA, IPhysics bodyB)
+        private void CreateCollisionHandlers(IPhysics bodyA, IPhysics bodyB)
         {
             CollisionInfo collision = CollisionMath.Between(bodyA.Position, bodyB.Position);
             if (!collision.Collided) { return; }
-            
-            bodyA.OnCollision(bodyB, collision);
-            bodyB.OnCollision(bodyA, collision);
+
+            Action handler = () => {
+                bodyA.OnCollision(bodyB, collision);
+                bodyB.OnCollision(bodyA, collision);
+            };
+
+            // ensure bodies are always in same order
+            int hashA = bodyA.GetHashCode();
+            int hashB = bodyB.GetHashCode();
+            if (hashA > hashB)
+            {
+                int hash = HashDynamicOnDynamicCollision(bodyA, bodyB);
+                Console.WriteLine("HANDLER: " + hash + "\t BODY A :" + bodyA + "\t BODY B:" + bodyB);
+                collisionHandlers[hash] = handler;
+            } else
+            {
+                int hash = HashDynamicOnDynamicCollision(bodyB, bodyA);
+                Console.WriteLine("HANDLER: " + hash + "\t BODY A :" + bodyA + "\t BODY B:" + bodyB);
+                collisionHandlers[hash] = handler;
+            }
         }
 
         public void Update(GameTime gameTime)
@@ -102,7 +125,7 @@ namespace Slorpus.Managers
                     foreach (IPhysics other in physicsObjects)
                     {
                         if (other == physicsObject) { continue; }
-                        CallCollisionHandlers(physicsObject, other);
+                        CreateCollisionHandlers(physicsObject, other);
                     }
 
                     // actually move the body
@@ -111,6 +134,12 @@ namespace Slorpus.Managers
                 }
             }
             CollideAndMoveBullets(gameTime, new Point(Constants.BULLET_SIZE, Constants.BULLET_SIZE));
+            // call all the collision handlers and refresh for next frame
+            foreach (KeyValuePair<int, Action> handler in collisionHandlers)
+            {
+                handler.Value();
+            }
+            collisionHandlers.Clear();
         }
 
         public void AddPhysicsObject(IPhysics physicsObject)
@@ -154,6 +183,35 @@ namespace Slorpus.Managers
                 }
             }
             bulletManager.DestroyBatch(queuedBullets.ToArray());
+        }
+        private int HashPhysicsBody(IPhysics body)
+        {
+            int result = body.ID;
+            // physics bodies tend to never occupy the same location so
+            // using XY for this should usually generate unique numbers
+            result = (result * 397) ^ body.Position.Bottom;
+            result = (result * 397) ^ body.Position.Left;
+            return result;
+        }
+        private int HashWall(Wall wall)
+        {
+            int result = wall.ID;
+            result = (result * 397) ^ wall.Position.Bottom;
+            result = (result * 397) ^ wall.Position.Left;
+            return result;
+        }
+
+        private int HashDynamicOnStaticCollision(Wall wall, IPhysics body)
+        {
+            int result = HashWall(wall);
+            result = (result * 397) ^ HashPhysicsBody(body);
+            return result;
+        }
+        private int HashDynamicOnDynamicCollision(IPhysics b1, IPhysics b2)
+        {
+            int result = HashPhysicsBody(b1);
+            result = (result * 397) ^ HashPhysicsBody(b2);
+            return result;
         }
     }
 }

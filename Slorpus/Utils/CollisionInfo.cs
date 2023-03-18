@@ -8,13 +8,22 @@ namespace Slorpus.Utils
 {
     public static class CollisionMath
     {
-        public static CollisionInfo Between(Rectangle b1, Rectangle b2)
+        public static CollisionInfo Between(Rectangle b1, Rectangle b2,
+            Vector2 subPixelOffset1=new Vector2(), Vector2 subPixelOffset2=new Vector2())
         {
             // dont use the builtin Intersects method because we need additional information
             // about the overlap like depth and normal
             // NOTE: using Top as the minimum side of the collision, assumes Top < Bottom (inverted coordinates)
-            Vector2 min = new Vector2(Math.Max(b1.Left, b2.Left), Math.Max(b1.Top, b2.Top));
-            Vector2 max = new Vector2(Math.Min(b1.Right, b2.Right), Math.Min(b1.Bottom, b2.Bottom));
+            float b1Left = b1.Left + subPixelOffset1.X;
+            float b1Right = b1.Right + subPixelOffset1.X;
+            float b2Left = b2.Left + subPixelOffset2.X;
+            float b2Right = b2.Right + subPixelOffset2.X;
+            float b1Top = b1.Top + subPixelOffset1.Y;
+            float b1Bottom = b1.Bottom + subPixelOffset1.Y;
+            float b2Top = b2.Top + subPixelOffset2.Y;
+            float b2Bottom = b2.Bottom + subPixelOffset2.Y;
+            Vector2 min = new Vector2(Math.Max(b1Left, b2Left), Math.Max(b1Top, b2Top));
+            Vector2 max = new Vector2(Math.Min(b1Right, b2Right), Math.Min(b1Bottom, b2Bottom));
             bool collided = min.X < max.X && min.Y < max.Y;
 
             // also get depth and normal if necessary
@@ -39,8 +48,8 @@ namespace Slorpus.Utils
                     // so the normal points as the sign of the depth
                     normal.X = (depth.X <= depth.Y) ? (depth.X / Math.Abs(depth.X)) : 0;
                 }
-                normal.X *= ((b1.Left > b2.Left) ? 2 : 0) - 1;
-                normal.Y *= ((b1.Top > b2.Top) ? 2 : 0) - 1;
+                normal.X *= ((b1Left > b2Left) ? 2 : 0) - 1;
+                normal.Y *= ((b1Top > b2Top) ? 2 : 0) - 1;
                 normal.Normalize();
             }
 

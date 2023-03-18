@@ -11,8 +11,12 @@ namespace Slorpus.Statics
         public const float CAMERA_SPEED = 0.05f;
         public const float MIN_FOLLOW_DISTANCE = 250f;
         public const float MIN_DETECTION_DISTANCE = 400;
+        
+        // this should be order of magnitudes bigger than the number of objects
+        // ever expected to be on the screen (most possible UUIDs should be unused)
+        public const int UUID_MAX = 10000;
 
-        public const int COLLISION_ITERATIONS = 3;
+        public const int COLLISION_ITERATIONS = 10;
         public const float UNIVERSAL_DRAG = 0.5f;
 
         private const ushort PLAYER_COLLISION_BIT =          0b00001000;

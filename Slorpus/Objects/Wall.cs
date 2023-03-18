@@ -19,12 +19,17 @@ namespace Slorpus.Objects
         public bool IsMirror { get { return isMirror; } }
         public ushort Mask { get { return mask; } }
 
+        int id;
+        public int ID { get { return id; } }
+
         //constuctor
         public Wall(Rectangle position, Rectangle subTex, bool bullet_collider = true, bool isMirror = false)
         {
             this.position = position;
             this.isMirror = isMirror;
             this.subTex = subTex;
+
+            id = UUID.get();
 
             mask = (bullet_collider) ? Constants.WALL_COLLISION_MASK : Constants.BOW_COLLISION_MASK;
         }
@@ -34,9 +39,9 @@ namespace Slorpus.Objects
         /// </summary>
         /// <param name="rect">The rectangle to check for collision with.</param>
         /// <returns>A CollisionInfo struct with all the information about the collision.</returns>
-        public CollisionInfo Collision(Rectangle rect)
+        public CollisionInfo Collision(Rectangle rect, Vector2 subPixelOffset)
         {
-            return CollisionMath.Between(rect, position);
+            return CollisionMath.Between(rect, position, subPixelOffset);
         }
     }
 }

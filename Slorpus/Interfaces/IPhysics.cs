@@ -16,6 +16,8 @@ namespace Slorpus.Interfaces
 
         public float Mass { get; }
 
+        public int ID { get; }
+
         /// <summary>
         /// Moves the object relative to its current position.
         /// </summary>
