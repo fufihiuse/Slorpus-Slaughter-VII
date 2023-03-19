@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Slorpus.Interfaces.Base;
 using Slorpus.Statics;
 using Slorpus.Utils;
+using Slorpus.Managers;
 
 namespace Slorpus.Objects
 {
@@ -27,6 +28,7 @@ namespace Slorpus.Objects
         private Vector2 intendedVelocity;
 
         private Vector2 lastNormal;
+        private Point lastWallPosition;
 
         public PlayerProjectile(Rectangle pos, Vector2 vel, ContentManager content): base(pos, vel)
         {
@@ -35,7 +37,10 @@ namespace Slorpus.Objects
             frameLength = 0.1;
             LoadContent(content);
             intendedVelocity = vel;
+
+            // two impossible values for both of the following variables
             lastNormal = Vector2.Zero;
+            lastWallPosition = new Point(int.MaxValue, int.MaxValue);
         }
 
         //get player proj pos?
@@ -81,7 +86,7 @@ namespace Slorpus.Objects
                 Wall tempWall = (Wall)(object)other;
                 if (tempWall.IsMirror)
                 {
-                    if (collision.Normal != lastNormal)
+                    if (collision.Normal != lastNormal && NotHittingCornerOfWall(tempWall, collision.Normal))
                     {
                         timesBounced++;
                         SoundEffects.PlayEffectVolume("reflect", 0.6f, Math.Min(-0.1f + timesBounced * 0.1f, 1)); // Plays firing off mirror sound effect
@@ -90,6 +95,7 @@ namespace Slorpus.Objects
 
                         vel = Vector2.Reflect(intendedVelocity, collision.Normal);
                         lastNormal = collision.Normal;
+                        lastWallPosition = tempWall.Position.Location;
                         intendedVelocity = vel;
                     }
                 }
@@ -116,6 +122,37 @@ namespace Slorpus.Objects
                 LevelInfo.ReloadLevel();
             }
             return false;
+        }
+        
+        /// <summary>
+        /// Used to mitigate the effects of tiling, where a bullet can collide with the corner
+        /// of a tile in a wall, getting a normal different than the one the whole wall obviously
+        /// has. Could also be accomplished by fusing adjacent wall tiles into one rectangle during
+        /// level load.
+        /// </summary>
+        /// <param name="newCollision">The wall being collided with, which may be invalid</param>
+        /// <param name="normal">The normal of the collision with newCollision.</param>
+        /// <returns>True if this collision should cause a reflection.</returns>
+        private bool NotHittingCornerOfWall(Wall newCollision, Vector2 normal)
+        {
+            Point loc = newCollision.Position.Location;
+            Point tileCoords = new Point(loc.X / Constants.WALL_SIZE, loc.Y / Constants.WALL_SIZE);
+
+            // now ensure that there is not another mirror wall in the direction of the normal
+            int X = tileCoords.X + (Math.Sign(normal.X) * (int)Math.Ceiling(Math.Abs(normal.X)));
+            int Y = tileCoords.Y + (Math.Sign(normal.Y) * (int)Math.Ceiling(Math.Abs(normal.Y)));
+            X = Math.Clamp(X, 1, Level.Size.X);
+            Y = Math.Clamp(Y, 1, Level.Size.Y);
+            char adjacent = Level.Map[Y-1, X-1];
+
+            Console.WriteLine(adjacent);
+
+            Console.WriteLine("this tiles coords: " + tileCoords);
+            Console.WriteLine("this tile: " + Level.Map[tileCoords.Y, tileCoords.X]);
+            Console.WriteLine("adjacent tiles coords: " + "X: " + X + "Y: " + Y);
+            Console.WriteLine("adjacent tile: " + adjacent);
+            
+            return adjacent != 'M' && adjacent != 'W';
         }
 
         /// <summary>
