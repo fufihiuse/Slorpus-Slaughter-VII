@@ -161,11 +161,8 @@ namespace Slorpus.Managers
                 {
                     if (wallList[w].Position.Contains(bulletManager[i].Position))
                     {
-                        bool destroyed = bulletManager[i].OnCollision(wallList[w]);
-                        if (destroyed)
-                        {
-                            queuedBullets.Add(i);
-                        }
+                        // everything in wallList should destroy bullets
+                        queuedBullets.Add(i);
                     }
                 }
             }
