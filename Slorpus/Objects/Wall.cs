@@ -14,22 +14,25 @@ namespace Slorpus.Objects
         private bool isMirror;
         private ushort mask;
         private ushort bit;
+        private Point levelCoordinate;
 
         public Rectangle Position { get { return position; } }
         public Rectangle SubTex { get { return subTex; } }
         public bool IsMirror { get { return isMirror; } }
         public ushort Mask { get { return mask; } }
         public ushort Bit { get { return bit; } }
+        public Point LevelCoordinate { get { return levelCoordinate; } }
 
         int id;
         public int ID { get { return id; } }
 
         //constuctor
-        public Wall(Rectangle position, Rectangle subTex, bool bullet_collider = true, bool isMirror = false)
+        public Wall(Rectangle position, Rectangle subTex, Point levelCoordinate, bool bullet_collider = true, bool isMirror = false)
         {
             this.position = position;
             this.isMirror = isMirror;
             this.subTex = subTex;
+            this.levelCoordinate = levelCoordinate;
 
             id = UUID.get();
             

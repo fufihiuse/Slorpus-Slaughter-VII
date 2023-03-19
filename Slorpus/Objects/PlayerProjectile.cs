@@ -135,20 +135,15 @@ namespace Slorpus.Objects
         /// <returns>True if this collision should cause a reflection.</returns>
         private bool NotHittingCornerOfWall(Wall newCollision, Vector2 normal)
         {
-            Point loc = newCollision.Position.Location;
-            Point tileCoords = new Point(loc.X / Constants.WALL_SIZE, loc.Y / Constants.WALL_SIZE);
+            // ensure that there is not another mirror wall in the direction of the normal
+            int X = newCollision.LevelCoordinate.X + (Math.Sign(normal.X) * (int)Math.Ceiling(Math.Abs(normal.X)));
+            int Y = newCollision.LevelCoordinate.Y + (Math.Sign(normal.Y) * (int)Math.Ceiling(Math.Abs(normal.Y)));
+            if (X >= Level.Size.X || X < 0) { return false; }
+            if (Y >= Level.Size.Y || Y < 0) { return false; }
+            char adjacent = Level.Map[Y, X];
 
-            // now ensure that there is not another mirror wall in the direction of the normal
-            int X = tileCoords.X + (Math.Sign(normal.X) * (int)Math.Ceiling(Math.Abs(normal.X)));
-            int Y = tileCoords.Y + (Math.Sign(normal.Y) * (int)Math.Ceiling(Math.Abs(normal.Y)));
-            X = Math.Clamp(X, 1, Level.Size.X);
-            Y = Math.Clamp(Y, 1, Level.Size.Y);
-            char adjacent = Level.Map[Y-1, X-1];
-
-            Console.WriteLine(adjacent);
-
-            Console.WriteLine("this tiles coords: " + tileCoords);
-            Console.WriteLine("this tile: " + Level.Map[tileCoords.Y, tileCoords.X]);
+            Console.WriteLine("this tiles coords: " + newCollision.LevelCoordinate);
+            Console.WriteLine("this tile: " + Level.Map[newCollision.LevelCoordinate.Y, newCollision.LevelCoordinate.X]);
             Console.WriteLine("adjacent tiles coords: " + "X: " + X + "Y: " + Y);
             Console.WriteLine("adjacent tile: " + adjacent);
             

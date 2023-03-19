@@ -100,7 +100,8 @@ namespace Slorpus.Utils
                                     Constants.WALL_SIZE
                                     )
                                 ),
-                            Autotiler.GetWallTileSimple(Autotiler.GetTileIndex(ge.OriginPosition.X, ge.OriginPosition.Y, '0'))
+                            Autotiler.GetWallTileSimple(Autotiler.GetTileIndex(ge.OriginPosition.X, ge.OriginPosition.Y, '0')),
+                            ge.OriginPosition
                             );
 
                         // add a new wall to the wall list
@@ -115,7 +116,8 @@ namespace Slorpus.Utils
                                     Constants.WALL_SIZE
                                     )
                                 ),
-                            Autotiler.GetWallTileSimple(Autotiler.GetTileIndex(ge.OriginPosition.X, ge.OriginPosition.Y))
+                            Autotiler.GetWallTileSimple(Autotiler.GetTileIndex(ge.OriginPosition.X, ge.OriginPosition.Y)),
+                            ge.OriginPosition
                             );
 
                         // add a new wall to the wall list
@@ -132,6 +134,7 @@ namespace Slorpus.Utils
                                     )
                                 ),
                             Autotiler.GetWallTileSimple(Autotiler.GetTileIndex(ge.OriginPosition.X, ge.OriginPosition.Y)),
+                            ge.OriginPosition,
                             true, //is collidable
                             true //is a mirror
                             );
@@ -149,6 +152,7 @@ namespace Slorpus.Utils
                                     )
                                 ),
                             Autotiler.GetWallTileSimple(Autotiler.GetTileIndex(ge.OriginPosition.X, ge.OriginPosition.Y)),
+                            ge.OriginPosition,
                             false, //is collidable
                             false //is a mirror
                             );
@@ -167,7 +171,8 @@ namespace Slorpus.Utils
                                 Constants.WALL_SIZE
                                 )
                             ),
-                        Autotiler.GetWallTileSimple(Autotiler.GetTileIndex(ge.OriginPosition.X, ge.OriginPosition.Y, '0'))
+                        Autotiler.GetWallTileSimple(Autotiler.GetTileIndex(ge.OriginPosition.X, ge.OriginPosition.Y, '0')),
+                        ge.OriginPosition
                         );
 
                     // add a new wall to the wall list
