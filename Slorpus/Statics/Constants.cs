@@ -16,7 +16,7 @@ namespace Slorpus.Statics
         // ever expected to be on the screen (most possible UUIDs should be unused)
         public const int UUID_MAX = 10000;
 
-        public const int COLLISION_ITERATIONS = 10;
+        public const int COLLISION_ITERATIONS = 3;
         public const float PLAYER_DRAG = 0.5f;
 
         public const ushort PLAYER_COLLISION_BIT =          0b00001000;
